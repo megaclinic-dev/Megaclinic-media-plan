@@ -6,6 +6,20 @@
 <title>Media Plan · ตารางช่องทาง</title>
 <script src="./react.production.min.js"></script>
 <script src="./react-dom.production.min.js"></script>
+<script src="./supabase.js"></script>
+<script>
+  /* ---- Central data store (Supabase) ---- */
+  window.__MP_SB = {
+    url: "https://ldokxrqxaunwfdcccvcg.supabase.co",
+    key: "sb_publishable_9DMTqT0OD6FAOu87ANlQIA_kCWLn4qx"
+  };
+  try {
+    window.sb = (window.supabase && window.supabase.createClient)
+      ? window.supabase.createClient(window.__MP_SB.url, window.__MP_SB.key)
+      : null;
+    if (!window.sb) console.error("[sync] supabase-js not loaded");
+  } catch (e) { console.error("[sync] init failed", e); window.sb = null; }
+</script>
 <script src="./support.js"></script>
 </head>
 <body>
@@ -785,7 +799,15 @@ class Component extends DCLogic {
     s.perms=this.ensureTeamAccess(s.perms, s.positions, s.people);
     this.migrateFormats(s);
     return s; } catch(e){ return null; } }
-  persist(){ try { localStorage.setItem('mediaPlan.v3', JSON.stringify({ channels:this.state.channels, people:this.state.people, tasks:this.state.tasks, log:this.state.log, contentTypes:this.state.contentTypes, procedures:this.state.procedures, statuses:this.state.statuses, perms:this.state.perms, positions:this.state.positions, formats:this.state.formats, sizes:this.state.sizes, branches:this.state.branches })); } catch(e){} }
+  _dataBlob(){ const S=this.state; return { channels:S.channels, people:S.people, tasks:S.tasks, log:S.log, contentTypes:S.contentTypes, procedures:S.procedures, statuses:S.statuses, perms:S.perms, positions:S.positions, formats:S.formats, sizes:S.sizes, branches:S.branches }; }
+  persist(){ try { localStorage.setItem('mediaPlan.v3', JSON.stringify(this._dataBlob())); } catch(e){} this._pushRemote(); }
+  _applyRemote(d){ if(!d || typeof d!=='object' || !Array.isArray(d.channels)) return; const S=this.state;
+    this.setState({ channels:d.channels||S.channels, people:d.people||S.people, tasks:d.tasks||[], log:d.log||[], contentTypes:d.contentTypes||S.contentTypes, procedures:d.procedures||S.procedures, statuses:d.statuses||S.statuses, perms:d.perms||S.perms, positions:d.positions||S.positions, formats:d.formats||S.formats, sizes:d.sizes||S.sizes, branches:d.branches||S.branches }); }
+  _pushRemote(){ if(!window.sb) return; clearTimeout(this._pushT); this._pushT=setTimeout(()=>{ const blob=this._dataBlob(); this._lastJson=JSON.stringify(blob); window.sb.from('app_state').update({ data:blob, updated_at:new Date().toISOString() }).eq('id',1).then(({error})=>{ if(error) console.error('[sync] push', error.message); }); }, 600); }
+  _pullRemote(){ if(!window.sb) return Promise.resolve(); return window.sb.from('app_state').select('data').eq('id',1).maybeSingle().then(({data,error})=>{ if(error){ console.error('[sync] pull', error.message); return; } const d=data&&data.data; if(d&&Array.isArray(d.channels)){ this._lastJson=JSON.stringify(d); this._applyRemote(d); } else { this._pushRemote(); } }); }
+  _initSync(){ if(!window.sb || this._syncInit) return; this._syncInit=true; this._pullRemote();
+    try { window.sb.channel('app_state_rt').on('postgres_changes', { event:'UPDATE', schema:'public', table:'app_state' }, (payload)=>{ const d=payload && payload.new && payload.new.data; if(!d) return; const json=JSON.stringify(d); if(json===this._lastJson) return; this._lastJson=json; this._applyRemote(d); }).subscribe(); }
+    catch(e){ console.error('[sync] realtime', e); } }
 
   addPosition(){ const n=(this.state.newPos||'').trim(); if(!n) return; if(this.state.positions.includes(n)){ this.setState({ newPos:'' }); return; }
     const perms=JSON.parse(JSON.stringify(this.state.perms||{})); const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del:a==='tasks' }; }); perms[n]=o;
@@ -861,7 +883,7 @@ class Component extends DCLogic {
   thMon(m){ return ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][m]; }
   nowStamp(){ const d=new Date(); return d.getDate()+' '+this.thMon(d.getMonth())+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 
-  componentDidMount(){ this._onR=()=>this.forceUpdate(); window.addEventListener('resize',this._onR); }
+  componentDidMount(){ this._onR=()=>this.forceUpdate(); window.addEventListener('resize',this._onR); this._initSync(); }
   componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); }
 
   commit(patch, action, detail, changes){
