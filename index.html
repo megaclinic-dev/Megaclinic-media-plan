@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Media Plan · ตารางช่องทาง</title>
+<script src="./react.production.min.js"></script>
+<script src="./react-dom.production.min.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  a { color: #4F46E5; text-decoration: none; }
+  a:hover { color: #3730A3; }
+  ::-webkit-scrollbar { height: 10px; width: 10px; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  input, select, button, textarea { font-family: inherit; }
+  .mp-hamb { display: none; }
+  .mp-overlay { display: none; }
+  @media (max-width: 860px) {
+    .mp-sidebar { position: fixed !important; left: 0; top: 0; bottom: 0; height: 100vh !important; z-index: 60; transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 20px 60px rgba(0,0,0,.4); }
+    .mp-root.mp-nav-open .mp-sidebar { transform: translateX(0); }
+    .mp-root.mp-nav-open .mp-overlay { display: block; }
+    .mp-hamb { display: inline-flex !important; align-items: center; justify-content: center; }
+    .mp-main-pad { padding: 14px 12px !important; }
+    .mp-header { padding: 11px 14px !important; gap: 10px !important; }
+    .mp-plan-split { flex-direction: column; }
+    .mp-workload { width: 100% !important; border-left: none !important; border-top: 1px solid #EEF2F6; }
+  }
+  @media (max-width: 560px) { .mp-hide-sm { display: none !important; } }
+</style>
+</helmet>
+
+<sc-if value="{{ notAuthed }}" hint-placeholder-val="{{ false }}">
+  <div style="font-family:'IBM Plex Sans Thai','IBM Plex Sans',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#0F172A; padding:20px; -webkit-font-smoothing:antialiased;">
+    <div style="width:100%; max-width:380px; background:#fff; border-radius:22px; padding:36px 32px; box-shadow:0 24px 60px rgba(0,0,0,.4);">
+      <div style="font-size:22px; font-weight:700; letter-spacing:-.01em;">Media Plan</div>
+      <div style="font-size:13px; color:#64748B; margin-top:4px; margin-bottom:26px;">เข้าสู่ระบบเพื่อจัดการแผนงานครีเอทีฟ</div>
+      <label style="display:block; margin-bottom:14px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ผู้ใช้งาน</span>
+        <select value="{{ loginId }}" onChange="{{ onLoginId }}" style="width:100%; font-size:14px; padding:11px 12px; border:1px solid #E2E8F0; border-radius:11px; background:#fff; cursor:pointer;">
+          <sc-for list="{{ loginPeopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+        </select></label>
+      <label style="display:block; margin-bottom:6px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">รหัสผ่าน</span>
+        <input type="password" value="{{ loginPw }}" onChange="{{ onLoginPw }}" onKeyDown="{{ onLoginKey }}" placeholder="รหัสผ่าน" style="width:100%; font-size:14px; padding:11px 12px; border:1px solid #E2E8F0; border-radius:11px;"></label>
+      <sc-if value="{{ loginErr }}" hint-placeholder-val=""><div style="font-size:12px; color:#EF4444; font-weight:600; margin-bottom:6px;">{{ loginErr }}</div></sc-if>
+      <button onClick="{{ doLogin }}" style="width:100%; margin-top:16px; font-size:14px; font-weight:700; color:#fff; background:#4F46E5; border:none; border-radius:11px; padding:12px; cursor:pointer;">เข้าสู่ระบบ</button>
+      <div style="font-size:11px; color:#94A3B8; margin-top:16px; text-align:center;">รหัสเริ่มต้นของทุกคน: 1234 · เปลี่ยนได้ที่เมนู "ทีมงาน"</div>
+    </div>
+  </div>
+</sc-if>
+<sc-if value="{{ authed }}" hint-placeholder-val="{{ true }}">
+<div class="mp-root {{ navOpenClass }}" style="font-family:'IBM Plex Sans Thai','IBM Plex Sans',system-ui,sans-serif; background:#F1F5F9; color:#0F172A; display:flex; height:100vh; overflow:hidden; -webkit-font-smoothing:antialiased;">
+
+  <div onClick="{{ closeNav }}" class="mp-overlay" style="position:fixed; inset:0; background:rgba(15,23,42,.4); z-index:55;"></div>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="mp-sidebar" style="width:236px; flex-shrink:0; background:#0F172A; color:#E2E8F0; display:flex; flex-direction:column; padding:20px 14px; overflow-y:auto;">
+    <div style="padding:6px 10px 20px;">
+      <div style="font-size:16px; font-weight:700; color:#fff; letter-spacing:-.01em;">Media Plan</div>
+      <div style="font-size:11px; color:#64748B; margin-top:2px;">งานครีเอทีฟ · ตารางช่องทาง</div>
+    </div>
+    <nav style="display:flex; flex-direction:column; gap:3px;">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="8">
+        <button onClick="{{ n.onClick }}" style="{{ n.style }}">
+          <span style="width:18px; text-align:center;">{{ n.icon }}</span>
+          <span style="flex:1; text-align:left;">{{ n.label }}</span>
+          <sc-if value="{{ n.badge }}" hint-placeholder-val="">
+            <span style="font-size:11px; font-weight:700; background:rgba(255,255,255,.12); padding:1px 7px; border-radius:99px;">{{ n.badge }}</span>
+          </sc-if>
+        </button>
+      </sc-for>
+    </nav>
+    <div style="margin-top:auto; padding:12px 10px 4px; border-top:1px solid #1E293B;">
+      <div style="font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:#64748B; margin-bottom:9px;">เข้าสู่ระบบในชื่อ</div>
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <span style="width:34px; height:34px; border-radius:9px; background:{{ actorColor }}; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ actorInit }}</span>
+        <div style="min-width:0;">
+          <div style="font-size:13px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ actorName }}</div>
+          <div style="font-size:11px; color:#64748B;">{{ actorPosition }}</div>
+        </div>
+      </div>
+      <button onClick="{{ logout }}" style="width:100%; font-size:12px; font-weight:600; color:#94A3B8; background:#1E293B; border:1px solid #334155; border-radius:9px; padding:8px; cursor:pointer;">ออกจากระบบ</button>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main style="flex:1; min-width:0; display:flex; flex-direction:column; overflow:hidden;">
+
+    <header class="mp-header" style="flex-shrink:0; background:#fff; border-bottom:1px solid #E2E8F0; padding:16px 26px; display:flex; align-items:center; gap:16px;">
+      <button onClick="{{ toggleNav }}" class="mp-hamb" style="width:38px; height:38px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:18px; color:#334155; flex-shrink:0;">☰</button>
+      <div style="flex:1; min-width:0;">
+        <h1 style="font-size:19px; font-weight:700; margin:0; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ viewTitle }}</h1>
+        <div style="font-size:12px; color:#64748B; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ viewSubtitle }}</div>
+      </div>
+      <span class="mp-hide-sm" style="display:inline-flex; gap:8px;">
+        <button onClick="{{ exportExcel }}" style="display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font-size:13px; font-weight:700; color:#15803D; background:#F0FDF4; border:1px solid #BBF7D0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ Excel</button>
+        <button onClick="{{ exportCSV }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ CSV</button>
+        <button onClick="{{ exportJSON }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ JSON</button>
+      </span>
+      <sc-if value="{{ showAddTask }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openAddTask }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer; flex-shrink:0;">+ เพิ่มงาน</button>
+      </sc-if>
+    </header>
+
+    <div class="mp-main-pad" style="flex:1; overflow:auto; padding:22px 26px;">
+
+      <!-- ============ PLAN VIEW ============ -->
+      <sc-if value="{{ isPlan }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:14px 18px;">
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;">
+              <sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button onClick="{{ prevPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">‹</button>
+                <div style="font-size:14px; font-weight:600; min-width:170px; text-align:center;">{{ periodLabel }}</div>
+                <button onClick="{{ nextPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">›</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ showRange }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="date" value="{{ rangeStart }}" onChange="{{ onRangeStart }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; color:#0F172A;">
+                <span style="color:#94A3B8;">–</span>
+                <input type="date" value="{{ rangeEnd }}" onChange="{{ onRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; color:#0F172A;">
+              </div>
+            </sc-if>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; gap:12px;">
+            <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="5">
+              <div style="flex:1; min-width:130px; background:#fff; border:1px solid #E2E8F0; border-radius:14px; padding:14px 16px;">
+                <div style="display:flex; align-items:center; gap:7px; margin-bottom:6px;">
+                  <span style="width:9px; height:9px; border-radius:3px; background:{{ s.color }};"></span>
+                  <span style="font-size:12px; color:#64748B; font-weight:600;">{{ s.label }}</span>
+                </div>
+                <div style="font-size:26px; font-weight:700; letter-spacing:-.02em;">{{ s.value }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 8px;">
+            <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;">
+              <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+            </select>
+            <sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+            <sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+            <sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+            <div style="flex:1;"></div>
+            <sc-for list="{{ channelChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block;"></span>{{ c.label }}</button></sc-for>
+          </div>
+
+          <div class="mp-plan-split" style="display:flex; gap:0; background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <div style="flex:1; min-width:0; overflow-x:auto;">
+              <div style="min-width:{{ matrixMinW }}px;">
+                <div style="display:grid; grid-template-columns:{{ gridCols }}; border-bottom:1px solid #EEF2F6;">
+                  <div style="padding:12px 14px; font-size:11px; font-weight:600; color:#94A3B8; align-self:end; position:sticky; left:0; background:#fff; z-index:2;">ช่องทาง \ วัน</div>
+                  <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+                    <button onClick="{{ d.onClick }}" style="{{ d.headStyle }}"><span style="font-size:10px; opacity:.85;">{{ d.dow }}</span><span style="font-size:14px; font-weight:700;">{{ d.dnum }}</span></button>
+                  </sc-for>
+                </div>
+                <sc-for list="{{ matrixRows }}" as="row" hint-placeholder-count="8">
+                  <div style="display:grid; grid-template-columns:{{ gridCols }}; border-bottom:1px solid #F1F5F9;">
+                    <div style="padding:11px 14px; display:flex; align-items:center; gap:8px; position:sticky; left:0; background:#fff; z-index:1;">
+                      <span style="width:9px; height:9px; border-radius:3px; background:{{ row.color }}; flex-shrink:0;"></span>
+                      <span style="font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ row.name }}</span>
+                      <span style="margin-left:auto; font-size:11px; color:#94A3B8; font-weight:600;">{{ row.total }}</span>
+                    </div>
+                    <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
+                      <div onClick="{{ cell.onClick }}" style="{{ cell.style }}">
+                        <sc-if value="{{ cell.compact }}" hint-placeholder-val="{{ false }}">
+                          <sc-if value="{{ cell.count }}" hint-placeholder-val="">
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+                              <span style="font-size:14px; font-weight:700;">{{ cell.count }}</span>
+                              <div style="display:flex; gap:2px;"><sc-for list="{{ cell.dots }}" as="ds" hint-placeholder-count="1"><span style="width:5px; height:5px; border-radius:50%; background:{{ ds }};"></span></sc-for></div>
+                            </div>
+                          </sc-if>
+                        </sc-if>
+                        <sc-if value="{{ cell.wide }}" hint-placeholder-val="{{ true }}">
+                          <sc-for list="{{ cell.tasks }}" as="t" hint-placeholder-count="1">
+                            <div title="{{ t.tip }}" style="display:flex; align-items:center; gap:5px; background:{{ t.tint }}; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px;">
+                              <span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span>
+                              <span style="font-size:11px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.title }}</span>
+                              <span style="margin-left:auto; font-size:9px; font-weight:700; color:#fff; background:{{ t.avatarBg }}; border-radius:4px; padding:1px 4px; flex-shrink:0;">{{ t.initials }}</span>
+                            </div>
+                          </sc-for>
+                          <sc-if value="{{ cell.more }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px; color:#94A3B8; padding-left:3px;">+{{ cell.more }} เพิ่มเติม</div></sc-if>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+            <div class="mp-workload" style="width:264px; flex-shrink:0; border-left:1px solid #EEF2F6; padding:16px 18px; background:#FCFCFD;">
+              <div style="font-size:13px; font-weight:700; margin-bottom:2px;">Workload / คน</div>
+              <div style="font-size:11px; color:#94A3B8; margin-bottom:14px;">งานในช่วงที่เลือก · มาก→น้อย</div>
+              <div style="display:flex; flex-direction:column; gap:10px; max-height:420px; overflow-y:auto;">
+                <sc-for list="{{ workload }}" as="w" hint-placeholder-count="8">
+                  <button onClick="{{ w.onClick }}" style="{{ w.rowStyle }}">
+                    <span style="width:26px; height:26px; border-radius:8px; background:{{ w.color }}; color:#fff; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ w.initials }}</span>
+                    <div style="flex:1; min-width:0; text-align:left;">
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
+                        <span style="font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ w.name }}</span>
+                        <span style="font-size:12px; font-weight:700; margin-left:6px;">{{ w.total }}</span>
+                      </div>
+                      <div style="font-size:10px; color:#94A3B8; margin-bottom:3px;">{{ w.position }}</div>
+                      <div style="height:6px; background:#EEF2F6; border-radius:99px; overflow:hidden;"><div style="height:100%; width:{{ w.pct }}%; background:{{ w.color }}; border-radius:99px;"></div></div>
+                    </div>
+                  </button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ CONTENT CALENDAR VIEW ============ -->
+      <sc-if value="{{ isTable }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 14px;">
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;">
+              <sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button onClick="{{ prevPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">‹</button>
+                <div style="font-size:15px; font-weight:700; min-width:170px; text-align:center;">{{ periodLabel }}</div>
+                <button onClick="{{ nextPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">›</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ showRange }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="date" value="{{ rangeStart }}" onChange="{{ onRangeStart }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;">
+                <span style="color:#94A3B8;">–</span>
+                <input type="date" value="{{ rangeEnd }}" onChange="{{ onRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;">
+              </div>
+            </sc-if>
+            <select value="{{ fChannel }}" onChange="{{ onChannelSel }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+              <sc-for list="{{ channelSelOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+            </select>
+            <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+              <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+            </select>
+            <sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+            <sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+            <sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+          </div>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; overflow-x:auto;">
+            <div style="min-width:720px;">
+              <div style="display:grid; grid-template-columns:repeat(7,1fr); background:#FAFBFC; border-bottom:1px solid #EEF2F6;">
+                <sc-for list="{{ calWeekHeads }}" as="h" hint-placeholder-count="7"><div style="padding:10px; text-align:center; font-size:11px; font-weight:700; color:#94A3B8;">{{ h }}</div></sc-for>
+              </div>
+              <div style="display:grid; grid-template-columns:repeat(7,1fr);">
+                <sc-for list="{{ calCells }}" as="c" hint-placeholder-count="35">
+                  <sc-if value="{{ c.blank }}" hint-placeholder-val="{{ false }}"><div style="{{ c.style }}"></div></sc-if>
+                  <sc-if value="{{ c.day }}" hint-placeholder-val="{{ true }}">
+                    <div onClick="{{ c.onClick }}" style="{{ c.style }}">
+                      <div style="display:flex; align-items:center; justify-content:flex-start;"><span style="{{ c.numStyle }}">{{ c.dnum }}</span></div>
+                      <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="2">
+                        <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="display:flex; align-items:center; gap:5px; background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%;">
+                          <span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span>
+                          <span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ t.title }}</span>
+                          <span style="font-size:9px; font-weight:700; color:#64748B; flex-shrink:0;">{{ t.initials }}</span>
+                        </button>
+                      </sc-for>
+                      <sc-if value="{{ c.more }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px; color:#94A3B8; padding-left:3px;">+{{ c.more }} เพิ่มเติม</div></sc-if>
+                    </div>
+                  </sc-if>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ REPORT VIEW ============ -->
+      <sc-if value="{{ isReport }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:18px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px;">
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;">
+              <sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button onClick="{{ prevPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">‹</button>
+                <div style="font-size:14px; font-weight:600; min-width:170px; text-align:center;">{{ periodLabel }}</div>
+                <button onClick="{{ nextPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">›</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ showRange }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="date" value="{{ rangeStart }}" onChange="{{ onRangeStart }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;">
+                <span style="color:#94A3B8;">–</span>
+                <input type="date" value="{{ rangeEnd }}" onChange="{{ onRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;">
+              </div>
+            </sc-if>
+            <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+              <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+            </select>
+            <div style="margin-left:auto; display:flex; align-items:baseline; gap:7px;"><span style="font-size:28px; font-weight:700;">{{ reportTotal }}</span><span style="font-size:13px; color:#64748B;">งานรวมในช่วงนี้</span></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:16px;">
+            <sc-for list="{{ reportSections }}" as="sec" hint-placeholder-count="4">
+              <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; padding:18px 20px;">
+                <div style="font-size:14px; font-weight:700; margin-bottom:16px;">{{ sec.title }}</div>
+                <div style="display:flex; flex-direction:column; gap:12px;">
+                  <sc-for list="{{ sec.items }}" as="it" hint-placeholder-count="4">
+                    <div>
+                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                        <div style="display:flex; align-items:center; gap:8px; min-width:0;"><span style="width:10px; height:10px; border-radius:3px; background:{{ it.color }}; flex-shrink:0;"></span><span style="font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ it.name }}</span></div>
+                        <span style="font-size:13px; font-weight:700; margin-left:8px;">{{ it.count }}</span>
+                      </div>
+                      <div style="height:7px; background:#F1F5F9; border-radius:99px; overflow:hidden;"><div style="height:100%; width:{{ it.pct }}%; background:{{ it.color }}; border-radius:99px;"></div></div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ sec.empty }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:#94A3B8; padding:6px 0;">ไม่มีข้อมูล</div></sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ TEAM VIEW ============ -->
+      <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:900px;">
+          <sc-if value="{{ canTeamEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddPerson }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มพนักงาน</button></div></sc-if>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <div style="display:grid; grid-template-columns:1fr 1fr 120px; padding:12px 18px; background:#FAFBFC; border-bottom:1px solid #EEF2F6; font-size:11px; font-weight:700; color:#94A3B8;"><span>ชื่อ</span><span>ตำแหน่ง</span><span style="text-align:right;">จัดการ</span></div>
+            <sc-for list="{{ teamRows }}" as="p" hint-placeholder-count="6">
+              <div style="display:grid; grid-template-columns:1fr 1fr 120px; padding:12px 18px; border-bottom:1px solid #F1F5F9; align-items:center;">
+                <div style="display:flex; align-items:center; gap:10px;"><span style="width:30px; height:30px; border-radius:8px; background:{{ p.color }}; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ p.initials }}</span><span style="font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.name }}</span></div>
+                <span style="font-size:13px; color:#475569;">{{ p.position }}</span>
+                <div style="display:flex; gap:6px; justify-content:flex-end;">
+                  <sc-if value="{{ canTeamEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ p.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                  <sc-if value="{{ canTeamDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="margin-top:28px;">
+            <div style="font-size:15px; font-weight:700; margin-bottom:4px;">สิทธิ์ตามตำแหน่ง</div>
+            <div style="font-size:12px; color:#64748B; margin-bottom:12px;">กำหนดว่าแต่ละตำแหน่ง ดู / แก้ไข / ลบ อะไรได้บ้างในแต่ละหน้า — <b style="color:#0EA5E9;">👁</b> = เข้าดูหน้า, <b style="color:#4F46E5;">✎</b> = แก้ไข, <b style="color:#EF4444;">🗑</b> = ลบ (คลิกเพื่อเปิด/ปิด) · ต้องมีอย่างน้อย 1 ตำแหน่งที่เข้าหน้าทีมงานได้เสมอ</div>
+            <sc-if value="{{ canPosEdit }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+                <input value="{{ newPos }}" onChange="{{ onNewPos }}" onKeyDown="{{ onNewPosKey }}" placeholder="ชื่อตำแหน่งใหม่ เช่น Content, Admin" style="flex:1; min-width:200px; max-width:320px; font-size:13px; padding:9px 12px; border:1px solid #E2E8F0; border-radius:10px;">
+                <button onClick="{{ addPosition }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 16px; border-radius:10px; cursor:pointer;">+ เพิ่มตำแหน่ง</button>
+              </div>
+            </sc-if>
+            <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow-x:auto;">
+              <div style="min-width:1290px;">
+                <div style="display:grid; grid-template-columns:150px repeat(9,1fr) 60px; background:#FAFBFC; border-bottom:1px solid #EEF2F6;">
+                  <div style="padding:12px 14px; font-size:11px; font-weight:700; color:#94A3B8;">ตำแหน่ง</div>
+                  <sc-for list="{{ permAreas }}" as="a" hint-placeholder-count="9"><div style="padding:12px 8px; font-size:11px; font-weight:700; color:#94A3B8; text-align:center;">{{ a }}</div></sc-for>
+                  <div></div>
+                </div>
+                <sc-for list="{{ permRows }}" as="row" hint-placeholder-count="4">
+                  <div style="display:grid; grid-template-columns:150px repeat(9,1fr) 60px; border-bottom:1px solid #F1F5F9; align-items:center;">
+                    <div style="padding:12px 14px; font-size:13px; font-weight:600;">{{ row.pos }}</div>
+                    <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="9">
+                      <div style="padding:10px 6px; display:flex; gap:5px; justify-content:center;">
+                        <button onClick="{{ c.onView }}" style="{{ c.viewStyle }}">👁</button>
+                        <button onClick="{{ c.onEdit }}" style="{{ c.editStyle }}">✎</button>
+                        <button onClick="{{ c.onDel }}" style="{{ c.delStyle }}">🗑</button>
+                      </div>
+                    </sc-for>
+                    <div style="display:flex; justify-content:center;">
+                      <sc-if value="{{ canPosDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ row.onDelete }}" title="ลบตำแหน่งนี้" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 9px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ CHANNELS VIEW ============ -->
+      <sc-if value="{{ isChannels }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:820px;">
+          <sc-if value="{{ canChEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddChannel }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มช่องทาง</button></div></sc-if>
+          <div style="display:flex; flex-direction:column; gap:20px;">
+            <sc-for list="{{ channelGroups }}" as="g" hint-placeholder-count="3">
+              <div>
+                <div style="font-size:12px; font-weight:700; color:#64748B; margin-bottom:9px; text-transform:uppercase; letter-spacing:.05em;">{{ g.name }}</div>
+                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+                  <sc-for list="{{ g.channels }}" as="c" hint-placeholder-count="3">
+                    <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid #F1F5F9;">
+                      <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
+                      <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                      <sc-if value="{{ canChEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                      <sc-if value="{{ canChDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ CONTENT TYPES VIEW ============ -->
+      <sc-if value="{{ isContent }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:680px;">
+          <sc-if value="{{ canCtEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddContent }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มประเภทคอนเทนต์</button></div></sc-if>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <sc-for list="{{ contentRows }}" as="c" hint-placeholder-count="6">
+              <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
+                <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
+                <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
+                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
+                <sc-if value="{{ canCtEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                <sc-if value="{{ canCtDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ PROCEDURES VIEW ============ -->
+      <sc-if value="{{ isProcedure }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:680px;">
+          <sc-if value="{{ canPrEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddProcedure }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มหัตถการ</button></div></sc-if>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <sc-for list="{{ procedureRows }}" as="c" hint-placeholder-count="6">
+              <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
+                <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
+                <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
+                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
+                <sc-if value="{{ canPrEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                <sc-if value="{{ canPrDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ FORMAT VIEW ============ -->
+      <sc-if value="{{ isFormat }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:680px;">
+          <sc-if value="{{ canFmEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddFormat }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มรูปแบบงาน</button></div></sc-if>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <sc-for list="{{ formatRows }}" as="c" hint-placeholder-count="6">
+              <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
+                <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
+                <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
+                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
+                <sc-if value="{{ canFmEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                <sc-if value="{{ canFmDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ SIZE VIEW ============ -->
+      <sc-if value="{{ isSize }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:680px;">
+          <sc-if value="{{ canSzEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddSize }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่ม Size งาน</button></div></sc-if>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <sc-for list="{{ sizeRows }}" as="c" hint-placeholder-count="6">
+              <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
+                <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
+                <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
+                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
+                <sc-if value="{{ canSzEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                <sc-if value="{{ canSzDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ BRANCH VIEW ============ -->
+      <sc-if value="{{ isBranch }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:680px;">
+          <div style="font-size:12px; color:#64748B; margin-bottom:12px;">สาขาสำหรับงาน Offline · หนึ่งงานระบุได้หลายสาขา พร้อมจำนวนชิ้นของแต่ละสาขา (ตัวเลขด้านขวาคือชิ้นรวมทั้งหมด)</div>
+          <sc-if value="{{ canBrEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddBranch }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มสาขา</button></div></sc-if>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <sc-for list="{{ branchRows }}" as="c" hint-placeholder-count="4">
+              <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
+                <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
+                <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} ชิ้น</span>
+                <sc-if value="{{ canBrEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                <sc-if value="{{ canBrDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ STATUS VIEW ============ -->
+      <sc-if value="{{ isStatus }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:680px;">
+          <div style="font-size:12px; color:#64748B; margin-bottom:12px;">เลือกสีและชื่อของสถานะได้อิสระ · เพิ่มสถานะใหม่ได้</div>
+          <sc-if value="{{ canStEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddStatus }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มสถานะ</button></div></sc-if>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <sc-for list="{{ statusRows }}" as="c" hint-placeholder-count="3">
+              <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
+                <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
+                <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
+                <sc-if value="{{ canStEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
+                <sc-if value="{{ canStDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ============ HISTORY VIEW ============ -->
+      <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:900px;">
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; overflow-x:auto;">
+            <div style="min-width:900px;">
+              <div style="display:grid; grid-template-columns:120px 120px 70px 1.1fr 130px 1.5fr; padding:12px 18px; background:#FAFBFC; border-bottom:1px solid #EEF2F6; font-size:11px; font-weight:700; color:#94A3B8; gap:10px;"><span>เวลา</span><span>ผู้ใช้งาน</span><span>การกระทำ</span><span>รายการ</span><span>ช่องที่แก้ไข</span><span>รายละเอียด (เก่า → ใหม่)</span></div>
+              <sc-for list="{{ historyRows }}" as="h" hint-placeholder-count="6">
+                <div style="display:grid; grid-template-columns:120px 120px 70px 1.1fr 130px 1.5fr; padding:11px 18px; border-bottom:1px solid #F1F5F9; align-items:start; gap:10px;">
+                  <span style="font-size:12px; color:#64748B;">{{ h.ts }}</span>
+                  <div style="display:flex; align-items:center; gap:7px;"><span style="width:20px; height:20px; border-radius:6px; background:{{ h.color }}; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ h.initials }}</span><span style="font-size:13px; font-weight:500;">{{ h.actor }}</span></div>
+                  <span style="{{ h.actionStyle }}">{{ h.action }}</span>
+                  <span style="font-size:13px; color:#334155; line-height:1.5;">{{ h.detail }}</span>
+                  <span style="font-size:12px; color:#475569; font-weight:600; line-height:1.5;">{{ h.fieldsText }}</span>
+                  <div style="display:flex; flex-direction:column; gap:4px;">
+                    <sc-for list="{{ h.changes }}" as="c" hint-placeholder-count="1">
+                      <div style="display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:12px; line-height:1.45;">
+                        <span style="color:#94A3B8; font-weight:600;">{{ c.field }}</span>
+                        <span style="color:#EF4444; text-decoration:line-through;">{{ c.from }}</span>
+                        <span style="color:#94A3B8;">→</span>
+                        <span style="color:#16A34A; font-weight:600;">{{ c.to }}</span>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ h.noChanges }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#CBD5E1;">—</span></sc-if>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px; text-align:center; color:#94A3B8; font-size:13px;">ยังไม่มีประวัติการแก้ไข</div></sc-if>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <!-- ================= MODAL ================= -->
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position:fixed; inset:0; background:rgba(15,23,42,.45); display:flex; align-items:center; justify-content:center; z-index:70; padding:16px;">
+      <div onClick="{{ stop }}" style="background:#fff; border-radius:18px; width:100%; max-width:480px; box-shadow:0 24px 60px rgba(15,23,42,.28); overflow:hidden; max-height:92vh; display:flex; flex-direction:column;">
+        <div style="padding:18px 22px; border-bottom:1px solid #EEF2F6; display:flex; align-items:center; flex-shrink:0;">
+          <div style="font-size:16px; font-weight:700;">{{ modalTitle }}</div>
+          <button onClick="{{ closeModal }}" style="margin-left:auto; width:30px; height:30px; border:none; background:#F1F5F9; border-radius:8px; cursor:pointer; font-size:16px; color:#64748B;">✕</button>
+        </div>
+
+        <sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:22px;">
+            <p style="font-size:14px; line-height:1.6; color:#334155; margin:0 0 20px;">{{ confirmMsg }}</p>
+            <div style="display:flex; gap:10px; justify-content:flex-end;"><button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button><button onClick="{{ confirmYes }}" style="font-size:13px; font-weight:700; color:#fff; background:#EF4444; border:none; padding:9px 16px; border-radius:9px; cursor:pointer;">ยืนยันลบ</button></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isTaskForm }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; gap:2px; padding:0 20px; border-bottom:1px solid #EEF2F6; overflow-x:auto; flex-shrink:0;">
+            <sc-for list="{{ taskTabs }}" as="tb" hint-placeholder-count="4"><button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}</button></sc-for>
+          </div>
+          <sc-if value="{{ tabDetail }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ชื่องาน</span><input value="{{ form.title }}" onChange="{{ onFTitle }}" placeholder="เช่น โปรโมชั่นกลางเดือน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">งาน Online / Offline</span>
+              <div style="display:flex; gap:8px;"><sc-for list="{{ mediumPick }}" as="x" hint-placeholder-count="2"><button onClick="{{ x.onClick }}" style="{{ x.style }}">{{ x.label }}</button></sc-for></div>
+              <div style="font-size:11px; color:#94A3B8; margin-top:6px;">รูปแบบงาน / Size / ประเภท / หัตถการ จะแสดงเฉพาะรายการของงานประเภทที่เลือก</div></div>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันส่งมอบงาน</span>
+              <input type="date" value="{{ form.delivery }}" onChange="{{ onFDelivery }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
+              <sc-if value="{{ deliveryHint }}" hint-placeholder-val=""><div style="font-size:11px; color:#F59E0B; font-weight:600; margin-top:5px;">{{ deliveryHint }}</div></sc-if></label>
+            <sc-if value="{{ showBranches }}" hint-placeholder-val="{{ false }}">
+              <div>
+                <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:7px;">
+                  <span style="font-size:12px; font-weight:600; color:#64748B;">สาขาที่ส่งมอบ · ระบุจำนวนชิ้นต่อสาขา</span>
+                  <span style="font-size:12px; font-weight:700; color:#4F46E5; white-space:nowrap;">รวม {{ branchTotalLabel }}</span>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:7px;">
+                  <sc-for list="{{ branchPick }}" as="b" hint-placeholder-count="4">
+                    <div style="{{ b.rowStyle }}">
+                      <span style="{{ b.dotStyle }}"></span>
+                      <span style="{{ b.nameStyle }}">{{ b.label }}</span>
+                      <button onClick="{{ b.onStepDown }}" style="width:28px; height:28px; border:1px solid #E2E8F0; background:#fff; border-radius:8px; cursor:pointer; font-size:14px; color:#475569; flex-shrink:0;">−</button>
+                      <input value="{{ b.qty }}" onChange="{{ b.onQty }}" placeholder="0" inputmode="numeric" style="{{ b.inputStyle }}">
+                      <button onClick="{{ b.onStepUp }}" style="width:28px; height:28px; border:1px solid #E2E8F0; background:#fff; border-radius:8px; cursor:pointer; font-size:14px; color:#475569; flex-shrink:0;">＋</button>
+                      <span style="font-size:11px; color:#94A3B8; flex-shrink:0;">ชิ้น</span>
+                    </div>
+                  </sc-for>
+                </div>
+                <div style="font-size:11px; color:#94A3B8; margin-top:7px;">{{ branchSummary }}</div>
+              </div>
+            </sc-if>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ช่องทาง</span><select value="{{ form.ch }}" onChange="{{ onFChannel }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ channelOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทงาน</span><select value="{{ form.jobType }}" onChange="{{ onFJob }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ jobTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันลงงาน</span><input type="date" value="{{ form.date }}" onChange="{{ onFDate }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันเริ่มทำงาน</span><input type="date" value="{{ form.start }}" onChange="{{ onFStart }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทคอนเทนต์</span><select value="{{ form.ctype }}" onChange="{{ onFCtype }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ contentOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <div style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ระยะเวลาทำงาน</span><div style="padding:10px 12px; background:#F8FAFC; border:1px solid #EEF2F6; border-radius:10px; font-size:14px; font-weight:700;">{{ durationLabel }}</div></div>
+            </div>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">หัตถการ</span><select value="{{ form.proc }}" onChange="{{ onFProc }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ procOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#4F46E5; display:block; margin-bottom:5px;">Creative</span><select value="{{ form.creative }}" onChange="{{ onFCreative }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ personPick }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#EC4899; display:block; margin-bottom:5px;">Graphic</span><select value="{{ form.graphic }}" onChange="{{ onFGraphic }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ personPick }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+            </div>
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">รูปแบบงาน</span><select value="{{ form.format }}" onChange="{{ onFFormat }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ formatOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Size งาน</span><select value="{{ form.size }}" onChange="{{ onFSize }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ sizeOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+            </div>
+            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะ</span><div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ statusPick }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
+          </div>
+          </sc-if>
+          <sc-if value="{{ tabImages }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">คำบรรยายภาพ / บทพูด</span>
+                <textarea value="{{ form.imgDesc }}" onChange="{{ onFImgDesc }}" rows="4" placeholder="อธิบายภาพ หรือใส่บทพูดประกอบภาพ..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดรูปภาพ<input type="file" accept="image/*" multiple onChange="{{ onUploadImages }}" style="display:none;"></label>
+              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+                <sc-for list="{{ imgList }}" as="im" hint-placeholder-count="0">
+                  <div style="position:relative; border-radius:9px; overflow:hidden; border:1px solid #EEF2F6;">
+                    {{ im.thumb }}
+                    <button onClick="{{ im.onDownload }}" title="ดาวน์โหลดรูปนี้" style="position:absolute; bottom:4px; left:4px; width:22px; height:22px; border:none; border-radius:6px; background:rgba(15,23,42,.65); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer;">⬇</button>
+                    <button onClick="{{ im.onRemove }}" style="position:absolute; top:4px; right:4px; width:22px; height:22px; border:none; border-radius:6px; background:rgba(15,23,42,.65); color:#fff; font-size:12px; cursor:pointer;">✕</button>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ tabCaption }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">แคปชั่น (สำหรับโพสต์จริง)</span>
+                <textarea value="{{ form.caption }}" onChange="{{ onFCaption }}" rows="5" placeholder="แคปชั่นที่จะใช้โพสต์จริง #แฮชแท็ก..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">รายละเอียดอื่นๆ</span>
+                <textarea value="{{ form.details }}" onChange="{{ onFDetails }}" rows="4" placeholder="โน้ต / รายละเอียดเพิ่มเติม / สิ่งที่ต้องระวัง..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ tabAW }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ลิงก์งาน</span>
+                <input value="{{ form.link }}" onChange="{{ onFLink }}" placeholder="วางลิงก์ Google Drive / โพสต์ / ไฟล์งาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
+                <sc-if value="{{ form.link }}" hint-placeholder-val=""><a href="{{ form.link }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิดลิงก์งาน</a></sc-if></div>
+              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดไฟล์ AW / VDO<input type="file" multiple onChange="{{ onUploadAW }}" style="display:none;"></label>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <sc-for list="{{ awList }}" as="im" hint-placeholder-count="0">
+                  <div style="display:flex; align-items:center; gap:11px; padding:9px 11px; border:1px solid #EEF2F6; border-radius:10px;">
+                    {{ im.awThumb }}
+                    <span style="flex:1; font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ im.name }}</span>
+                    <button onClick="{{ im.onDownload }}" style="font-size:12px; font-weight:600; color:#4F46E5; background:#fff; border:1px solid #C7D2FE; padding:5px 10px; border-radius:8px; cursor:pointer;">ดาวน์โหลด</button>
+                    <button onClick="{{ im.onRemove }}" style="width:24px; height:24px; border:1px solid #FECACA; border-radius:7px; background:#fff; color:#EF4444; font-size:12px; cursor:pointer;">✕</button>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+          <div style="padding:16px 22px; border-top:1px solid #EEF2F6; display:flex; gap:10px; justify-content:space-between; align-items:center; flex-shrink:0;">
+            <sc-if value="{{ canDeleteTask }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTaskFromForm }}" style="font-size:13px; font-weight:600; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:9px 14px; border-radius:9px; cursor:pointer;">ลบงานนี้</button></sc-if>
+            <div style="flex:1;"></div>
+            <button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button>
+            <sc-if value="{{ canSaveTask }}" hint-placeholder-val="{{ true }}"><button onClick="{{ saveModal }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 18px; border-radius:9px; cursor:pointer;">บันทึก</button></sc-if>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isPersonForm }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ชื่อพนักงาน</span><input value="{{ form.name }}" onChange="{{ onFName }}" placeholder="ชื่อเล่น / ชื่อจริง" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ตำแหน่ง</span><input value="{{ form.position }}" onChange="{{ onFPosition }}" placeholder="เช่น Creative, Graphic, Planner, Strategy" list="posList" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"><datalist id="posList"><sc-for list="{{ positionOpts }}" as="p" hint-placeholder-count="4"><option value="{{ p }}"></option></sc-for></datalist></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">รหัสผ่านเข้าระบบ</span><input value="{{ form.pass }}" onChange="{{ onFPass }}" placeholder="รหัสผ่าน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
+              <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
+          </div>
+          <div style="padding:16px 22px; border-top:1px solid #EEF2F6; display:flex; gap:10px; justify-content:flex-end; flex-shrink:0;"><button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button><button onClick="{{ saveModal }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 18px; border-radius:9px; cursor:pointer;">บันทึก</button></div>
+        </sc-if>
+
+        <sc-if value="{{ isChannelForm }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ชื่อช่องทาง</span><input value="{{ form.name }}" onChange="{{ onFName }}" placeholder="เช่น Facebook รอง" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">กลุ่ม</span><input value="{{ form.group }}" onChange="{{ onFGroup }}" placeholder="เช่น Facebook, Instagram, อื่นๆ" list="grpList" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"><datalist id="grpList"><sc-for list="{{ groupOpts }}" as="g" hint-placeholder-count="3"><option value="{{ g }}"></option></sc-for></datalist></label>
+            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
+              <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
+          </div>
+          <div style="padding:16px 22px; border-top:1px solid #EEF2F6; display:flex; gap:10px; justify-content:flex-end; flex-shrink:0;"><button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button><button onClick="{{ saveModal }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 18px; border-radius:9px; cursor:pointer;">บันทึก</button></div>
+        </sc-if>
+
+        <sc-if value="{{ isTagForm }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">{{ tagFieldLabel }}</span><input value="{{ form.name }}" onChange="{{ onFName }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            <sc-if value="{{ showTagScope }}" hint-placeholder-val="{{ false }}">
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ใช้กับงาน</span>
+                <div style="display:flex; gap:8px;"><sc-for list="{{ tagScopePick }}" as="x" hint-placeholder-count="3"><button onClick="{{ x.onClick }}" style="{{ x.style }}">{{ x.label }}</button></sc-for></div></div>
+            </sc-if>
+            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
+              <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
+                <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
+          </div>
+          <div style="padding:16px 22px; border-top:1px solid #EEF2F6; display:flex; gap:10px; justify-content:flex-end; flex-shrink:0;"><button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button><button onClick="{{ saveModal }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 18px; border-radius:9px; cursor:pointer;">บันทึก</button></div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
+    this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
+    this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
+    this.mediums = [ {id:'online',label:'Online'}, {id:'offline',label:'Offline'} ];
+    this.SIZES = ['1:1 (1080×1080)','4:5 (1080×1350)','9:16 (1080×1920)','16:9 (1920×1080)','Cover / Banner','อื่นๆ'];
+    this.jobTypes = [ {id:'online',label:'Online'}, {id:'central',label:'งานกลาง'}, {id:'kol',label:'KOL'} ];
+    this.positions = ['Creative','Graphic','Planner','Strategy'];
+    this.CTYPES = ['โปรโมชั่น','ให้ความรู้','รีวิว/รีวิวจริง','Before/After','โปรไฟล์แพทย์','Testimonial','โปรโมทหัตถการ'];
+    this.PROCS = ['โบท็อกซ์','ฟิลเลอร์','เลเซอร์','ร้อยไหม','ดูดไขมัน','ทรีตเมนต์ผิว','ปรับรูปหน้า'];
+    const saved = this.load();
+    const seed = saved || this.defaultSeed();
+    seed.people.forEach(p=>{ if(p.pass==null) p.pass='1234'; });
+    const firstView = this.firstPermittedView((seed.people[0]||{}).position, seed.perms);
+    this.state = {
+      authed:false, loginId: seed.people[0].id, loginPw:'', loginErr:'',
+      view:firstView, actor: seed.people[0].id, navOpen:false,
+      channels: seed.channels, people: seed.people, tasks: seed.tasks, log: seed.log || [],
+      contentTypes: seed.contentTypes, procedures: seed.procedures, statuses: seed.statuses || this.defaultStatuses(), perms: seed.perms || this.defaultPerms(),
+      positions: seed.positions || this.positions.slice(), newPos:'',
+      formats: seed.formats || this.defaultFormats(), sizes: seed.sizes || this.defaultSizes(), branches: seed.branches || this.defaultBranches(),
+      fMedium:'all',
+      dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
+      fChannel:'all', fPerson:'all', fStatus:'all', fJob:'all', selDate:'2026-07-08',
+      modal:null, form:{}
+    };
+  }
+
+  defaultFormats(){ return this.FORMATS.map((n,i)=>({ id:'fm'+(i+1), name:n, color:this.PAL[(i+2)%this.PAL.length] })); }
+  defaultSizes(){ return this.SIZES.map((n,i)=>({ id:'sz'+(i+1), name:n, color:this.PAL[(i+9)%this.PAL.length] })); }
+  migrateFormats(s){
+    if(!s.formats) s.formats=this.defaultFormats();
+    if(!s.sizes) s.sizes=this.defaultSizes();
+    if(!s.branches) s.branches=this.defaultBranches();
+    ['formats','sizes','contentTypes','procedures'].forEach(k=>(s[k]||[]).forEach(x=>{ if(!x.scope) x.scope='both'; }));
+    (s.tasks||[]).forEach(t=>{ if(t.medium==null) t.medium='online'; if(t.delivery==null) t.delivery=''; if(!Array.isArray(t.branches)) t.branches=[];
+      if(!t.branchQty||typeof t.branchQty!=='object'){ const q={}; (t.branches||[]).forEach(b=>q[b]=1); t.branchQty=q; }
+      if(t.size==null) t.size='';
+      if(t.format && !s.formats.some(f=>f.id===t.format)){ const m=s.formats.find(f=>f.name===t.format); t.format=m?m.id:(s.formats[0]||{}).id||''; } });
+    return s;
+  }
+  defaultBranches(){ return this.BRANCHES.map((n,i)=>({ id:'br'+(i+1), name:n, color:this.PAL[(i+4)%this.PAL.length] })); }
+  branchText(q, branches){ const list=branches||this.state.branches; return Object.keys(q||{}).filter(k=>Number(q[k])>0).map(k=>((list.find(b=>b.id===k)||{}).name||k)+' '+Number(q[k])+' ชิ้น').join(', ')||'—'; }
+  branchTotal(q){ return Object.keys(q||{}).reduce((s,k)=>s+(Number(q[k])||0),0); }
+  scopeLabel(s){ return s==='online'?'Online':(s==='offline'?'Offline':'ทั้งสอง'); }
+  inScope(item, medium){ const s=item&&item.scope; return !s||s==='both'||s===medium; }
+  defaultStatuses(){ return [ {id:'todo',label:'ยังไม่เริ่ม',color:'#94A3B8'}, {id:'doing',label:'กำลังทำ',color:'#F97316'}, {id:'done',label:'เสร็จ',color:'#22C55E'} ]; }
+
+  load(){ try { const s=JSON.parse(localStorage.getItem('mediaPlan.v3')); if(!(s && s.channels && s.contentTypes)) return null;
+    (s.people||[]).forEach(p=>{ if(p.pass==null) p.pass='1234'; });
+    (s.tasks||[]).forEach(t=>{ if(t.creative==null) t.creative=t.owner||''; if(t.graphic==null) t.graphic=''; if(t.jobType==null) t.jobType='online'; if(t.imgDesc==null) t.imgDesc=t.draft||''; if(t.details==null) t.details=''; });
+    if(!s.statuses) s.statuses=this.defaultStatuses();
+    if(!s.perms) s.perms=this.defaultPerms();
+    if(!s.positions) s.positions=[...new Set([...this.positions, ...(s.people||[]).map(p=>p.position).filter(Boolean)])];
+    s.perms=this.ensureTeamAccess(s.perms, s.positions, s.people);
+    this.migrateFormats(s);
+    return s; } catch(e){ return null; } }
+  persist(){ try { localStorage.setItem('mediaPlan.v3', JSON.stringify({ channels:this.state.channels, people:this.state.people, tasks:this.state.tasks, log:this.state.log, contentTypes:this.state.contentTypes, procedures:this.state.procedures, statuses:this.state.statuses, perms:this.state.perms, positions:this.state.positions, formats:this.state.formats, sizes:this.state.sizes, branches:this.state.branches })); } catch(e){} }
+
+  addPosition(){ const n=(this.state.newPos||'').trim(); if(!n) return; if(this.state.positions.includes(n)){ this.setState({ newPos:'' }); return; }
+    const perms=JSON.parse(JSON.stringify(this.state.perms||{})); const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del:a==='tasks' }; }); perms[n]=o;
+    this.commit({ positions:[...this.state.positions,n], perms, newPos:'' }, 'เพิ่ม', 'ตำแหน่ง "'+n+'"'); }
+  askDeletePosition(pos){ const S=this.state; const cnt=S.people.filter(p=>p.position===pos).length;
+    this.setState({ modal:{ kind:'confirm', msg:'ลบตำแหน่ง "'+pos+'"?'+(cnt?' มีพนักงาน '+cnt+' คนใช้ตำแหน่งนี้อยู่ (ชื่อตำแหน่งของเขาจะยังคงอยู่ แต่จะไม่มีสิทธิ์กำหนดไว้)':''),
+      onYes:()=>{ let perms=JSON.parse(JSON.stringify(S.perms||{})); delete perms[pos]; const positions=S.positions.filter(p=>p!==pos); perms=this.ensureTeamAccess(perms, positions, S.people); this.commit({ positions, perms, modal:null }, 'ลบ', 'ตำแหน่ง "'+pos+'"'); } } }); }
+
+  areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา']]; }
+  defaultPerms(){ const p={}; this.positions.forEach(pos=>{ const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del: a==='tasks' }; }); p[pos]=o; }); return p; }
+  togglePerm(pos,area,act){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; if(!perms[pos][area]) perms[pos][area]={view:true,edit:true,del:true}; const cur=perms[pos][area][act]!==false; perms[pos][area][act]=!cur;
+    if(area==='team'&&act==='view'&&cur){ const held=[...new Set(s.people.map(p=>p.position).filter(Boolean))]; const posList=held.length?held:[...new Set(s.positions||[])]; const anyLeft=posList.some(p=>{ const o=perms[p]; return !o||!o.team||o.team.view!==false; }); if(!anyLeft){ return {}; } }
+    return { perms }; }, ()=>this.persist()); }
+  ensureTeamAccess(perms, positions, people){ const P=perms||{};
+    const held=[...new Set((people||[]).map(p=>p.position).filter(Boolean))];
+    const posList=held.length?held:[...new Set(positions||[])];
+    const anyLeft=posList.some(p=>{ const o=P[p]; return !o||!o.team||o.team.view!==false; });
+    if(!anyLeft && posList.length){ const first=posList[0]; if(!P[first]) P[first]={}; if(!P[first].team) P[first].team={view:true,edit:true,del:false}; P[first].team.view=true; P[first].team.edit=true; }
+    return P; }
+  permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return true; return p[area].view!==false; }
+  navArea(v){ return { plan:'tasks', table:'tasks', report:'tasks', team:'team', channels:'channels', content:'content', procedure:'procedure', status:'status', format:'format', size:'size', branch:'branch', history:null }[v]; }
+  firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
+
+  defaultSeed(){
+    const channels = [
+      {id:'fb1',name:'Facebook หลัก',group:'Facebook',color:'#1877F2'},
+      {id:'fb2',name:'Facebook รอง',group:'Facebook',color:'#4293FB'},
+      {id:'fb3',name:'Facebook Group',group:'Facebook',color:'#93C0FD'},
+      {id:'ig1',name:'Instagram หลัก',group:'Instagram',color:'#E1306C'},
+      {id:'ig2',name:'Instagram รอง',group:'Instagram',color:'#F472A6'},
+      {id:'tt1',name:'TikTok หลัก',group:'TikTok',color:'#111827'},
+      {id:'tt2',name:'TikTok รอง',group:'TikTok',color:'#6B7280'},
+      {id:'line',name:'LINE OA',group:'อื่นๆ',color:'#06C755'},
+      {id:'x',name:'X (Twitter)',group:'อื่นๆ',color:'#0EA5E9'},
+      {id:'web',name:'Website/Blog',group:'อื่นๆ',color:'#6366F1'},
+      {id:'yt',name:'YouTube',group:'อื่นๆ',color:'#EF4444'},
+      {id:'l8',name:'Lemon8',group:'อื่นๆ',color:'#F59E0B'},
+    ];
+    const names = ['Lookkaew','Minchy','Amp','Best','Minnie','Mint','Eve','Baifern','Tuck','Mickey','Nurse'];
+    const people = names.map((n,i)=>({ id:'p'+(i+1), name:n, color:this.PAL[i%this.PAL.length], position:this.positions[i%this.positions.length], pass:'1234' }));
+    const contentTypes = this.CTYPES.map((n,i)=>({ id:'ct'+(i+1), name:n, color:this.PAL[(i+3)%this.PAL.length] }));
+    const procedures = this.PROCS.map((n,i)=>({ id:'pr'+(i+1), name:n, color:this.PAL[(i+6)%this.PAL.length] }));
+    const formats = this.defaultFormats(); const sizes = this.defaultSizes(); const branches = this.defaultBranches();
+    const tasks = this.generate(channels, people, contentTypes, procedures, formats, sizes);
+    return { channels, people, tasks, contentTypes, procedures, formats, sizes, branches, statuses:this.defaultStatuses(), log:[], perms:this.defaultPerms() };
+  }
+
+  generate(channels, people, contentTypes, procedures, formats, sizes){
+    let seed = 20260706;
+    const rnd = () => { seed=(seed*1103515245+12345)&0x7fffffff; return seed/0x7fffffff; };
+    const pick = a => a[Math.floor(rnd()*a.length)];
+    const jt = ['online','central','kol'];
+    const out=[]; let id=1;
+    for (let i=0;i<21;i++){
+      const date = this.addDays('2026-07-06', i);
+      const dow = this.parse(date).getDay();
+      const n = (dow===0||dow===6) ? Math.floor(rnd()*2) : 1+Math.floor(rnd()*4);
+      for (let j=0;j<n;j++){
+        const r=rnd(), early=date<'2026-07-20';
+        const status = early ? (r<0.55?'done':(r<0.85?'doing':'todo')) : (r<0.2?'done':(r<0.65?'doing':'todo'));
+        const cre=pick(people).id, gra=pick(people).id;
+        out.push({ id:'t'+(id++), date, start:this.addDays(date, -(Math.floor(rnd()*4))), ch:pick(channels).id, creative:cre, graphic:gra, jobType:pick(jt), status, medium:(rnd()<0.75?'online':'offline'), delivery:'', branches:[], format:pick(formats).id, size:pick(sizes).id, ctype:pick(contentTypes).id, proc:pick(procedures).id, imgDesc:'', caption:'', details:'', link:'', images:[], aw:[],
+          title:pick(['โปรโมชั่นกลางเดือน','รีวิวหลังทำ','Live สด Q&A','ให้ความรู้ก่อนทำ','แจก Voucher','เคสจริงคนไข้','Testimonial ลูกค้า','Countdown โปร','How-to ดูแลผิว','เทรนด์ความงาม','แนะนำแพทย์','ตอบคำถามยอดฮิต','โปรวันหยุด','เปรียบเทียบก่อน-หลัง']) });
+      }
+    }
+    return out;
+  }
+
+  parse(s){ const [a,b,c]=s.split('-').map(Number); return new Date(a,b-1,c); }
+  iso(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+  addDays(s,n){ const d=this.parse(s); d.setDate(d.getDate()+n); return this.iso(d); }
+  dow(s){ return ['อา','จ','อ','พ','พฤ','ศ','ส'][this.parse(s).getDay()]; }
+  thMon(m){ return ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][m]; }
+  nowStamp(){ const d=new Date(); return d.getDate()+' '+this.thMon(d.getMonth())+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+
+  componentDidMount(){ this._onR=()=>this.forceUpdate(); window.addEventListener('resize',this._onR); }
+  componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); }
+
+  commit(patch, action, detail, changes){
+    this.setState(s=>{
+      const log = action ? [{ id:'l'+Date.now()+Math.floor(Math.random()*999), ts:this.nowStamp(), actorId:this.state.actor, action, detail, changes:changes||[] }, ...s.log] : s.log;
+      return { ...patch, log };
+    }, ()=>this.persist());
+  }
+
+  setView(v){ this.setState({ view:v, navOpen:false }); }
+  toggleNav(){ this.setState(s=>({ navOpen:!s.navOpen })); }
+  closeNav(){ this.setState({ navOpen:false }); }
+  setMode(m){ this.setState({ dateMode:m }); }
+  shiftPeriod(dir){
+    const S=this.state;
+    if (S.dateMode==='week'){ this.setState({ weekStart:this.addDays(S.weekStart, dir*7) }); }
+    else if (S.dateMode==='month'){ let [y,m]=S.calMonth.split('-').map(Number); m+=dir; if(m<1){m=12;y--;} if(m>12){m=1;y++;} this.setState({ calMonth:y+'-'+String(m).padStart(2,'0') }); }
+  }
+  setChannel(k){ this.setState({ fChannel:this.state.fChannel===k?'all':k }); }
+  setStatus(k){ this.setState({ fStatus:this.state.fStatus===k?'all':k }); }
+  setJob(k){ this.setState({ fJob:this.state.fJob===k?'all':k }); }
+  setDate(iso){ this.setState({ selDate:iso }); }
+
+  openModal(kind, mode, form){ this.setState({ modal:{ kind, mode }, form:form||{} }); }
+  closeModal(){ this.setState({ modal:null, form:{} }); }
+  setF(field, val){ this.setState(s=>({ form:{ ...s.form, [field]:val } })); }
+  setTab(t){ this.setF('tab', t); }
+  doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้' }); return; } if((p.pass||'1234')!==S.loginPw){ this.setState({ loginErr:'รหัสผ่านไม่ถูกต้อง' }); return; } this.setState({ authed:true, actor:p.id, loginPw:'', loginErr:'', view:this.firstPermittedView(p.position) }); }
+  logout(){ this.setState({ authed:false, loginPw:'', loginErr:'', navOpen:false }); }
+  addFiles(field, files){ const arr=[...files]; if(!arr.length) return; Promise.all(arr.map(f=>new Promise(res=>{ const r=new FileReader(); r.onload=()=>res({ name:f.name, data:r.result }); r.readAsDataURL(f); }))).then(items=>this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } }))); }
+  removeAttach(field, idx){ this.setState(s=>({ form:{ ...s.form, [field]:(s.form[field]||[]).filter((_,i)=>i!==idx) } })); }
+
+  blankTask(over){ const S=this.state; return Object.assign({ title:'', ch:S.channels[0].id, date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:(S.fJob!=='all'?S.fJob:'online'), status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), tab:'detail' }, over||{}); }
+  openAddTask(){ this.openModal('task','add',this.blankTask()); }
+  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, tab:'detail' }); }
+  openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
+  openEditPerson(p){ this.openModal('person','edit',{ id:p.id, name:p.name, position:p.position, color:p.color, pass:p.pass||'1234' }); }
+  openAddChannel(){ this.openModal('channel','add',{ name:'', group:'อื่นๆ', color:this.PAL[Math.floor(Math.random()*this.PAL.length)] }); }
+  openEditChannel(c){ this.openModal('channel','edit',{ id:c.id, name:c.name, group:c.group, color:c.color }); }
+  openAddTag(entity){ this.setState({ modal:{ kind:'tag', mode:'add', entity }, form:{ name:'', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], scope:'both' } }); }
+  openEditTag(entity, it){ this.setState({ modal:{ kind:'tag', mode:'edit', entity }, form:{ id:it.id, name:it.name, color:it.color, scope:it.scope||'both' } }); }
+
+  taskDiff(o,n){
+    const S=this.state; const cn=id=>(S.channels.find(c=>c.id===id)||{}).name||'—'; const pn=id=>id?((S.people.find(p=>p.id===id)||{}).name||'—'):'—'; const ctn=id=>id?((S.contentTypes.find(c=>c.id===id)||{}).name||'—'):'—'; const prn=id=>id?((S.procedures.find(c=>c.id===id)||{}).name||'—'):'—'; const sn=id=>(S.statuses.find(s=>s.id===id)||{}).label||id; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
+    const out=[]; const cmp=(label,a,b)=>{ if((a||'')!==(b||'')) out.push({ f:label, from:(a||'—'), to:(b||'—') }); };
+    cmp('ชื่องาน',o.title,n.title); cmp('ช่องทาง',cn(o.ch),cn(n.ch)); cmp('วันลงงาน',o.date,n.date); cmp('ประเภทงาน',jn(o.jobType),jn(n.jobType));
+    const brn=q=>this.branchText(q, S.branches);
+    cmp('Online/Offline',(this.mediums.find(x=>x.id===o.medium)||{}).label,(this.mediums.find(x=>x.id===n.medium)||{}).label);
+    cmp('วันส่งมอบงาน',o.delivery,n.delivery); cmp('สาขา',brn(o.branchQty),brn(n.branchQty));
+    cmp('ประเภท',ctn(o.ctype),ctn(n.ctype)); cmp('หัตถการ',prn(o.proc),prn(n.proc)); cmp('Creative',pn(o.creative),pn(n.creative)); cmp('Graphic',pn(o.graphic),pn(n.graphic));
+    const fmn=id=>id?((S.formats.find(x=>x.id===id)||{}).name||id):'—'; const szn=id=>id?((S.sizes.find(x=>x.id===id)||{}).name||id):'—';
+    cmp('รูปแบบ',fmn(o.format),fmn(n.format)); cmp('Size',szn(o.size),szn(n.size)); cmp('สถานะ',sn(o.status),sn(n.status));
+    const txt=(label,a,b)=>{ if((a||'')!==(b||'')) out.push({ f:label, from:(a||'—'), to:(b||'—'), long:true }); };
+    txt('คำบรรยายภาพ',o.imgDesc,n.imgDesc); txt('แคปชั่น',o.caption,n.caption); txt('รายละเอียดอื่นๆ',o.details,n.details); txt('ลิงก์งาน',o.link,n.link);
+    if((o.images||[]).length!==(n.images||[]).length) out.push({ f:'รูปภาพ', from:(o.images||[]).length+' ไฟล์', to:(n.images||[]).length+' ไฟล์' });
+    if((o.aw||[]).length!==(n.aw||[]).length) out.push({ f:'ไฟล์ AW/VDO', from:(o.aw||[]).length+' ไฟล์', to:(n.aw||[]).length+' ไฟล์' });
+    return out;
+  }
+
+  saveModal(){
+    const S=this.state, f=S.form, m=S.modal; if(!m) return;
+    const chName=id=>(S.channels.find(c=>c.id===id)||{}).name;
+    if (m.kind==='task'){
+      if(!f.title || !f.title.trim()) return;
+      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:f.proc||'', imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date };
+      if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
+        this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')'); }
+      else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
+        this.commit({ tasks, modal:null, form:{} }, 'แก้ไข', 'งาน "'+rec.title+'"', diffs); }
+    } else if (m.kind==='person'){
+      if(!f.name || !f.name.trim()) return;
+      if (m.mode==='add'){ const p={ id:'p'+Date.now(), name:f.name.trim(), position:f.position||'', color:f.color, pass:f.pass||'1234' };
+        this.commit({ people:[...S.people,p], modal:null, form:{} }, 'เพิ่ม', 'พนักงาน "'+p.name+'" ('+p.position+')'); }
+      else { const old=S.people.find(p=>p.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.position||'')!==(f.position||'')) d.push({ f:'ตำแหน่ง', from:old.position||'—', to:f.position||'—' }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' }); if((old.pass||'')!==(f.pass||'')) d.push({ f:'รหัสผ่าน', from:'••••', to:'••••' });
+        const people=S.people.map(p=>p.id===f.id?{ ...p, name:f.name.trim(), position:f.position||'', color:f.color, pass:f.pass||'1234' }:p);
+        this.commit({ people, modal:null, form:{} }, 'แก้ไข', 'พนักงาน "'+f.name.trim()+'"', d); }
+    } else if (m.kind==='channel'){
+      if(!f.name || !f.name.trim()) return;
+      if (m.mode==='add'){ const c={ id:'c'+Date.now(), name:f.name.trim(), group:f.group||'อื่นๆ', color:f.color };
+        this.commit({ channels:[...S.channels,c], modal:null, form:{} }, 'เพิ่ม', 'ช่องทาง "'+c.name+'"'); }
+      else { const old=S.channels.find(c=>c.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.group||'')!==(f.group||'')) d.push({ f:'กลุ่ม', from:old.group||'—', to:f.group||'—' }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' });
+        const channels=S.channels.map(c=>c.id===f.id?{ ...c, name:f.name.trim(), group:f.group||'อื่นๆ', color:f.color }:c);
+        this.commit({ channels, modal:null, form:{} }, 'แก้ไข', 'ช่องทาง "'+f.name.trim()+'"', d); }
+    } else if (m.kind==='tag'){
+      if(!f.name || !f.name.trim()) return;
+      if (m.entity==='status'){ const list=S.statuses;
+        if (m.mode==='add'){ const it={ id:'st'+Date.now(), label:f.name.trim(), color:f.color }; this.commit({ statuses:[...list,it], modal:null, form:{} }, 'เพิ่ม', 'สถานะ "'+it.label+'"'); }
+        else { const old=list.find(x=>x.id===f.id)||{}; const d=[]; if((old.label||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.label||'—', to:f.name.trim() }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' }); const nl=list.map(x=>x.id===f.id?{ ...x, label:f.name.trim(), color:f.color }:x); this.commit({ statuses:nl, modal:null, form:{} }, 'แก้ไข', 'สถานะ "'+f.name.trim()+'"', d); }
+        return;
+      }
+      const keyMap={ contentType:'contentTypes', procedure:'procedures', format:'formats', size:'sizes', branch:'branches' };
+      const lblMap={ contentType:'ประเภทคอนเทนต์', procedure:'หัตถการ', format:'รูปแบบงาน', size:'Size งาน', branch:'สาขา' };
+      const pfxMap={ contentType:'ct', procedure:'pr', format:'fm', size:'sz', branch:'br' };
+      const hasScope = m.entity!=='branch';
+      const key = keyMap[m.entity]; const lbl = lblMap[m.entity];
+      const list = S[key];
+      if (m.mode==='add'){ const it={ id:pfxMap[m.entity]+Date.now(), name:f.name.trim(), color:f.color }; if(hasScope) it.scope=f.scope||'both';
+        this.commit({ [key]:[...list,it], modal:null, form:{} }, 'เพิ่ม', lbl+' "'+it.name+'"'); }
+      else { const old=list.find(x=>x.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' }); if(hasScope&&(old.scope||'both')!==(f.scope||'both')) d.push({ f:'Online/Offline', from:this.scopeLabel(old.scope||'both'), to:this.scopeLabel(f.scope||'both') });
+        const nl=list.map(x=>x.id===f.id?Object.assign({ ...x, name:f.name.trim(), color:f.color }, hasScope?{ scope:f.scope||'both' }:{}):x);
+        this.commit({ [key]:nl, modal:null, form:{} }, 'แก้ไข', lbl+' "'+f.name.trim()+'"', d); }
+    }
+  }
+
+  askDeleteTask(t){ const S=this.state; const cn=(S.channels.find(c=>c.id===t.ch)||{}).name;
+    this.setState({ modal:{ kind:'confirm', msg:'ลบงาน "'+t.title+'" ('+cn+') ใช่หรือไม่?', onYes:()=>this.commit({ tasks:S.tasks.filter(x=>x.id!==t.id), modal:null }, 'ลบ', 'งาน "'+t.title+'"') } }); }
+  askDeletePerson(p){ const S=this.state; const cnt=S.tasks.filter(t=>t.creative===p.id||t.graphic===p.id).length;
+    this.setState({ modal:{ kind:'confirm', msg:'ลบพนักงาน "'+p.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นที่เกี่ยวข้องจะถูกปลดชื่อออก':''), onYes:()=>this.commit({ people:S.people.filter(x=>x.id!==p.id), tasks:S.tasks.map(t=>({ ...t, creative:t.creative===p.id?'':t.creative, graphic:t.graphic===p.id?'':t.graphic })), modal:null }, 'ลบ', 'พนักงาน "'+p.name+'"') } }); }
+  askDeleteChannel(c){ const S=this.state; const cnt=S.tasks.filter(t=>t.ch===c.id).length;
+    this.setState({ modal:{ kind:'confirm', msg:'ลบช่องทาง "'+c.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นในช่องทางนี้จะถูกลบด้วย':''), onYes:()=>this.commit({ channels:S.channels.filter(x=>x.id!==c.id), tasks:S.tasks.filter(t=>t.ch!==c.id), modal:null }, 'ลบ', 'ช่องทาง "'+c.name+'"'+(cnt?' และงาน '+cnt+' ชิ้น':'')) } }); }
+  askDeleteTag(entity, it){ const S=this.state;
+    if (entity==='status'){ const fb=(S.statuses.find(x=>x.id!==it.id)||{}).id||'todo'; const cnt=S.tasks.filter(t=>t.status===it.id).length;
+      this.setState({ modal:{ kind:'confirm', msg:'ลบสถานะ "'+it.label+'"?'+(cnt?' งาน '+cnt+' ชิ้นจะถูกย้ายไปสถานะแรก':''), onYes:()=>this.commit({ statuses:S.statuses.filter(x=>x.id!==it.id), tasks:S.tasks.map(t=>t.status===it.id?{ ...t, status:fb }:t), modal:null }, 'ลบ', 'สถานะ "'+it.label+'"') } }); return; }
+    if (entity==='branch'){ const cnt=S.tasks.filter(t=>Number((t.branchQty||{})[it.id])>0).length;
+      this.setState({ modal:{ kind:'confirm', msg:'ลบสาขา "'+it.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นจะถูกถอดสาขานี้ออก':''), onYes:()=>this.commit({ branches:S.branches.filter(x=>x.id!==it.id), tasks:S.tasks.map(t=>{ const q=Object.assign({}, t.branchQty||{}); delete q[it.id]; return { ...t, branchQty:q }; }), modal:null }, 'ลบ', 'สาขา "'+it.name+'"') } }); return; }
+    const key={ contentType:'contentTypes', procedure:'procedures', format:'formats', size:'sizes' }[entity];
+    const field={ contentType:'ctype', procedure:'proc', format:'format', size:'size' }[entity];
+    const lbl={ contentType:'ประเภทคอนเทนต์', procedure:'หัตถการ', format:'รูปแบบงาน', size:'Size งาน' }[entity];
+    const cnt=S.tasks.filter(t=>t[field]===it.id).length;
+    this.setState({ modal:{ kind:'confirm', msg:'ลบ'+lbl+' "'+it.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นจะถูกตั้งเป็น "ไม่ระบุ"':''), onYes:()=>this.commit({ [key]:S[key].filter(x=>x.id!==it.id), tasks:S.tasks.map(t=>t[field]===it.id?{ ...t,[field]:'' }:t), modal:null }, 'ลบ', lbl+' "'+it.name+'"') } }); }
+
+  download(name, text, mime){ const b=new Blob(['\ufeff'+text],{type:mime}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),800); }
+  exportCSV(){ const S=this.state; const cn=id=>(S.channels.find(c=>c.id===id)||{}).name||''; const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||k; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
+    const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+    const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
+    const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
+    const rows=[['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา(วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบ','Size','Creative','Graphic','สถานะ','แคปชั่น','รายละเอียด','ลิงก์']];
+    S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(t=>rows.push([t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),prn(t.proc),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),(t.caption||'').replace(/\n/g,' '),(t.details||'').replace(/\n/g,' '),t.link||'']));
+    this.download('media-plan.csv', rows.map(r=>r.map(esc).join(',')).join('\n'), 'text/csv;charset=utf-8'); }
+  exportJSON(){ const S=this.state; this.download('media-plan.json', JSON.stringify({ channels:S.channels, people:S.people, contentTypes:S.contentTypes, procedures:S.procedures, formats:S.formats, sizes:S.sizes, branches:S.branches, statuses:S.statuses, tasks:S.tasks, log:S.log }, null, 2), 'application/json'); }
+  xmlEsc(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\r?\n/g,'&#10;'); }
+  sheetXml(name, rows){
+    const safe=String(name).replace(/[\\\/\?\*\[\]:]/g,' ').slice(0,31);
+    const cell=(v,head)=>{ const num=(typeof v==='number'); return '<Cell'+(head?' ss:StyleID="h"':'')+'><Data ss:Type="'+(num?'Number':'String')+'">'+this.xmlEsc(v)+'</Data></Cell>'; };
+    const body=rows.map((r,i)=>'<Row>'+r.map(v=>cell(v,i===0)).join('')+'</Row>').join('');
+    const widths=(rows[0]||[]).map(()=>'<Column ss:AutoFitWidth="0" ss:Width="130"/>').join('');
+    return '<Worksheet ss:Name="'+this.xmlEsc(safe)+'"><Table>'+widths+body+'</Table><WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel"><FreezePanes/><SplitHorizontal>1</SplitHorizontal><TopRowBottomPane>1</TopRowBottomPane><ActivePane>2</ActivePane></WorksheetOptions></Worksheet>';
+  }
+  exportExcel(){
+    const S=this.state;
+    const cn=id=>(S.channels.find(c=>c.id===id)||{}).name||''; const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||''; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||''; const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
+    const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
+    const tasks=[['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา (วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบงาน','Size งาน','Creative','Graphic','สถานะ','คำบรรยายภาพ','แคปชั่น','รายละเอียดอื่นๆ','ลิงก์งาน','จำนวนรูป','จำนวนไฟล์ AW']];
+    S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(t=>tasks.push([t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),prn(t.proc),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),t.imgDesc||'',t.caption||'',t.details||'',t.link||'',(t.images||[]).length,(t.aw||[]).length]));
+    const team=[['ชื่อ','ตำแหน่ง','สี','จำนวนงาน (Creative)','จำนวนงาน (Graphic)']];
+    S.people.forEach(p=>team.push([p.name,p.position,p.color,S.tasks.filter(t=>t.creative===p.id).length,S.tasks.filter(t=>t.graphic===p.id).length]));
+    const chs=[['กลุ่ม','ชื่อช่องทาง','สี','จำนวนงาน']];
+    S.channels.forEach(c=>chs.push([c.group,c.name,c.color,S.tasks.filter(t=>t.ch===c.id).length]));
+    const simple=(list,field,nameKey)=>{ const sc=list.some(x=>x.scope); const r=[sc?['ชื่อ','Online/Offline','สี','จำนวนงาน']:['ชื่อ','สี','จำนวนงาน']];
+      list.forEach(x=>{ const c=S.tasks.filter(t=>t[field]===x.id).length; r.push(sc?[x[nameKey||'name'],this.scopeLabel(x.scope||'both'),x.color,c]:[x[nameKey||'name'],x.color,c]); }); return r; };
+    const brRows=[['สาขา','สี','จำนวนงาน','ชิ้นรวม']]; S.branches.forEach(b=>brRows.push([b.name,b.color,S.tasks.filter(t=>Number((t.branchQty||{})[b.id])>0).length,S.tasks.reduce((s,t)=>s+(Number((t.branchQty||{})[b.id])||0),0)]));
+    const perms=[['ตำแหน่ง',...this.areas().map(a=>a[1]+' (ดู/แก้/ลบ)')]];
+    const held=[...new Set([...(S.positions||[]), ...S.people.map(p=>p.position).filter(Boolean)])];
+    const gp=(pos,area,act)=>{ const o=(S.perms||{})[pos]; if(!o||!o[area]) return true; return o[area][act]!==false; };
+    held.forEach(pos=>perms.push([pos,...this.areas().map(([a])=>[gp(pos,a,'view')?'ดู':'-',gp(pos,a,'edit')?'แก้':'-',gp(pos,a,'del')?'ลบ':'-'].join('/'))]));
+    const hist=[['เวลา','ผู้ใช้งาน','การกระทำ','รายการ','ช่องที่แก้ไข','ค่าเก่า','ค่าใหม่']];
+    S.log.forEach(l=>{ const who=(S.people.find(p=>p.id===l.actorId)||{}).name||'—';
+      if((l.changes||[]).length) l.changes.forEach(c=>hist.push([l.ts,who,l.action,l.detail||'',c.f,c.from,c.to]));
+      else hist.push([l.ts,who,l.action,l.detail||'','','','']); });
+    const sheets=[ this.sheetXml('งานทั้งหมด',tasks), this.sheetXml('ทีมงาน',team), this.sheetXml('สิทธิ์ตำแหน่ง',perms), this.sheetXml('ช่องทาง',chs),
+      this.sheetXml('ประเภทคอนเทนต์',simple(S.contentTypes,'ctype')), this.sheetXml('หัตถการ',simple(S.procedures,'proc')),
+      this.sheetXml('รูปแบบงาน',simple(S.formats,'format')), this.sheetXml('Size งาน',simple(S.sizes,'size')), this.sheetXml('สาขา',brRows),
+      this.sheetXml('สถานะ',simple(S.statuses,'status','label')), this.sheetXml('ประวัติการแก้ไข',hist) ].join('');
+    const xml='<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
+      +'<Styles><Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Top"/><Font ss:FontName="Tahoma" ss:Size="10"/></Style>'
+      +'<Style ss:ID="h"><Font ss:FontName="Tahoma" ss:Size="10" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#4F46E5" ss:Pattern="Solid"/></Style></Styles>'
+      +sheets+'</Workbook>';
+    this.download('media-plan.xls', xml, 'application/vnd.ms-excel;charset=utf-8');
+  }
+  downloadAttach(item){ try { const [head,b64]=String(item.data).split(','); const mime=(head.match(/data:([^;]+)/)||[])[1]||'application/octet-stream';
+      const bin=atob(b64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+      const u=URL.createObjectURL(new Blob([arr],{type:mime})); const a=document.createElement('a'); a.href=u; a.download=item.name||'file'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),1200);
+    } catch(e){ const a=document.createElement('a'); a.href=item.data; a.download=item.name||'file'; document.body.appendChild(a); a.click(); a.remove(); } }
+
+  buildDays(){
+    const S=this.state, out=[];
+    if (S.dateMode==='week'){ for(let i=0;i<7;i++) out.push(this.addDays(S.weekStart,i)); }
+    else if (S.dateMode==='month'){ const [y,m]=S.calMonth.split('-').map(Number); const n=new Date(y,m,0).getDate(); for(let d=1;d<=n;d++) out.push(this.iso(new Date(y,m-1,d))); }
+    else { let s=S.rangeStart, e=S.rangeEnd; if(s>e){ const t=s; s=e; e=t; } let cur=s, guard=0; while(cur<=e && guard<62){ out.push(cur); cur=this.addDays(cur,1); guard++; } if(!out.length) out.push(s); }
+    return out;
+  }
+
+  renderVals(){
+    const S=this.state, T=S.tasks;
+    const chMap={}; S.channels.forEach(c=>chMap[c.id]=c);
+    const pMap={}; S.people.forEach(p=>pMap[p.id]=p);
+    const stMap={}; S.statuses.forEach(s=>stMap[s.id]=s);
+    const ctMap={}; S.contentTypes.forEach(c=>ctMap[c.id]=c);
+    const prMap={}; S.procedures.forEach(c=>prMap[c.id]=c);
+    const init=n=>(n||'').slice(0,2).toUpperCase();
+    const getP=(pos,area,act)=>{ const p=(S.perms||{})[pos]; if(!p||!p[area]) return true; return p[area][act]!==false; };
+    const actorPos=(pMap[S.actor]||{}).position||'';
+    const can=(area,act)=>getP(actorPos,area,act);
+    const st=id=>stMap[id]||{label:'',color:'#94A3B8'};
+    const fMed=(S.form||{}).medium||'online';
+    const scoped2=(list,cur)=>list.filter(x=>this.inScope(x,fMed)||x.id===cur);
+    const scopeChip=s=>{ const sc=s||'both'; const c=sc==='online'?'#0EA5E9':(sc==='offline'?'#F59E0B':'#94A3B8'); return 'font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;color:'+c+';background:'+c+'18;border:1px solid '+c+'44;'; };
+
+    const fc=t=>S.fChannel==='all'||t.ch===S.fChannel;
+    const fp=t=>S.fPerson==='all'||t.creative===S.fPerson||t.graphic===S.fPerson;
+    const fs=t=>S.fStatus==='all'||t.status===S.fStatus;
+    const fj=t=>S.fJob==='all'||t.jobType===S.fJob;
+    const fm=t=>S.fMedium==='all'||(t.medium||'online')===S.fMedium;
+
+    const days=this.buildDays(); const daySet=new Set(days); const compact=days.length>10;
+    const dayObjs=days.map(iso=>{ const d=this.parse(iso), we=d.getDay()===0||d.getDay()===6, sel=iso===S.selDate;
+      const headStyle='display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 3px;cursor:pointer;border:none;border-left:1px solid #F1F5F9;'+(sel?'background:#4F46E5;color:#fff;':(we?'background:#F8FAFC;color:#94A3B8;':'background:#fff;color:#334155;'));
+      return { iso, dow:this.dow(iso), dnum:d.getDate(), isSel:sel, isWe:we, headStyle, onClick:()=>this.setDate(iso) }; });
+
+    const rowChannels=S.channels.filter(c=>S.fChannel==='all'||c.id===S.fChannel);
+    const matrixRows=rowChannels.map(c=>{ let total=0;
+      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&t.ch===c.id&&fp(t)&&fs(t)&&fj(t)&&fm(t)); total+=ct.length;
+        const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
+        const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status);
+          return { title:t.title, tip:t.title+' · '+(p.name||'')+' · '+s.label, color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name) }; });
+        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''));
+        const first=ct[0];
+        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown, more:(!compact&&ct.length>3)?ct.length-3:0, style,
+          onClick:()=> first ? this.openEditTask(first) : this.openModal('task','add',this.blankTask({ ch:c.id, date:d.iso })) };
+      });
+      return { name:c.name, color:c.color, total, cells };
+    });
+
+    const scoped=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fj(t)&&fm(t));
+    const cntBy=id=>scoped.filter(t=>t.status===id).length;
+    const statCards=[
+      { label:'งานทั้งหมด', value:scoped.length, color:'#4F46E5' },
+      { label:'เสร็จ', value:cntBy('done'), color:'#22C55E' },
+      { label:'กำลังทำ', value:cntBy('doing'), color:'#F97316' },
+      { label:'ยังไม่เริ่ม', value:cntBy('todo'), color:'#94A3B8' },
+      { label:'ช่องทางที่ใช้', value:new Set(scoped.map(t=>t.ch)).size, color:'#0EA5E9' },
+    ];
+
+    const wlBase=S.people.map(p=>({ ...p, total:T.filter(t=>daySet.has(t.date)&&(t.creative===p.id||t.graphic===p.id)&&fc(t)&&fs(t)&&fj(t)&&fm(t)).length }));
+    const maxWk=Math.max(1,...wlBase.map(w=>w.total));
+    const workload=wlBase.slice().sort((a,b)=>b.total-a.total).map(w=>{ const active=S.fPerson===w.id;
+      return { name:w.name, position:w.position, color:w.color, initials:init(w.name), total:w.total, pct:Math.round(w.total/maxWk*100),
+        rowStyle:'display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;cursor:pointer;text-align:left;border:1px solid '+(active?'#C7D2FE;background:#EEF2FF;':'transparent;background:transparent;'),
+        onClick:()=>this.setState({ fPerson:S.fPerson===w.id?'all':w.id }) }; });
+
+    const chipBtn=active=>'display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;font-size:12px;font-weight:600;padding:6px 11px;border-radius:99px;cursor:pointer;'+(active?'background:#0F172A;color:#fff;border:1px solid #0F172A;':'background:#fff;color:#475569;border:1px solid #E2E8F0;');
+    const channelChips=[{ id:'all', name:'ทุกช่องทาง', color:'#94A3B8' }, ...S.channels].map(c=>({ label:c.name, color:c.color, style:chipBtn(S.fChannel===c.id), onClick:()=> c.id==='all'?this.setState({fChannel:'all'}):this.setChannel(c.id) }));
+    const statusChips=[{ id:'all', label:'ทุกสถานะ' }, ...S.statuses].map(s=>({ label:s.label, style:chipBtn(S.fStatus===s.id), onClick:()=> s.id==='all'?this.setState({fStatus:'all'}):this.setStatus(s.id) }));
+    const mediumChips=[{ id:'all', label:'Online + Offline' }, ...this.mediums].map(x=>({ label:x.label, style:chipBtn(S.fMedium===x.id), onClick:()=>this.setState({ fMedium:S.fMedium===x.id?'all':x.id }) }));
+    const jobChips=[{ id:'all', label:'ทุกประเภทงาน' }, ...this.jobTypes].map(j=>({ label:j.label, style:chipBtn(S.fJob===j.id), onClick:()=> j.id==='all'?this.setState({fJob:'all'}):this.setJob(j.id) }));
+    const peopleOpts=[{ value:'all', label:'ทุกคน' }, ...S.people.map(p=>({ value:p.id, label:p.name }))];
+    const channelSelOpts=[{ value:'all', label:'ทุกช่องทาง' }, ...S.channels.map(c=>({ value:c.id, label:c.name }))];
+
+    const tabb=active=>'font-size:13px;font-weight:600;padding:7px 15px;border-radius:8px;border:none;cursor:pointer;'+(active?'background:#fff;color:#0F172A;box-shadow:0 1px 2px rgba(15,23,42,.12);':'background:transparent;color:#64748B;');
+    const modeTabs=[['week','สัปดาห์'],['month','เดือน'],['custom','กำหนดเอง']].map(([k,l])=>({ label:l, style:tabb(S.dateMode===k), onClick:()=>this.setMode(k) }));
+    let periodLabel='';
+    if (S.dateMode==='week'){ const a=this.parse(days[0]), b=this.parse(days[days.length-1]); periodLabel=a.getDate()+'–'+b.getDate()+' '+this.thMon(b.getMonth())+' '+b.getFullYear(); }
+    else if (S.dateMode==='month'){ const [y,m]=S.calMonth.split('-').map(Number); periodLabel=this.thMon(m-1)+' '+y; }
+    else { const rs=S.rangeStart<S.rangeEnd?S.rangeStart:S.rangeEnd, re=S.rangeStart<S.rangeEnd?S.rangeEnd:S.rangeStart; const a=this.parse(rs), b=this.parse(re); periodLabel=a.getDate()+' '+this.thMon(a.getMonth())+' – '+b.getDate()+' '+this.thMon(b.getMonth())+' '+b.getFullYear(); }
+
+    const matrixMinW=176+days.length*(compact?48:112);
+    const gridCols='176px repeat('+days.length+', minmax('+(compact?'48px':'112px')+',1fr))';
+
+    // content calendar
+    const calFilter=t=>fc(t)&&fp(t)&&fs(t)&&fj(t)&&fm(t);
+    let calS, calE;
+    if (S.dateMode==='week'){ calS=S.weekStart; calE=this.addDays(S.weekStart,6); }
+    else if (S.dateMode==='custom'){ let s=S.rangeStart,e=S.rangeEnd; if(s>e){ const _t=s; s=e; e=_t; } calS=s; calE=e; }
+    else { const [cyM,cmM]=S.calMonth.split('-').map(Number); calS=this.iso(new Date(cyM,cmM-1,1)); calE=this.iso(new Date(cyM,cmM,0)); }
+    const padC=(this.parse(calS).getDay()+6)%7;
+    const gridStart=this.addDays(calS,-padC);
+    const span=Math.round((this.parse(calE)-this.parse(gridStart))/86400000)+1;
+    const totalCells=Math.min(Math.ceil(span/7)*7, 70);
+    const calCells=[];
+    for(let i=0;i<totalCells;i++){
+      const iso=this.addDays(gridStart,i);
+      if(iso<calS || iso>calE){ calCells.push({ blank:true, day:false, items:[], style:'min-height:120px;background:#FAFBFC;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;' }); continue; }
+      const dts=T.filter(t=>t.date===iso&&calFilter(t)).slice().sort((a,b)=> a.ch<b.ch?-1:(a.ch>b.ch?1:0));
+      const items=dts.slice(0,4).map(t=>{ const c=chMap[t.ch]||{},p=pMap[t.creative]||pMap[t.graphic]||{},s=st(t.status); return { title:t.title, color:c.color||'#CBD5E1', tint:(c.color||'#CBD5E1')+'1A', statusColor:s.color, initials:init(p.name), onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTask(t); } }; });
+      const isToday=iso==='2026-07-24';
+      calCells.push({ blank:false, day:true, dnum:this.parse(iso).getDate(), items, more: dts.length>4?dts.length-4:0,
+        numStyle:'font-size:12px;font-weight:700;'+(isToday?'background:#4F46E5;color:#fff;border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;':'color:#334155;'),
+        style:'min-height:120px;padding:6px;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;cursor:pointer;display:flex;flex-direction:column;gap:4px;',
+        onClick:()=>this.openModal('task','add',this.blankTask({ ch:(S.fChannel!=='all'?S.fChannel:S.channels[0].id), date:iso, start:iso })) });
+    }
+    const calWeekHeads=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
+    const durDays=(a,b)=>{ if(!a||!b) return null; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
+    const _cf=S.form||{}; const _dd=durDays(_cf.start,_cf.date);
+    const durationLabel=_dd==null?'ระบุวันเริ่ม–วันลง':(_dd>0?(_dd+' วัน'):'ตรวจสอบวันที่');
+
+    // report
+    const rep=T.filter(t=>daySet.has(t.date)&&fp(t)&&fj(t)&&fm(t));
+    const withPct=arr=>{ const m=Math.max(1,...arr.map(x=>x.count)); const f=arr.filter(x=>x.count>0).sort((a,b)=>b.count-a.count); return f.map(x=>({ ...x, pct:Math.round(x.count/m*100) })); };
+    const bd=(list, field, unspec)=>{ let arr=list.map(x=>({ name:x.name, color:x.color, count:rep.filter(t=>t[field]===x.id).length })); if(unspec){ const u=rep.filter(t=>!t[field]).length; if(u) arr.push({ name:'ไม่ระบุ', color:'#CBD5E1', count:u }); } return withPct(arr); };
+    const secDefs=[
+      { title:'ตาม Online / Offline', items:withPct(this.mediums.map(x=>({ name:x.label, color:x.id==='online'?'#0EA5E9':'#F59E0B', count:rep.filter(t=>(t.medium||'online')===x.id).length }))) },
+      { title:'ตามสาขา (จำนวนชิ้น)', items:withPct(S.branches.map(b=>({ name:b.name, color:b.color, count:rep.reduce((s,t)=>s+(Number((t.branchQty||{})[b.id])||0),0) }))) },
+      { title:'ตามประเภทงาน', items:withPct(this.jobTypes.map(j=>({ name:j.label, color:j.id==='online'?'#3B82F6':(j.id==='central'?'#8B5CF6':'#EC4899'), count:rep.filter(t=>t.jobType===j.id).length }))) },
+      { title:'ตามประเภทคอนเทนต์', items:bd(S.contentTypes,'ctype',true) },
+      { title:'ตามหัตถการ', items:bd(S.procedures,'proc',true) },
+      { title:'ตามช่องทาง', items:bd(S.channels,'ch',false) },
+      { title:'ตามสถานะ', items:withPct(S.statuses.map(s=>({ name:s.label, color:s.color, count:rep.filter(t=>t.status===s.id).length }))) },
+      { title:'ตามคน (Creative/Graphic)', items:withPct(S.people.map(p=>({ name:p.name, color:p.color, count:rep.filter(t=>t.creative===p.id||t.graphic===p.id).length }))) },
+    ];
+    const reportSections=secDefs.map(s=>({ ...s, empty:s.items.length===0 }));
+
+    const teamRows=S.people.map(p=>({ name:p.name, position:p.position, color:p.color, initials:init(p.name), onEdit:()=>this.openEditPerson(p), onDelete:()=>this.askDeletePerson(p) }));
+    const positionsUsed=[...new Set([...(S.positions||[]), ...S.people.map(p=>p.position).filter(Boolean)])];
+    const canPosEdit=can('team','edit'), canPosDel=can('team','del');
+    const areaDefs=this.areas();
+    const permAreas=areaDefs.map(a=>a[1]);
+    const pchip=(on,kind)=>{ const c=kind==='del'?'#EF4444':(kind==='view'?'#0EA5E9':'#4F46E5'); return 'font-size:12px;width:30px;height:28px;border-radius:8px;cursor:pointer;'+(on?'border:1px solid '+c+'55;background:'+c+'18;color:'+c+';':'border:1px solid #E2E8F0;background:#fff;color:#CBD5E1;'); };
+    const permRows=positionsUsed.map(pos=>({ pos, onDelete:()=>this.askDeletePosition(pos), cells: areaDefs.map(([ak])=>{ const v=getP(pos,ak,'view'), e=getP(pos,ak,'edit'), d=getP(pos,ak,'del'); return { viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,ak,'view'), onEdit:()=>this.togglePerm(pos,ak,'edit'), onDel:()=>this.togglePerm(pos,ak,'del') }; }) }));
+
+    const groups=[]; const gi={};
+    S.channels.forEach(c=>{ if(gi[c.group]==null){ gi[c.group]=groups.length; groups.push({ name:c.group, channels:[] }); } groups[gi[c.group]].channels.push({ name:c.name, color:c.color, onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c) }); });
+
+    const contentRows=S.contentTypes.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.ctype===c.id).length, onEdit:()=>this.openEditTag('contentType',c), onDelete:()=>this.askDeleteTag('contentType',c) }));
+    const procedureRows=S.procedures.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.proc===c.id).length, onEdit:()=>this.openEditTag('procedure',c), onDelete:()=>this.askDeleteTag('procedure',c) }));
+    const branchRows=S.branches.map(c=>({ name:c.name, color:c.color, taskCount:T.reduce((s,t)=>s+(Number((t.branchQty||{})[c.id])||0),0), onEdit:()=>this.openEditTag('branch',c), onDelete:()=>this.askDeleteTag('branch',c) }));
+    const formatRows=S.formats.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.format===c.id).length, onEdit:()=>this.openEditTag('format',c), onDelete:()=>this.askDeleteTag('format',c) }));
+    const sizeRows=S.sizes.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.size===c.id).length, onEdit:()=>this.openEditTag('size',c), onDelete:()=>this.askDeleteTag('size',c) }));
+    const statusRows=S.statuses.map(s=>({ name:s.label, color:s.color, taskCount:T.filter(t=>t.status===s.id).length, onEdit:()=>this.openEditTag('status',{id:s.id,name:s.label,color:s.color}), onDelete:()=>this.askDeleteTag('status',s) }));
+
+    const actClr={ 'เพิ่ม':'#22C55E','แก้ไข':'#F97316','ลบ':'#EF4444' };
+    const clip=v=>{ const s=String(v==null?'':v); return s.length>60?s.slice(0,60)+'…':s; };
+    const historyRows=S.log.map(l=>{ const a=pMap[l.actorId]||{name:'—',color:'#94A3B8'};
+      const ch=(l.changes||[]).map(c=>({ field:c.f, from:clip(c.from), to:clip(c.to) }));
+      return { ts:l.ts, actor:a.name, color:a.color, initials:init(a.name), action:l.action, detail:l.detail,
+        fieldsText:ch.length?ch.map(c=>c.field).join(', '):'—', changes:ch, noChanges:ch.length===0,
+        actionStyle:'font-size:12px;font-weight:700;color:'+(actClr[l.action]||'#64748B')+';' }; });
+
+    const navDef=[['plan','📋','แผนงาน'],['table','🗓','ปฏิทิน'],['report','📊','สรุป'],['team','👥','ทีมงาน'],['channels','📡','ช่องทาง'],['content','🏷','ประเภทคอนเทนต์'],['procedure','💉','หัตถการ'],['format','🎬','รูปแบบงาน'],['size','📐','Size งาน'],['branch','🏢','สาขา'],['status','⚑','สถานะ'],['history','🕘','ประวัติ']];
+    const navBadge={ plan:S.tasks.length, table:null, report:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length };
+    const navItems=navDef.filter(([k])=>{ const a=this.navArea(k); return a==null||can(a,'view'); }).map(([k,ic,l])=>({ label:l, icon:ic, badge:navBadge[k]||null,
+      style:'display:flex;align-items:center;gap:11px;width:100%;font-size:13px;font-weight:600;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;'+(S.view===k?'background:#4F46E5;color:#fff;':'background:transparent;color:#94A3B8;'),
+      onClick:()=>this.setView(k) }));
+    const curArea=this.navArea(S.view); const viewAllowed=curArea==null||can(curArea,'view');
+    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], team:['ทีมงาน','จัดการพนักงานและสิทธิ์ตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'] };
+
+    const m=S.modal, f=S.form||{};
+    let modalTitle='';
+    if (m){ if(m.kind==='confirm') modalTitle='ยืนยันการลบ';
+      else if(m.kind==='tag') modalTitle=(m.mode==='edit'?'แก้ไข':'เพิ่ม')+({ contentType:'ประเภทคอนเทนต์', status:'สถานะ', procedure:'หัตถการ', format:'รูปแบบงาน', size:'Size งาน', branch:'สาขา' }[m.entity]||'');
+      else { const t={ task:['เพิ่มงานใหม่','แก้ไขงาน'], person:['เพิ่มพนักงาน','แก้ไขพนักงาน'], channel:['เพิ่มช่องทาง','แก้ไขช่องทาง'] }[m.kind]; modalTitle=t[m.mode==='edit'?1:0]; } }
+    const channelOpts=S.channels.map(c=>({ value:c.id, label:c.name }));
+    const personPick=[{ value:'', label:'— ไม่ระบุ —' }, ...S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position }))];
+    const formatOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.formats,f.format).map(x=>({ value:x.id, label:x.name }))];
+    const sizeOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.sizes,f.size).map(x=>({ value:x.id, label:x.name }))];
+    const jobTypeOpts=this.jobTypes.map(j=>({ value:j.id, label:j.label }));
+    const contentOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.contentTypes,f.ctype).map(c=>({ value:c.id, label:c.name }))];
+    const procOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.procedures,f.proc).map(c=>({ value:c.id, label:c.name }))];
+    const statusPick=S.statuses.map(s=>({ label:s.label, onClick:()=>this.setF('status',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid '+(f.status===s.id?s.color+';background:'+s.color+'1A;color:'+s.color:'#E2E8F0;background:#fff;color:#64748B') }));
+    const palette=this.PAL.map(hex=>({ onClick:()=>this.setF('color',hex), style:'width:30px;height:30px;border-radius:9px;cursor:pointer;background:'+hex+';border:3px solid '+(f.color===hex?'#0F172A':'transparent')+';box-shadow:0 0 0 1px #E2E8F0;' }));
+    const groupOpts=[...new Set(S.channels.map(c=>c.group))];
+    const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setF('medium',x.id),
+      style:'flex:1;font-size:13px;font-weight:700;padding:9px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(fMed===x.id?(x.id==='online'?'#0EA5E9;background:#0EA5E918;color:#0369A1':'#F59E0B;background:#F59E0B18;color:#B45309'):'#E2E8F0;background:#fff;color:#64748B') }));
+    const setQty=(id,v)=>this.setState(s=>{ const q=Object.assign({}, s.form.branchQty||{}); const n=Math.max(0, Math.min(999, Number(v)||0)); if(n>0) q[id]=n; else delete q[id]; return { form:{ ...s.form, branchQty:q } }; });
+    const fq=f.branchQty||{};
+    const branchPick=S.branches.map(b=>{ const n=Number(fq[b.id])||0, on=n>0;
+      return { label:b.name, qty:on?String(n):'', on,
+        rowStyle:'display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:11px;border:1px solid '+(on?b.color+'66;background:'+b.color+'0F;':'#E2E8F0;background:#fff;'),
+        dotStyle:'width:10px;height:10px;border-radius:3px;flex-shrink:0;background:'+b.color+';',
+        nameStyle:'flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:'+(on?'#0F172A':'#64748B')+';',
+        inputStyle:'width:66px;font-size:13px;font-weight:700;text-align:center;padding:7px 6px;border-radius:9px;border:1px solid '+(on?b.color+'88':'#E2E8F0')+';color:#0F172A;',
+        onQty:e=>setQty(b.id, e.target.value), onStepUp:()=>setQty(b.id, n+1), onStepDown:()=>setQty(b.id, n-1) }; });
+    const branchSummary=this.branchText(fq, S.branches);
+    const branchTotalLabel=this.branchTotal(fq)+' ชิ้น';
+    const isOffline=fMed==='offline';
+    const deliveryHint=isOffline?(f.delivery?'':'งาน Offline ควรระบุวันส่งมอบงาน'):'งาน Online ไม่ระบุก็ได้';
+    const showBranches=!!f.delivery||isOffline;
+    const tagScopePick=(m&&m.kind==='tag'&&m.entity!=='branch'&&m.entity!=='status')?[['online','Online'],['offline','Offline'],['both','ทั้งสอง']].map(([k,l])=>({ label:l, onClick:()=>this.setF('scope',k),
+      style:'flex:1;font-size:12px;font-weight:700;padding:8px 10px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(((f.scope||'both')===k)?'#4F46E5;background:#EEF2FF;color:#4F46E5':'#E2E8F0;background:#fff;color:#64748B') })):[];
+    const showTagScope=tagScopePick.length>0;
+
+    const formTab=f.tab||'detail';
+    const ttab=active=>'font-size:13px;font-weight:600;padding:11px 12px;border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid '+(active?'#4F46E5;color:#4F46E5;':'transparent;color:#94A3B8;');
+    const taskTabs=[['detail','รายละเอียด'],['images','Draft'+((f.images||[]).length?' ('+f.images.length+')':'')],['caption','แคปชั่น'],['aw','AW/VDO'+((f.aw||[]).length?' ('+f.aw.length+')':'')]].map(([k,l])=>({ label:l, onClick:()=>this.setTab(k), style:ttab(formTab===k) }));
+    const mkAtt=field=>(f[field]||[]).map((im,i)=>{ const isImg=(im.data||'').startsWith('data:image');
+      const thumb=isImg?React.createElement('img',{src:im.data,style:{width:'100%',height:'88px',objectFit:'cover',display:'block'}}):null;
+      const awThumb=isImg?React.createElement('img',{src:im.data,style:{width:'40px',height:'40px',objectFit:'cover',borderRadius:'7px',flexShrink:0}}):React.createElement('span',{style:{width:'40px',height:'40px',borderRadius:'7px',background:'#F1F5F9',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}},'📄');
+      return { data:im.data, name:im.name, isImg, notImg:!isImg, thumb, awThumb, onDownload:()=>this.downloadAttach(im), onRemove:()=>this.removeAttach(field,i) }; });
+    const imgList=mkAtt('images'), awList=mkAtt('aw');
+    const actorP=pMap[S.actor]||{};
+
+    return {
+      authed:S.authed, notAuthed:!S.authed,
+      loginPeopleOpts:S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position })), loginId:S.loginId, loginPw:S.loginPw, loginErr:S.loginErr,
+      onLoginId:e=>this.setState({ loginId:e.target.value, loginErr:'' }), onLoginPw:e=>this.setState({ loginPw:e.target.value, loginErr:'' }), onLoginKey:e=>{ if(e.key==='Enter') this.doLogin(); }, doLogin:()=>this.doLogin(), logout:()=>this.logout(),
+      navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
+      actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
+      taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabCaption:formTab==='caption', tabAW:formTab==='aw',
+      onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
+      onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFStart:e=>this.setF('start',e.target.value), durationLabel,
+      onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setF('jobType',e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
+      calWeekHeads, calCells, permRows, permAreas, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
+      newPos:S.newPos, onNewPos:e=>this.setState({ newPos:e.target.value }), onNewPosKey:e=>{ if(e.key==='Enter') this.addPosition(); }, addPosition:()=>this.addPosition(),
+      canTeamEdit:can('team','edit'), canTeamDel:can('team','del'), canChEdit:can('channels','edit'), canChDel:can('channels','del'), canCtEdit:can('content','edit'), canCtDel:can('content','del'), canPrEdit:can('procedure','edit'), canPrDel:can('procedure','del'), canStEdit:can('status','edit'), canStDel:can('status','del'), canSaveTask:can('tasks','edit'),
+      navItems, actor:S.actor, people:S.people,
+      viewTitle:titles[S.view][0], viewSubtitle:titles[S.view][1],
+      isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isTeam:viewAllowed&&S.view==='team', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:S.view==='history',
+      isFormat:viewAllowed&&S.view==='format', isSize:viewAllowed&&S.view==='size',
+      formatRows, sizeRows, sizeOpts, branchRows, isBranch:viewAllowed&&S.view==='branch', canBrEdit:can('branch','edit'), canBrDel:can('branch','del'), openAddBranch:()=>this.openAddTag('branch'),
+      mediumChips, mediumPick, branchPick, branchSummary, branchTotalLabel, isOffline, deliveryHint, showBranches, tagScopePick, showTagScope,
+      onFDelivery:e=>this.setF('delivery',e.target.value),
+      canFmEdit:can('format','edit'), canFmDel:can('format','del'), canSzEdit:can('size','edit'), canSzDel:can('size','del'),
+      openAddFormat:()=>this.openAddTag('format'), openAddSize:()=>this.openAddTag('size'), onFSize:e=>this.setF('size',e.target.value),
+      showAddTask:(S.view==='plan'||S.view==='table')&&can('tasks','edit'),
+      exportCSV:()=>this.exportCSV(), exportJSON:()=>this.exportJSON(), exportExcel:()=>this.exportExcel(),
+      modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
+      prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
+      rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
+      statCards, channelChips, statusChips, peopleOpts, channelSelOpts, fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
+      days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
+      reportSections, reportTotal:rep.length,
+      teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, openAddChannel:()=>this.openAddChannel(),
+      contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
+      historyRows, historyEmpty:S.log.length===0,
+      modalOpen:!!m, modalTitle, closeModal:()=>this.closeModal(), stop:e=>e.stopPropagation(),
+      isConfirm:!!m&&m.kind==='confirm', confirmMsg:m&&m.msg, confirmYes:()=>{ if(m&&m.onYes)m.onYes(); },
+      isTaskForm:!!m&&m.kind==='task', isPersonForm:!!m&&m.kind==='person', isChannelForm:!!m&&m.kind==='channel', isTagForm:!!m&&m.kind==='tag',
+      tagFieldLabel:(m&&m.kind==='tag')?({ contentType:'ชื่อประเภทคอนเทนต์', status:'ชื่อสถานะ', procedure:'ชื่อหัตถการ', format:'ชื่อรูปแบบงาน', size:'ชื่อ Size งาน', branch:'ชื่อสาขา' }[m.entity]||'ชื่อ'):'ชื่อ',
+      form:f, saveModal:()=>this.saveModal(),
+      canDeleteTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can('tasks','del'), deleteTaskFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.askDeleteTask(t); },
+      channelOpts, formatOpts, contentOpts, procOpts, statusPick, palette, positionOpts:positionsUsed, groupOpts,
+      onFTitle:e=>this.setF('title',e.target.value), onFChannel:e=>this.setF('ch',e.target.value), onFDate:e=>this.setF('date',e.target.value),
+      onFFormat:e=>this.setF('format',e.target.value), onFCtype:e=>this.setF('ctype',e.target.value), onFProc:e=>this.setF('proc',e.target.value),
+      onFName:e=>this.setF('name',e.target.value), onFPosition:e=>this.setF('position',e.target.value), onFGroup:e=>this.setF('group',e.target.value),
+    };
+  }
+}
+</script>
+</body>
+</html>
