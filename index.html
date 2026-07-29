@@ -59,12 +59,14 @@
       <div style="font-size:22px; font-weight:700; letter-spacing:-.01em;">Media Plan</div>
       <div style="font-size:13px; color:#64748B; margin-top:4px; margin-bottom:26px;">เข้าสู่ระบบเพื่อจัดการแผนงานครีเอทีฟ</div>
       <label style="display:block; margin-bottom:14px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ผู้ใช้งาน</span>
-        <select value="{{ loginId }}" onChange="{{ onLoginId }}" onKeyDown="{{ onLoginKey }}" style="width:100%; font-size:14px; padding:11px 12px; border:1px solid #E2E8F0; border-radius:11px; background:#fff; cursor:pointer;">
+        <select value="{{ loginId }}" onChange="{{ onLoginId }}" style="width:100%; font-size:14px; padding:11px 12px; border:1px solid #E2E8F0; border-radius:11px; background:#fff; cursor:pointer;">
           <sc-for list="{{ loginPeopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
         </select></label>
+      <label style="display:block; margin-bottom:6px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">รหัสผ่าน</span>
+        <input type="password" value="{{ loginPw }}" onChange="{{ onLoginPw }}" onKeyDown="{{ onLoginKey }}" placeholder="รหัสผ่าน" style="width:100%; font-size:14px; padding:11px 12px; border:1px solid #E2E8F0; border-radius:11px;"></label>
       <sc-if value="{{ loginErr }}" hint-placeholder-val=""><div style="font-size:12px; color:#EF4444; font-weight:600; margin-bottom:6px;">{{ loginErr }}</div></sc-if>
       <button onClick="{{ doLogin }}" style="width:100%; margin-top:16px; font-size:14px; font-weight:700; color:#fff; background:#4F46E5; border:none; border-radius:11px; padding:12px; cursor:pointer;">เข้าสู่ระบบ</button>
-      <div style="font-size:11px; color:#94A3B8; margin-top:16px; text-align:center;">เลือกชื่อผู้ใช้งานแล้วกดเข้าสู่ระบบ</div>
+      <div style="font-size:11px; color:#94A3B8; margin-top:16px; text-align:center;">รหัสเริ่มต้นของทุกคน: 1234 · เปลี่ยนได้ที่เมนู "ทีมงาน"</div>
     </div>
   </div>
 </sc-if>
@@ -909,7 +911,7 @@ class Component extends DCLogic {
   closeModal(){ this.setState({ modal:null, form:{} }); }
   setF(field, val){ this.setState(s=>({ form:{ ...s.form, [field]:val } })); }
   setTab(t){ this.setF('tab', t); }
-  doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้' }); return; } this.setState({ authed:true, actor:p.id, loginPw:'', loginErr:'', view:this.firstPermittedView(p.position) }); }
+  doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้' }); return; } if((p.pass||'1234')!==S.loginPw){ this.setState({ loginErr:'รหัสผ่านไม่ถูกต้อง' }); return; } this.setState({ authed:true, actor:p.id, loginPw:'', loginErr:'', view:this.firstPermittedView(p.position) }); }
   logout(){ this.setState({ authed:false, loginPw:'', loginErr:'', navOpen:false }); }
   addFiles(field, files){ const arr=[...files]; if(!arr.length) return; Promise.all(arr.map(f=>new Promise(res=>{ const r=new FileReader(); r.onload=()=>res({ name:f.name, data:r.result }); r.readAsDataURL(f); }))).then(items=>this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } }))); }
   removeAttach(field, idx){ this.setState(s=>({ form:{ ...s.form, [field]:(s.form[field]||[]).filter((_,i)=>i!==idx) } })); }
