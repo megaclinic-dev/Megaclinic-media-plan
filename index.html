@@ -924,8 +924,13 @@ class Component extends DCLogic {
   addFiles(field, files){ const arr=[...files]; if(!arr.length) return; Promise.all(arr.map(f=>new Promise(res=>{ const r=new FileReader(); r.onload=()=>res({ name:f.name, data:r.result }); r.readAsDataURL(f); }))).then(items=>this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } }))); }
   removeAttach(field, idx){ this.setState(s=>({ form:{ ...s.form, [field]:(s.form[field]||[]).filter((_,i)=>i!==idx) } })); }
 
-  setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; if(v==='online'){ if(!s.channels.find(c=>c.id===form.ch)) form.ch=(s.channels[0]||{}).id||''; } else { form.ch='other'; } return { form }; }); }
-  blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const base={ title:'', ch:(jt==='online'?S.channels[0].id:'other'), date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:(jt==='central'||jt==='kol'?'online':'online'), delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), tab:'detail' }; const o=Object.assign(base, over||{}); if(o.jobType!=='online' && !o.ch) o.ch='other'; return o; }
+  setJobType(v){ this.setState(s=>({ form:{ ...s.form, jobType:v, _err:'' } })); }
+  blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const firstOnline=(S.channels.find(c=>(c.kind||'online')==='online')||S.channels[0]||{}).id||'';
+    const base={ title:'', ch:firstOnline, date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), tab:'detail' };
+    const o=Object.assign(base, over||{});
+    const chObj=S.channels.find(c=>c.id===o.ch); if(chObj) o.medium=(chObj.kind==='offline')?'offline':'online';
+    if(o.medium==='offline') o.jobType='central';
+    return o; }
   openAddTask(){ this.openModal('task','add',this.blankTask()); }
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, tab:'detail' }); }
   openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
@@ -958,7 +963,7 @@ class Component extends DCLogic {
     if (m.kind==='task'){
       if(!f.title || !f.title.trim()){ this.setState({ form:{ ...f, _err:'กรุณาระบุชื่องาน' } }); return; }
       if((f.jobType==='central'||f.jobType==='kol') && !f.delivery){ this.setState({ form:{ ...f, _err:'งานกลาง / KOL ต้องระบุวันส่งมอบงาน' } }); return; }
-      if((f.jobType==='central'||f.jobType==='kol') && this.branchTotal(f.branchQty)===0){ this.setState({ form:{ ...f, _err:'งานกลาง / KOL ต้องระบุสาขาและจำนวนชิ้น (อย่างน้อย 1 สาขา)' } }); return; }
+      if(f.jobType==='central' && this.branchTotal(f.branchQty)===0){ this.setState({ form:{ ...f, _err:'งานกลาง ต้องระบุสาขาและจำนวนชิ้น (อย่างน้อย 1 สาขา)' } }); return; }
       const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:f.proc||'', imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date };
       if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
         this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec)); }
@@ -1260,7 +1265,9 @@ class Component extends DCLogic {
     if (m){ if(m.kind==='confirm') modalTitle='ยืนยันการลบ';
       else if(m.kind==='tag') modalTitle=(m.mode==='edit'?'แก้ไข':'เพิ่ม')+({ contentType:'ประเภทคอนเทนต์', status:'สถานะ', procedure:'หัตถการ', format:'รูปแบบงาน', size:'Size งาน', branch:'สาขา' }[m.entity]||'');
       else { const t={ task:['เพิ่มงานใหม่','แก้ไขงาน'], person:['เพิ่มพนักงาน','แก้ไขพนักงาน'], channel:['เพิ่มช่องทาง','แก้ไขช่องทาง'] }[m.kind]; modalTitle=t[m.mode==='edit'?1:0]; } }
-    const channelOpts=(f.jobType==='online')?S.channels.map(c=>({ value:c.id, label:c.name })):[{ value:'other', label:'อื่นๆ' }];
+    const chKind=(fMed==='offline')?'offline':'online';
+    const medChannels=S.channels.filter(c=>(c.kind||'online')===chKind);
+    const channelOpts=medChannels.length?medChannels.map(c=>({ value:c.id, label:c.name })):[{ value:'', label:'— ยังไม่มีช่องทาง'+(chKind==='offline'?' Offline':' Online')+' · เพิ่มที่เมนูช่องทาง —' }];
     const personPick=[{ value:'', label:'— ไม่ระบุ —' }, ...S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position }))];
     const formatOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.formats,f.format).map(x=>({ value:x.id, label:x.name }))];
     const sizeOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.sizes,f.size).map(x=>({ value:x.id, label:x.name }))];
@@ -1270,7 +1277,7 @@ class Component extends DCLogic {
     const statusPick=S.statuses.map(s=>({ label:s.label, onClick:()=>this.setF('status',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid '+(f.status===s.id?s.color+';background:'+s.color+'1A;color:'+s.color:'#E2E8F0;background:#fff;color:#64748B') }));
     const palette=this.PAL.map(hex=>({ onClick:()=>this.setF('color',hex), style:'width:30px;height:30px;border-radius:9px;cursor:pointer;background:'+hex+';border:3px solid '+(f.color===hex?'#0F172A':'transparent')+';box-shadow:0 0 0 1px #E2E8F0;' }));
     const groupOpts=[...new Set(S.channels.map(c=>c.group))];
-    const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setState(s=>{ const form={ ...s.form, medium:x.id, _err:'' }; if(x.id==='offline'){ form.jobType='central'; form.ch='other'; } else { form.jobType='online'; if(!s.channels.find(c=>c.id===form.ch)) form.ch=(s.channels[0]||{}).id||''; } return { form }; }),
+    const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setState(s=>{ const form={ ...s.form, medium:x.id, _err:'' }; const k=(x.id==='offline')?'offline':'online'; form.jobType=(x.id==='offline')?'central':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k)){ const fch=s.channels.find(c=>(c.kind||'online')===k); form.ch=fch?fch.id:''; } return { form }; }),
       style:'flex:1;font-size:13px;font-weight:700;padding:9px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(fMed===x.id?(x.id==='online'?'#0EA5E9;background:#0EA5E918;color:#0369A1':'#F59E0B;background:#F59E0B18;color:#B45309'):'#E2E8F0;background:#fff;color:#64748B') }));
     const setQty=(id,v)=>this.setState(s=>{ const q=Object.assign({}, s.form.branchQty||{}); const n=Math.max(0, Math.min(999, Number(v)||0)); if(n>0) q[id]=n; else delete q[id]; return { form:{ ...s.form, branchQty:q } }; });
     const fq=f.branchQty||{};
@@ -1286,7 +1293,7 @@ class Component extends DCLogic {
     const isOffline=fMed==='offline';
     const needDelivery=(f.jobType==='central'||f.jobType==='kol');
     const deliveryHint=needDelivery?(f.delivery?'':'งานกลาง / KOL ต้องระบุวันส่งมอบงาน'):'ไม่บังคับสำหรับงานนี้';
-    const showBranches=(f.jobType==='central'||f.jobType==='kol');
+    const showBranches=(f.jobType==='central');
     const tagScopePick=(m&&m.kind==='tag'&&m.entity!=='branch'&&m.entity!=='status')?[['online','Online'],['offline','Offline'],['both','ทั้งสอง']].map(([k,l])=>({ label:l, onClick:()=>this.setF('scope',k),
       style:'flex:1;font-size:12px;font-weight:700;padding:8px 10px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(((f.scope||'both')===k)?'#4F46E5;background:#EEF2FF;color:#4F46E5':'#E2E8F0;background:#fff;color:#64748B') })):[];
     const showTagScope=tagScopePick.length>0;
