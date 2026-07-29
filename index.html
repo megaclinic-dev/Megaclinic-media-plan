@@ -1178,8 +1178,9 @@ class Component extends DCLogic {
     const chanSelGroups=CH_CAT.map((cat,i)=>({ label:cat[2], opts:channelsSorted.filter(c=>chCatIdx(c)===i).map(c=>({ value:c.id, label:c.name })) })).filter(g=>g.opts.length);
     const channelChips=[{ id:'all', name:'ทุกช่องทาง', color:'#94A3B8' }, ...channelsSorted].map(c=>({ label:c.name, color:c.color, style:chipBtn(S.fChannel===c.id), onClick:()=> c.id==='all'?this.setState({fChannel:'all'}):this.setChannel(c.id) }));
     const statusChips=[{ id:'all', label:'ทุกสถานะ' }, ...S.statuses].map(s=>({ label:s.label, style:chipBtn(S.fStatus===s.id), onClick:()=> s.id==='all'?this.setState({fStatus:'all'}):this.setStatus(s.id) }));
-    const mediumChips=[{ id:'all', label:'Online + Offline' }, ...this.mediums].map(x=>({ label:x.label, style:chipBtn(S.fMedium===x.id), onClick:()=>this.setState({ fMedium:S.fMedium===x.id?'all':x.id }) }));
-    const jobChips=[{ id:'all', label:'ทุกประเภทงาน' }, ...this.jobTypes].map(j=>({ label:j.label, style:chipBtn(S.fJob===j.id), onClick:()=> j.id==='all'?this.setState({fJob:'all'}):this.setJob(j.id) }));
+    const mediumChips=[{ id:'all', label:'Online + Offline' }, ...this.mediums].map(x=>({ label:x.label, style:chipBtn(S.fMedium===x.id), onClick:()=>this.setState(s=>{ const fMedium=s.fMedium===x.id?'all':x.id; let fJob=s.fJob; if(fMedium==='offline' && fJob!=='all' && fJob!=='central') fJob='all'; return { fMedium, fJob }; }) }));
+    const jobTypesForFilter=(S.fMedium==='offline')?this.jobTypes.filter(j=>j.id==='central'):this.jobTypes;
+    const jobChips=[{ id:'all', label:'ทุกประเภทงาน' }, ...jobTypesForFilter].map(j=>({ label:j.label, style:chipBtn(S.fJob===j.id), onClick:()=> j.id==='all'?this.setState({fJob:'all'}):this.setJob(j.id) }));
     const peopleOpts=[{ value:'all', label:'ทุกคน' }, ...S.people.map(p=>({ value:p.id, label:p.name }))];
     const channelSelOpts=[{ value:'all', label:'ทุกช่องทาง' }, ...S.channels.map(c=>({ value:c.id, label:c.name }))];
 
