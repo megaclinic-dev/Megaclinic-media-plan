@@ -50,6 +50,10 @@
     .mp-workload { width: 100% !important; border-left: none !important; border-top: 1px solid #EEF2F6; }
   }
   @media (max-width: 560px) { .mp-hide-sm { display: none !important; } }
+  .mp-frow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+  .mp-fbox { display: flex; flex-direction: column; gap: 6px; border: 1px solid #E2E8F0; border-radius: 12px; padding: 8px 10px; background: #FCFCFD; }
+  .mp-flabel { font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .04em; }
+  .mp-fchips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 </style>
 </helmet>
 
@@ -160,15 +164,15 @@
             </sc-for>
           </div>
 
-          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 8px;">
-            <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;">
-              <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
-            </select>
-            <sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
-            <sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
-            <sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
-            <div style="flex:1;"></div>
-            <sc-for list="{{ channelChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block;"></span>{{ c.label }}</button></sc-for>
+          <div class="mp-frow">
+            <div class="mp-fbox"><div class="mp-flabel">คน</div>
+              <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;">
+                <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+              </select></div>
+            <div class="mp-fbox"><div class="mp-flabel">งาน Online / Offline</div><div class="mp-fchips"><sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง</div><div class="mp-fchips"><sc-for list="{{ channelChips }}" as="c" hint-placeholder-count="6"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block;"></span>{{ c.label }}</button></sc-for></div></div>
           </div>
 
           <div class="mp-plan-split" style="display:flex; gap:0; background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
@@ -257,15 +261,19 @@
                 <input type="date" value="{{ rangeEnd }}" onChange="{{ onRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;">
               </div>
             </sc-if>
-            <select value="{{ fChannel }}" onChange="{{ onChannelSel }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
-              <sc-for list="{{ channelSelOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
-            </select>
-            <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
-              <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
-            </select>
-            <sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
-            <sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
-            <sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for>
+          </div>
+          <div class="mp-frow">
+            <div class="mp-fbox"><div class="mp-flabel">ช่องทาง</div>
+              <select value="{{ fChannel }}" onChange="{{ onChannelSel }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+                <sc-for list="{{ channelSelOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+              </select></div>
+            <div class="mp-fbox"><div class="mp-flabel">คน</div>
+              <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+                <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+              </select></div>
+            <div class="mp-fbox"><div class="mp-flabel">งาน Online / Offline</div><div class="mp-fchips"><sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
           </div>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; overflow-x:auto;">
             <div style="min-width:720px;">
@@ -433,7 +441,6 @@
                 <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                 <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
                 <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
-                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
                 <sc-if value="{{ canCtEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                 <sc-if value="{{ canCtDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
               </div>
@@ -452,7 +459,6 @@
                 <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                 <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
                 <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
-                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
                 <sc-if value="{{ canPrEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                 <sc-if value="{{ canPrDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
               </div>
@@ -471,7 +477,6 @@
                 <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                 <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
                 <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
-                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
                 <sc-if value="{{ canFmEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                 <sc-if value="{{ canFmDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
               </div>
@@ -490,7 +495,6 @@
                 <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                 <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
                 <span style="{{ c.scopeStyle }}">{{ c.scope }}</span>
-                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
                 <sc-if value="{{ canSzEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                 <sc-if value="{{ canSzDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
               </div>
@@ -502,14 +506,13 @@
       <!-- ============ BRANCH VIEW ============ -->
       <sc-if value="{{ isBranch }}" hint-placeholder-val="{{ false }}">
         <div style="max-width:680px;">
-          <div style="font-size:12px; color:#64748B; margin-bottom:12px;">สาขาสำหรับงาน Offline · หนึ่งงานระบุได้หลายสาขา พร้อมจำนวนชิ้นของแต่ละสาขา (ตัวเลขด้านขวาคือชิ้นรวมทั้งหมด)</div>
+          <div style="font-size:12px; color:#64748B; margin-bottom:12px;">สาขาสำหรับงาน Offline · หนึ่งงานระบุได้หลายสาขา พร้อมจำนวนชิ้นของแต่ละสาขา</div>
           <sc-if value="{{ canBrEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddBranch }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มสาขา</button></div></sc-if>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
             <sc-for list="{{ branchRows }}" as="c" hint-placeholder-count="4">
               <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
                 <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                 <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
-                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} ชิ้น</span>
                 <sc-if value="{{ canBrEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                 <sc-if value="{{ canBrDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
               </div>
@@ -528,7 +531,6 @@
               <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
                 <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                 <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
-                <span style="font-size:13px; font-weight:700; color:#475569;">{{ c.taskCount }} งาน</span>
                 <sc-if value="{{ canStEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                 <sc-if value="{{ canStDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
               </div>
@@ -711,7 +713,7 @@
         <sc-if value="{{ isChannelForm }}" hint-placeholder-val="{{ false }}">
           <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ชื่อช่องทาง</span><input value="{{ form.name }}" onChange="{{ onFName }}" placeholder="เช่น Facebook รอง" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
-            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">กลุ่ม</span><input value="{{ form.group }}" onChange="{{ onFGroup }}" placeholder="เช่น Facebook, Instagram, อื่นๆ" list="grpList" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"><datalist id="grpList"><sc-for list="{{ groupOpts }}" as="g" hint-placeholder-count="3"><option value="{{ g }}"></option></sc-for></datalist></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภท</span><select value="{{ form.kind }}" onChange="{{ onFKind }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="online">Online</option><option value="offline">Offline</option><option value="kol">KOL</option></select></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
               <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
                 <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
@@ -920,8 +922,8 @@ class Component extends DCLogic {
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, tab:'detail' }); }
   openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
   openEditPerson(p){ this.openModal('person','edit',{ id:p.id, name:p.name, position:p.position, color:p.color, pass:p.pass||'1234' }); }
-  openAddChannel(){ this.openModal('channel','add',{ name:'', group:'อื่นๆ', color:this.PAL[Math.floor(Math.random()*this.PAL.length)] }); }
-  openEditChannel(c){ this.openModal('channel','edit',{ id:c.id, name:c.name, group:c.group, color:c.color }); }
+  openAddChannel(){ this.openModal('channel','add',{ name:'', group:'อื่นๆ', kind:'online', color:this.PAL[Math.floor(Math.random()*this.PAL.length)] }); }
+  openEditChannel(c){ this.openModal('channel','edit',{ id:c.id, name:c.name, group:c.group, kind:c.kind||'online', color:c.color }); }
   openAddTag(entity){ this.setState({ modal:{ kind:'tag', mode:'add', entity }, form:{ name:'', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], scope:'both' } }); }
   openEditTag(entity, it){ this.setState({ modal:{ kind:'tag', mode:'edit', entity }, form:{ id:it.id, name:it.name, color:it.color, scope:it.scope||'both' } }); }
 
@@ -961,10 +963,11 @@ class Component extends DCLogic {
         this.commit({ people, modal:null, form:{} }, 'แก้ไข', 'พนักงาน "'+f.name.trim()+'"', d); }
     } else if (m.kind==='channel'){
       if(!f.name || !f.name.trim()) return;
-      if (m.mode==='add'){ const c={ id:'c'+Date.now(), name:f.name.trim(), group:f.group||'อื่นๆ', color:f.color };
+      const kindLbl={online:'Online',offline:'Offline',kol:'KOL'};
+      if (m.mode==='add'){ const c={ id:'c'+Date.now(), name:f.name.trim(), group:f.group||'อื่นๆ', kind:f.kind||'online', color:f.color };
         this.commit({ channels:[...S.channels,c], modal:null, form:{} }, 'เพิ่ม', 'ช่องทาง "'+c.name+'"'); }
-      else { const old=S.channels.find(c=>c.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.group||'')!==(f.group||'')) d.push({ f:'กลุ่ม', from:old.group||'—', to:f.group||'—' }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' });
-        const channels=S.channels.map(c=>c.id===f.id?{ ...c, name:f.name.trim(), group:f.group||'อื่นๆ', color:f.color }:c);
+      else { const old=S.channels.find(c=>c.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.kind||'online')!==(f.kind||'online')) d.push({ f:'ประเภท', from:kindLbl[old.kind||'online'], to:kindLbl[f.kind||'online'] }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' });
+        const channels=S.channels.map(c=>c.id===f.id?{ ...c, name:f.name.trim(), group:f.group||'อื่นๆ', kind:f.kind||'online', color:f.color }:c);
         this.commit({ channels, modal:null, form:{} }, 'แก้ไข', 'ช่องทาง "'+f.name.trim()+'"', d); }
     } else if (m.kind==='tag'){
       if(!f.name || !f.name.trim()) return;
@@ -1029,8 +1032,9 @@ class Component extends DCLogic {
     S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(t=>tasks.push([t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),prn(t.proc),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),t.imgDesc||'',t.caption||'',t.details||'',t.link||'',(t.images||[]).length,(t.aw||[]).length]));
     const team=[['ชื่อ','ตำแหน่ง','สี','จำนวนงาน (Creative)','จำนวนงาน (Graphic)']];
     S.people.forEach(p=>team.push([p.name,p.position,p.color,S.tasks.filter(t=>t.creative===p.id).length,S.tasks.filter(t=>t.graphic===p.id).length]));
-    const chs=[['กลุ่ม','ชื่อช่องทาง','สี','จำนวนงาน']];
-    S.channels.forEach(c=>chs.push([c.group,c.name,c.color,S.tasks.filter(t=>t.ch===c.id).length]));
+    const chKindLbl={online:'Online',offline:'Offline',kol:'KOL'};
+    const chs=[['ประเภท','ชื่อช่องทาง','สี','จำนวนงาน']];
+    S.channels.forEach(c=>chs.push([chKindLbl[c.kind]||'Online',c.name,c.color,S.tasks.filter(t=>t.ch===c.id).length]));
     const simple=(list,field,nameKey)=>{ const sc=list.some(x=>x.scope); const r=[sc?['ชื่อ','Online/Offline','สี','จำนวนงาน']:['ชื่อ','สี','จำนวนงาน']];
       list.forEach(x=>{ const c=S.tasks.filter(t=>t[field]===x.id).length; r.push(sc?[x[nameKey||'name'],this.scopeLabel(x.scope||'both'),x.color,c]:[x[nameKey||'name'],x.color,c]); }); return r; };
     const brRows=[['สาขา','สี','จำนวนงาน','ชิ้นรวม']]; S.branches.forEach(b=>brRows.push([b.name,b.color,S.tasks.filter(t=>Number((t.branchQty||{})[b.id])>0).length,S.tasks.reduce((s,t)=>s+(Number((t.branchQty||{})[b.id])||0),0)]));
@@ -1042,15 +1046,22 @@ class Component extends DCLogic {
     S.log.forEach(l=>{ const who=(S.people.find(p=>p.id===l.actorId)||{}).name||'—';
       if((l.changes||[]).length) l.changes.forEach(c=>hist.push([l.ts,who,l.action,l.detail||'',c.f,c.from,c.to]));
       else hist.push([l.ts,who,l.action,l.detail||'','','','']); });
-    const sheets=[ this.sheetXml('งานทั้งหมด',tasks), this.sheetXml('ทีมงาน',team), this.sheetXml('สิทธิ์ตำแหน่ง',perms), this.sheetXml('ช่องทาง',chs),
-      this.sheetXml('ประเภทคอนเทนต์',simple(S.contentTypes,'ctype')), this.sheetXml('หัตถการ',simple(S.procedures,'proc')),
-      this.sheetXml('รูปแบบงาน',simple(S.formats,'format')), this.sheetXml('Size งาน',simple(S.sizes,'size')), this.sheetXml('สาขา',brRows),
-      this.sheetXml('สถานะ',simple(S.statuses,'status','label')), this.sheetXml('ประวัติการแก้ไข',hist) ].join('');
+    const named={
+      plan:['แผนงาน',tasks], table:['ปฏิทินคอนเทนต์',tasks], report:['สรุป',tasks],
+      channels:['ช่องทาง',chs],
+      content:['ประเภทคอนเทนต์',simple(S.contentTypes,'ctype')], procedure:['หัตถการ',simple(S.procedures,'proc')],
+      format:['รูปแบบงาน',simple(S.formats,'format')], size:['Size งาน',simple(S.sizes,'size')],
+      branch:['สาขา',brRows], status:['สถานะ',simple(S.statuses,'status','label')],
+      history:['ประวัติการแก้ไข',hist]
+    };
+    let sheets, fname;
+    if(S.view==='team'){ sheets=this.sheetXml('ทีมงาน',team)+this.sheetXml('สิทธิ์ตำแหน่ง',perms); fname='ทีมงาน'; }
+    else { const cur=named[S.view]||['ข้อมูล',tasks]; sheets=this.sheetXml(cur[0],cur[1]); fname=cur[0]; }
     const xml='<?xml version="1.0" encoding="UTF-8"?>\n<?mso-application progid="Excel.Sheet"?>\n<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">'
       +'<Styles><Style ss:ID="Default" ss:Name="Normal"><Alignment ss:Vertical="Top"/><Font ss:FontName="Tahoma" ss:Size="10"/></Style>'
       +'<Style ss:ID="h"><Font ss:FontName="Tahoma" ss:Size="10" ss:Bold="1" ss:Color="#FFFFFF"/><Interior ss:Color="#4F46E5" ss:Pattern="Solid"/></Style></Styles>'
       +sheets+'</Workbook>';
-    this.download('media-plan.xls', xml, 'application/vnd.ms-excel;charset=utf-8');
+    this.download(fname+'.xls', xml, 'application/vnd.ms-excel;charset=utf-8');
   }
   downloadAttach(item){ try { const [head,b64]=String(item.data).split(','); const mime=(head.match(/data:([^;]+)/)||[])[1]||'application/octet-stream';
       const bin=atob(b64); const arr=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
@@ -1192,8 +1203,10 @@ class Component extends DCLogic {
     const pchip=(on,kind)=>{ const c=kind==='del'?'#EF4444':(kind==='view'?'#0EA5E9':'#4F46E5'); return 'font-size:12px;width:30px;height:28px;border-radius:8px;cursor:pointer;'+(on?'border:1px solid '+c+'55;background:'+c+'18;color:'+c+';':'border:1px solid #E2E8F0;background:#fff;color:#CBD5E1;'); };
     const permRows=positionsUsed.map(pos=>({ pos, onDelete:()=>this.askDeletePosition(pos), cells: areaDefs.map(([ak])=>{ const v=getP(pos,ak,'view'), e=getP(pos,ak,'edit'), d=getP(pos,ak,'del'); return { viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,ak,'view'), onEdit:()=>this.togglePerm(pos,ak,'edit'), onDel:()=>this.togglePerm(pos,ak,'del') }; }) }));
 
-    const groups=[]; const gi={};
-    S.channels.forEach(c=>{ if(gi[c.group]==null){ gi[c.group]=groups.length; groups.push({ name:c.group, channels:[] }); } groups[gi[c.group]].channels.push({ name:c.name, color:c.color, onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c) }); });
+    const chKinds=[['online','Online'],['offline','Offline'],['kol','KOL']];
+    const gmap={}; chKinds.forEach(([id,label])=>{ gmap[id]={ name:label, channels:[] }; });
+    S.channels.forEach(c=>{ const g=gmap[c.kind]||gmap['online']; g.channels.push({ name:c.name, color:c.color, onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c) }); });
+    const groups=chKinds.map(([id])=>gmap[id]).filter(g=>g.channels.length);
 
     const contentRows=S.contentTypes.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.ctype===c.id).length, onEdit:()=>this.openEditTag('contentType',c), onDelete:()=>this.askDeleteTag('contentType',c) }));
     const procedureRows=S.procedures.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.proc===c.id).length, onEdit:()=>this.openEditTag('procedure',c), onDelete:()=>this.askDeleteTag('procedure',c) }));
@@ -1305,7 +1318,7 @@ class Component extends DCLogic {
       channelOpts, formatOpts, contentOpts, procOpts, statusPick, palette, positionOpts:positionsUsed, groupOpts,
       onFTitle:e=>this.setF('title',e.target.value), onFChannel:e=>this.setF('ch',e.target.value), onFDate:e=>this.setF('date',e.target.value),
       onFFormat:e=>this.setF('format',e.target.value), onFCtype:e=>this.setF('ctype',e.target.value), onFProc:e=>this.setF('proc',e.target.value),
-      onFName:e=>this.setF('name',e.target.value), onFPosition:e=>this.setF('position',e.target.value), onFGroup:e=>this.setF('group',e.target.value),
+      onFName:e=>this.setF('name',e.target.value), onFPosition:e=>this.setF('position',e.target.value), onFGroup:e=>this.setF('group',e.target.value), onFKind:e=>this.setF('kind',e.target.value),
     };
   }
 }
