@@ -542,31 +542,37 @@
       <!-- ============ HISTORY VIEW ============ -->
       <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
         <div style="max-width:900px;">
-          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; overflow-x:auto;">
-            <div style="min-width:900px;">
-              <div style="display:grid; grid-template-columns:120px 120px 70px 1.1fr 130px 1.5fr; padding:12px 18px; background:#FAFBFC; border-bottom:1px solid #EEF2F6; font-size:11px; font-weight:700; color:#94A3B8; gap:10px;"><span>เวลา</span><span>ผู้ใช้งาน</span><span>การกระทำ</span><span>รายการ</span><span>ช่องที่แก้ไข</span><span>รายละเอียด (เก่า → ใหม่)</span></div>
-              <sc-for list="{{ historyRows }}" as="h" hint-placeholder-count="6">
-                <div style="display:grid; grid-template-columns:120px 120px 70px 1.1fr 130px 1.5fr; padding:11px 18px; border-bottom:1px solid #F1F5F9; align-items:start; gap:10px;">
-                  <span style="font-size:12px; color:#64748B;">{{ h.ts }}</span>
-                  <div style="display:flex; align-items:center; gap:7px;"><span style="width:20px; height:20px; border-radius:6px; background:{{ h.color }}; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ h.initials }}</span><span style="font-size:13px; font-weight:500;">{{ h.actor }}</span></div>
+          <div class="mp-frow" style="margin-bottom:16px;">
+            <div class="mp-fbox"><div class="mp-flabel">จากวันที่</div><input type="date" value="{{ hFrom }}" onChange="{{ onHFrom }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+            <div class="mp-fbox"><div class="mp-flabel">ถึงวันที่</div><input type="date" value="{{ hTo }}" onChange="{{ onHTo }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+            <div class="mp-fbox"><div class="mp-flabel">หน้า</div><select value="{{ hArea }}" onChange="{{ onHArea }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histAreaOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox"><div class="mp-flabel">การกระทำ</div><select value="{{ hAction }}" onChange="{{ onHAction }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histActionOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="justify-content:flex-end;"><div class="mp-flabel">&nbsp;</div><button onClick="{{ clearHistFilter }}" style="font-size:12px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:8px 12px; border-radius:9px; cursor:pointer; white-space:nowrap;">ล้างตัวกรอง</button></div>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <sc-for list="{{ historyRows }}" as="h" hint-placeholder-count="6">
+              <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; padding:14px 16px;">
+                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;">
                   <span style="{{ h.actionStyle }}">{{ h.action }}</span>
-                  <span style="font-size:13px; color:#334155; line-height:1.5;">{{ h.detail }}</span>
-                  <span style="font-size:12px; color:#475569; font-weight:600; line-height:1.5;">{{ h.fieldsText }}</span>
-                  <div style="display:flex; flex-direction:column; gap:4px;">
-                    <sc-for list="{{ h.changes }}" as="c" hint-placeholder-count="1">
-                      <div style="display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:12px; line-height:1.45;">
-                        <span style="color:#94A3B8; font-weight:600;">{{ c.field }}</span>
-                        <span style="color:#EF4444; text-decoration:line-through;">{{ c.from }}</span>
-                        <span style="color:#94A3B8;">→</span>
-                        <span style="color:#16A34A; font-weight:600;">{{ c.to }}</span>
-                      </div>
-                    </sc-for>
-                    <sc-if value="{{ h.noChanges }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#CBD5E1;">—</span></sc-if>
-                  </div>
+                  <span style="font-size:11px; font-weight:700; color:#4F46E5; background:#EEF2FF; padding:3px 10px; border-radius:99px;">{{ h.area }}</span>
+                  <div style="display:flex; align-items:center; gap:7px;"><span style="width:20px; height:20px; border-radius:6px; background:{{ h.color }}; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ h.initials }}</span><span style="font-size:12px; font-weight:600; color:#475569;">{{ h.actor }}</span></div>
+                  <span style="margin-left:auto; font-size:12px; color:#94A3B8; white-space:nowrap;">{{ h.ts }}</span>
                 </div>
-              </sc-for>
-              <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px; text-align:center; color:#94A3B8; font-size:13px;">ยังไม่มีประวัติการแก้ไข</div></sc-if>
-            </div>
+                <div style="font-size:14px; font-weight:600; color:#0F172A; margin-top:9px;">{{ h.detail }}</div>
+                <div style="display:flex; flex-direction:column; gap:4px; margin-top:9px;">
+                  <sc-for list="{{ h.changes }}" as="c" hint-placeholder-count="1">
+                    <div style="display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:12px; line-height:1.5;">
+                      <span style="color:#94A3B8; font-weight:600; min-width:96px;">{{ c.field }}</span>
+                      <span style="color:#EF4444; text-decoration:line-through;">{{ c.from }}</span>
+                      <span style="color:#94A3B8;">→</span>
+                      <span style="color:#16A34A; font-weight:600;">{{ c.to }}</span>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ h.noChanges }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#CBD5E1;">— ไม่มีรายละเอียดการเปลี่ยนแปลง</span></sc-if>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px; text-align:center; color:#94A3B8; font-size:13px; background:#fff; border:1px solid #E2E8F0; border-radius:14px;">ไม่มีประวัติตามตัวกรองนี้</div></sc-if>
           </div>
         </div>
       </sc-if>
@@ -690,6 +696,7 @@
               </div>
             </div>
           </sc-if>
+          <sc-if value="{{ taskErr }}" hint-placeholder-val=""><div style="padding:10px 22px 0; font-size:12px; font-weight:700; color:#EF4444;">{{ taskErr }}</div></sc-if>
           <div style="padding:16px 22px; border-top:1px solid #EEF2F6; display:flex; gap:10px; justify-content:space-between; align-items:center; flex-shrink:0;">
             <sc-if value="{{ canDeleteTask }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTaskFromForm }}" style="font-size:13px; font-weight:600; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:9px 14px; border-radius:9px; cursor:pointer;">ลบงานนี้</button></sc-if>
             <div style="flex:1;"></div>
@@ -889,7 +896,7 @@ class Component extends DCLogic {
 
   commit(patch, action, detail, changes){
     this.setState(s=>{
-      const log = action ? [{ id:'l'+Date.now()+Math.floor(Math.random()*999), ts:this.nowStamp(), actorId:this.state.actor, action, detail, changes:changes||[] }, ...s.log] : s.log;
+      const log = action ? [{ id:'l'+Date.now()+Math.floor(Math.random()*999), ts:this.nowStamp(), iso:new Date().toISOString(), actorId:this.state.actor, action, detail, changes:changes||[] }, ...s.log] : s.log;
       return { ...patch, log };
     }, ()=>this.persist());
   }
@@ -948,16 +955,18 @@ class Component extends DCLogic {
     const S=this.state, f=S.form, m=S.modal; if(!m) return;
     const chName=id=>(S.channels.find(c=>c.id===id)||{}).name;
     if (m.kind==='task'){
-      if(!f.title || !f.title.trim()) return;
+      if(!f.title || !f.title.trim()){ this.setState({ form:{ ...f, _err:'กรุณาระบุชื่องาน' } }); return; }
+      if((f.jobType==='central'||f.jobType==='kol') && !f.delivery){ this.setState({ form:{ ...f, _err:'งานกลาง / KOL ต้องระบุวันส่งมอบงาน' } }); return; }
+      if(f.jobType==='central' && this.branchTotal(f.branchQty)===0){ this.setState({ form:{ ...f, _err:'งานกลาง ต้องระบุสาขาและจำนวนชิ้น (อย่างน้อย 1 สาขา)' } }); return; }
       const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:f.proc||'', imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date };
       if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
-        this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')'); }
+        this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec)); }
       else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
         this.commit({ tasks, modal:null, form:{} }, 'แก้ไข', 'งาน "'+rec.title+'"', diffs); }
     } else if (m.kind==='person'){
       if(!f.name || !f.name.trim()) return;
       if (m.mode==='add'){ const p={ id:'p'+Date.now(), name:f.name.trim(), position:f.position||'', color:f.color, pass:f.pass||'1234' };
-        this.commit({ people:[...S.people,p], modal:null, form:{} }, 'เพิ่ม', 'พนักงาน "'+p.name+'" ('+p.position+')'); }
+        this.commit({ people:[...S.people,p], modal:null, form:{} }, 'เพิ่ม', 'พนักงาน "'+p.name+'" ('+p.position+')', [{f:'ชื่อ',from:'—',to:p.name},{f:'ตำแหน่ง',from:'—',to:p.position||'—'}]); }
       else { const old=S.people.find(p=>p.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.position||'')!==(f.position||'')) d.push({ f:'ตำแหน่ง', from:old.position||'—', to:f.position||'—' }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' }); if((old.pass||'')!==(f.pass||'')) d.push({ f:'รหัสผ่าน', from:'••••', to:'••••' });
         const people=S.people.map(p=>p.id===f.id?{ ...p, name:f.name.trim(), position:f.position||'', color:f.color, pass:f.pass||'1234' }:p);
         this.commit({ people, modal:null, form:{} }, 'แก้ไข', 'พนักงาน "'+f.name.trim()+'"', d); }
@@ -965,14 +974,14 @@ class Component extends DCLogic {
       if(!f.name || !f.name.trim()) return;
       const kindLbl={online:'Online',offline:'Offline',kol:'KOL'};
       if (m.mode==='add'){ const c={ id:'c'+Date.now(), name:f.name.trim(), group:f.group||'อื่นๆ', kind:f.kind||'online', color:f.color };
-        this.commit({ channels:[...S.channels,c], modal:null, form:{} }, 'เพิ่ม', 'ช่องทาง "'+c.name+'"'); }
+        this.commit({ channels:[...S.channels,c], modal:null, form:{} }, 'เพิ่ม', 'ช่องทาง "'+c.name+'"', [{f:'ชื่อ',from:'—',to:c.name},{f:'ประเภท',from:'—',to:kindLbl[c.kind]||'Online'}]); }
       else { const old=S.channels.find(c=>c.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.kind||'online')!==(f.kind||'online')) d.push({ f:'ประเภท', from:kindLbl[old.kind||'online'], to:kindLbl[f.kind||'online'] }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' });
         const channels=S.channels.map(c=>c.id===f.id?{ ...c, name:f.name.trim(), group:f.group||'อื่นๆ', kind:f.kind||'online', color:f.color }:c);
         this.commit({ channels, modal:null, form:{} }, 'แก้ไข', 'ช่องทาง "'+f.name.trim()+'"', d); }
     } else if (m.kind==='tag'){
       if(!f.name || !f.name.trim()) return;
       if (m.entity==='status'){ const list=S.statuses;
-        if (m.mode==='add'){ const it={ id:'st'+Date.now(), label:f.name.trim(), color:f.color }; this.commit({ statuses:[...list,it], modal:null, form:{} }, 'เพิ่ม', 'สถานะ "'+it.label+'"'); }
+        if (m.mode==='add'){ const it={ id:'st'+Date.now(), label:f.name.trim(), color:f.color }; this.commit({ statuses:[...list,it], modal:null, form:{} }, 'เพิ่ม', 'สถานะ "'+it.label+'"', [{f:'ชื่อ',from:'—',to:it.label}]); }
         else { const old=list.find(x=>x.id===f.id)||{}; const d=[]; if((old.label||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.label||'—', to:f.name.trim() }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' }); const nl=list.map(x=>x.id===f.id?{ ...x, label:f.name.trim(), color:f.color }:x); this.commit({ statuses:nl, modal:null, form:{} }, 'แก้ไข', 'สถานะ "'+f.name.trim()+'"', d); }
         return;
       }
@@ -983,7 +992,7 @@ class Component extends DCLogic {
       const key = keyMap[m.entity]; const lbl = lblMap[m.entity];
       const list = S[key];
       if (m.mode==='add'){ const it={ id:pfxMap[m.entity]+Date.now(), name:f.name.trim(), color:f.color }; if(hasScope) it.scope=f.scope||'both';
-        this.commit({ [key]:[...list,it], modal:null, form:{} }, 'เพิ่ม', lbl+' "'+it.name+'"'); }
+        this.commit({ [key]:[...list,it], modal:null, form:{} }, 'เพิ่ม', lbl+' "'+it.name+'"', [{f:'ชื่อ',from:'—',to:it.name}].concat(hasScope?[{f:'Online/Offline',from:'—',to:this.scopeLabel(it.scope||'both')}]:[])); }
       else { const old=list.find(x=>x.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' }); if(hasScope&&(old.scope||'both')!==(f.scope||'both')) d.push({ f:'Online/Offline', from:this.scopeLabel(old.scope||'both'), to:this.scopeLabel(f.scope||'both') });
         const nl=list.map(x=>x.id===f.id?Object.assign({ ...x, name:f.name.trim(), color:f.color }, hasScope?{ scope:f.scope||'both' }:{}):x);
         this.commit({ [key]:nl, modal:null, form:{} }, 'แก้ไข', lbl+' "'+f.name.trim()+'"', d); }
@@ -1217,11 +1226,21 @@ class Component extends DCLogic {
 
     const actClr={ 'เพิ่ม':'#22C55E','แก้ไข':'#F97316','ลบ':'#EF4444' };
     const clip=v=>{ const s=String(v==null?'':v); return s.length>60?s.slice(0,60)+'…':s; };
-    const historyRows=S.log.map(l=>{ const a=pMap[l.actorId]||{name:'—',color:'#94A3B8'};
+    const areaOf=d=>(((d||'').split('"')[0])||'').trim()||'อื่นๆ';
+    const hArea=S.hArea||'all', hAction=S.hAction||'all', hFrom=S.hFrom||'', hTo=S.hTo||'';
+    const logFiltered=S.log.filter(l=>{
+      if(hAction!=='all' && l.action!==hAction) return false;
+      if(hArea!=='all' && areaOf(l.detail)!==hArea) return false;
+      if(hFrom||hTo){ if(!l.iso) return false; const d=l.iso.slice(0,10); if(hFrom&&d<hFrom) return false; if(hTo&&d>hTo) return false; }
+      return true;
+    });
+    const histAreaOpts=[{value:'all',label:'ทุกหน้า'}, ...[...new Set(S.log.map(l=>areaOf(l.detail)))].map(a=>({value:a,label:a}))];
+    const histActionOpts=[{value:'all',label:'ทุกการกระทำ'},{value:'เพิ่ม',label:'เพิ่ม'},{value:'แก้ไข',label:'แก้ไข'},{value:'ลบ',label:'ลบ'}];
+    const historyRows=logFiltered.map(l=>{ const a=pMap[l.actorId]||{name:'—',color:'#94A3B8'};
       const ch=(l.changes||[]).map(c=>({ field:c.f, from:clip(c.from), to:clip(c.to) }));
-      return { ts:l.ts, actor:a.name, color:a.color, initials:init(a.name), action:l.action, detail:l.detail,
-        fieldsText:ch.length?ch.map(c=>c.field).join(', '):'—', changes:ch, noChanges:ch.length===0,
-        actionStyle:'font-size:12px;font-weight:700;color:'+(actClr[l.action]||'#64748B')+';' }; });
+      return { ts:l.ts, area:areaOf(l.detail), actor:a.name, color:a.color, initials:init(a.name), action:l.action, detail:l.detail,
+        changes:ch, noChanges:ch.length===0,
+        actionStyle:'font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap;color:'+(actClr[l.action]||'#64748B')+';background:'+(actClr[l.action]||'#64748B')+'18;' }; });
 
     const navDef=[['plan','📋','แผนงาน'],['table','🗓','ปฏิทิน'],['report','📊','สรุป'],['team','👥','ทีมงาน'],['channels','📡','ช่องทาง'],['content','🏷','ประเภทคอนเทนต์'],['procedure','💉','หัตถการ'],['format','🎬','รูปแบบงาน'],['size','📐','Size งาน'],['branch','🏢','สาขา'],['status','⚑','สถานะ'],['history','🕘','ประวัติ']];
     const navBadge={ plan:S.tasks.length, table:null, report:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length };
@@ -1240,13 +1259,13 @@ class Component extends DCLogic {
     const personPick=[{ value:'', label:'— ไม่ระบุ —' }, ...S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position }))];
     const formatOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.formats,f.format).map(x=>({ value:x.id, label:x.name }))];
     const sizeOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.sizes,f.size).map(x=>({ value:x.id, label:x.name }))];
-    const jobTypeOpts=this.jobTypes.map(j=>({ value:j.id, label:j.label }));
+    const jobTypeOpts=(fMed==='offline')?[{ value:'central', label:'งานกลาง' }]:this.jobTypes.map(j=>({ value:j.id, label:j.label }));
     const contentOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.contentTypes,f.ctype).map(c=>({ value:c.id, label:c.name }))];
     const procOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.procedures,f.proc).map(c=>({ value:c.id, label:c.name }))];
     const statusPick=S.statuses.map(s=>({ label:s.label, onClick:()=>this.setF('status',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid '+(f.status===s.id?s.color+';background:'+s.color+'1A;color:'+s.color:'#E2E8F0;background:#fff;color:#64748B') }));
     const palette=this.PAL.map(hex=>({ onClick:()=>this.setF('color',hex), style:'width:30px;height:30px;border-radius:9px;cursor:pointer;background:'+hex+';border:3px solid '+(f.color===hex?'#0F172A':'transparent')+';box-shadow:0 0 0 1px #E2E8F0;' }));
     const groupOpts=[...new Set(S.channels.map(c=>c.group))];
-    const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setF('medium',x.id),
+    const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setState(s=>{ const form={ ...s.form, medium:x.id, _err:'' }; if(x.id==='offline' && form.jobType!=='central') form.jobType='central'; return { form }; }),
       style:'flex:1;font-size:13px;font-weight:700;padding:9px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(fMed===x.id?(x.id==='online'?'#0EA5E9;background:#0EA5E918;color:#0369A1':'#F59E0B;background:#F59E0B18;color:#B45309'):'#E2E8F0;background:#fff;color:#64748B') }));
     const setQty=(id,v)=>this.setState(s=>{ const q=Object.assign({}, s.form.branchQty||{}); const n=Math.max(0, Math.min(999, Number(v)||0)); if(n>0) q[id]=n; else delete q[id]; return { form:{ ...s.form, branchQty:q } }; });
     const fq=f.branchQty||{};
@@ -1260,8 +1279,9 @@ class Component extends DCLogic {
     const branchSummary=this.branchText(fq, S.branches);
     const branchTotalLabel=this.branchTotal(fq)+' ชิ้น';
     const isOffline=fMed==='offline';
-    const deliveryHint=isOffline?(f.delivery?'':'งาน Offline ควรระบุวันส่งมอบงาน'):'งาน Online ไม่ระบุก็ได้';
-    const showBranches=!!f.delivery||isOffline;
+    const needDelivery=(f.jobType==='central'||f.jobType==='kol');
+    const deliveryHint=needDelivery?(f.delivery?'':'งานกลาง / KOL ต้องระบุวันส่งมอบงาน'):'ไม่บังคับสำหรับงานนี้';
+    const showBranches=(f.jobType==='central');
     const tagScopePick=(m&&m.kind==='tag'&&m.entity!=='branch'&&m.entity!=='status')?[['online','Online'],['offline','Offline'],['both','ทั้งสอง']].map(([k,l])=>({ label:l, onClick:()=>this.setF('scope',k),
       style:'flex:1;font-size:12px;font-weight:700;padding:8px 10px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(((f.scope||'both')===k)?'#4F46E5;background:#EEF2FF;color:#4F46E5':'#E2E8F0;background:#fff;color:#64748B') })):[];
     const showTagScope=tagScopePick.length>0;
@@ -1283,6 +1303,7 @@ class Component extends DCLogic {
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabCaption:formTab==='caption', tabAW:formTab==='aw',
+      taskErr:(m&&m.kind==='task')?(f._err||''):'',
       onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
       onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFStart:e=>this.setF('start',e.target.value), durationLabel,
       onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setF('jobType',e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
@@ -1308,7 +1329,11 @@ class Component extends DCLogic {
       reportSections, reportTotal:rep.length,
       teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, openAddChannel:()=>this.openAddChannel(),
       contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
-      historyRows, historyEmpty:S.log.length===0,
+      historyRows, historyEmpty:logFiltered.length===0,
+      histAreaOpts, histActionOpts, hArea, hAction, hFrom, hTo,
+      onHArea:e=>this.setState({hArea:e.target.value}), onHAction:e=>this.setState({hAction:e.target.value}),
+      onHFrom:e=>this.setState({hFrom:e.target.value}), onHTo:e=>this.setState({hTo:e.target.value}),
+      clearHistFilter:()=>this.setState({hArea:'all',hAction:'all',hFrom:'',hTo:''}),
       modalOpen:!!m, modalTitle, closeModal:()=>this.closeModal(), stop:e=>e.stopPropagation(),
       isConfirm:!!m&&m.kind==='confirm', confirmMsg:m&&m.msg, confirmYes:()=>{ if(m&&m.onYes)m.onYes(); },
       isTaskForm:!!m&&m.kind==='task', isPersonForm:!!m&&m.kind==='person', isChannelForm:!!m&&m.kind==='channel', isTagForm:!!m&&m.kind==='tag',
