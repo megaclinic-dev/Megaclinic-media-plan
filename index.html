@@ -267,7 +267,7 @@
             <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox"><div class="mp-flabel">ช่องทาง</div>
               <select value="{{ fChannel }}" onChange="{{ onChannelSel }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
-                <sc-for list="{{ channelSelOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+                <option value="all">ทุกช่องทาง</option><sc-for list="{{ chanSelGroups }}" as="g" hint-placeholder-count="3"><optgroup label="{{ g.label }}"><sc-for list="{{ g.opts }}" as="op" hint-placeholder-count="3"><option value="{{ op.value }}">{{ op.label }}</option></sc-for></optgroup></sc-for>
               </select></div>
             <div class="mp-fbox"><div class="mp-flabel">คน</div>
               <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
@@ -553,7 +553,7 @@
             <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">ถึงวันที่</div><input type="date" value="{{ hTo }}" onChange="{{ onHTo }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">พนักงาน</div><select value="{{ hPerson }}" onChange="{{ onHPerson }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histPersonOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
             <div class="mp-fbox" style="width:140px;"><div class="mp-flabel">Online / Offline</div><select value="{{ hMedium }}" onChange="{{ onHMedium }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histMediumOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
-            <div class="mp-fbox" style="width:170px;"><div class="mp-flabel">ช่องทาง</div><select value="{{ hChannel }}" onChange="{{ onHChannel }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histChannelOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="width:170px;"><div class="mp-flabel">ช่องทาง</div><select value="{{ hChannel }}" onChange="{{ onHChannel }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><option value="all">ทุกช่องทาง</option><sc-for list="{{ chanSelGroups }}" as="g" hint-placeholder-count="3"><optgroup label="{{ g.label }}"><sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></optgroup></sc-for></select></div>
             <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">หน้า</div><select value="{{ hArea }}" onChange="{{ onHArea }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histAreaOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
             <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">การกระทำ</div><select value="{{ hAction }}" onChange="{{ onHAction }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histActionOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
             <div class="mp-fbox" style="width:220px;"><div class="mp-flabel">ค้นหา</div><input value="{{ hSearch }}" onChange="{{ onHSearch }}" placeholder="พิมพ์คำค้น เช่น ชื่องาน / ค่าที่แก้" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
@@ -977,8 +977,6 @@ class Component extends DCLogic {
     const chName=id=>id==='other'?'อื่นๆ':(S.channels.find(c=>c.id===id)||{}).name;
     if (m.kind==='task'){
       if(!f.title || !f.title.trim()){ this.setState({ form:{ ...f, _err:'กรุณาระบุชื่องาน' } }); return; }
-      if((f.jobType==='central'||f.jobType==='kol') && !f.delivery){ this.setState({ form:{ ...f, _err:'งานกลาง / KOL ต้องระบุวันส่งมอบงาน' } }); return; }
-      if(f.jobType==='central' && this.branchTotal(f.branchQty)===0){ this.setState({ form:{ ...f, _err:'งานกลาง ต้องระบุสาขาและจำนวนชิ้น (อย่างน้อย 1 สาขา)' } }); return; }
       const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:f.proc||'', imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date };
       if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
         this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec), { medium:rec.medium, ch:rec.ch }); }
@@ -1174,7 +1172,11 @@ class Component extends DCLogic {
         onClick:()=>this.setState({ fPerson:S.fPerson===w.id?'all':w.id }) }; });
 
     const chipBtn=active=>'display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;font-size:12px;font-weight:600;padding:6px 11px;border-radius:99px;cursor:pointer;'+(active?'background:#0F172A;color:#fff;border:1px solid #0F172A;':'background:#fff;color:#475569;border:1px solid #E2E8F0;');
-    const channelChips=[{ id:'all', name:'ทุกช่องทาง', color:'#94A3B8' }, ...S.channels].map(c=>({ label:c.name, color:c.color, style:chipBtn(S.fChannel===c.id), onClick:()=> c.id==='all'?this.setState({fChannel:'all'}):this.setChannel(c.id) }));
+    const CH_CAT=[['online','online','Online · ช่องทางต่างๆ'],['online','central','Online · งานกลาง'],['online','kol','Online · KOL'],['offline','central','Offline · งานกลาง']];
+    const chCatIdx=c=>{ const k=(c.kind==='offline')?'offline':'online'; let j=c.jobcat||'online'; if(k==='offline') j='central'; const i=CH_CAT.findIndex(x=>x[0]===k&&x[1]===j); return i<0?99:i; };
+    const channelsSorted=S.channels.slice().sort((a,b)=>chCatIdx(a)-chCatIdx(b));
+    const chanSelGroups=CH_CAT.map((cat,i)=>({ label:cat[2], opts:channelsSorted.filter(c=>chCatIdx(c)===i).map(c=>({ value:c.id, label:c.name })) })).filter(g=>g.opts.length);
+    const channelChips=[{ id:'all', name:'ทุกช่องทาง', color:'#94A3B8' }, ...channelsSorted].map(c=>({ label:c.name, color:c.color, style:chipBtn(S.fChannel===c.id), onClick:()=> c.id==='all'?this.setState({fChannel:'all'}):this.setChannel(c.id) }));
     const statusChips=[{ id:'all', label:'ทุกสถานะ' }, ...S.statuses].map(s=>({ label:s.label, style:chipBtn(S.fStatus===s.id), onClick:()=> s.id==='all'?this.setState({fStatus:'all'}):this.setStatus(s.id) }));
     const mediumChips=[{ id:'all', label:'Online + Offline' }, ...this.mediums].map(x=>({ label:x.label, style:chipBtn(S.fMedium===x.id), onClick:()=>this.setState({ fMedium:S.fMedium===x.id?'all':x.id }) }));
     const jobChips=[{ id:'all', label:'ทุกประเภทงาน' }, ...this.jobTypes].map(j=>({ label:j.label, style:chipBtn(S.fJob===j.id), onClick:()=> j.id==='all'?this.setState({fJob:'all'}):this.setJob(j.id) }));
@@ -1228,7 +1230,7 @@ class Component extends DCLogic {
       { title:'ตามประเภทงาน', items:withPct(this.jobTypes.map(j=>({ name:j.label, color:j.id==='online'?'#3B82F6':(j.id==='central'?'#8B5CF6':'#EC4899'), count:rep.filter(t=>t.jobType===j.id).length }))) },
       { title:'ตามประเภทคอนเทนต์', items:bd(S.contentTypes,'ctype',true) },
       { title:'ตามหัตถการ', items:bd(S.procedures,'proc',true) },
-      { title:'ตามช่องทาง', items:withPct([...S.channels.map(x=>({ name:x.name, color:x.color, count:rep.filter(t=>t.ch===x.id).length })), { name:'อื่นๆ', color:'#94A3B8', count:rep.filter(t=>!S.channels.find(c=>c.id===t.ch)).length }]) },
+      { title:'ตามช่องทาง', items:withPct([...channelsSorted.map(x=>({ name:(CH_CAT[chCatIdx(x)]?CH_CAT[chCatIdx(x)][2]+' · ':'')+x.name, color:x.color, count:rep.filter(t=>t.ch===x.id).length })), { name:'อื่นๆ', color:'#94A3B8', count:rep.filter(t=>!S.channels.find(c=>c.id===t.ch)).length }]) },
       { title:'ตามสถานะ', items:withPct(S.statuses.map(s=>({ name:s.label, color:s.color, count:rep.filter(t=>t.status===s.id).length }))) },
       { title:'ตามคน (Creative/Graphic)', items:withPct(S.people.map(p=>({ name:p.name, color:p.color, count:rep.filter(t=>t.creative===p.id||t.graphic===p.id).length }))) },
     ];
@@ -1368,7 +1370,7 @@ class Component extends DCLogic {
       modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
       rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
-      statCards, channelChips, statusChips, peopleOpts, channelSelOpts, fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
+      statCards, channelChips, statusChips, peopleOpts, channelSelOpts, chanSelGroups, fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
       reportSections, reportTotal:rep.length,
