@@ -165,6 +165,7 @@
           </div>
 
           <div class="mp-frow">
+            <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox"><div class="mp-flabel">คน</div>
               <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;">
                 <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
@@ -263,6 +264,7 @@
             </sc-if>
           </div>
           <div class="mp-frow">
+            <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox"><div class="mp-flabel">ช่องทาง</div>
               <select value="{{ fChannel }}" onChange="{{ onChannelSel }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
                 <sc-for list="{{ channelSelOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
@@ -355,7 +357,11 @@
       <!-- ============ TEAM VIEW ============ -->
       <sc-if value="{{ isTeam }}" hint-placeholder-val="{{ false }}">
         <div style="max-width:900px;">
-          <sc-if value="{{ canTeamEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ openAddPerson }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มพนักงาน</button></div></sc-if>
+          <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
+            <input value="{{ fTeamSearch }}" onChange="{{ onFTeamSearch }}" placeholder="ค้นหาชื่อ / ตำแหน่ง" style="flex:1; min-width:200px; max-width:320px; font-size:13px; padding:9px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;">
+            <div style="flex:1;"></div>
+            <sc-if value="{{ canTeamEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ openAddPerson }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">+ เพิ่มพนักงาน</button></sc-if>
+          </div>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
             <div style="display:grid; grid-template-columns:1fr 1fr 120px; padding:12px 18px; background:#FAFBFC; border-bottom:1px solid #EEF2F6; font-size:11px; font-weight:700; color:#94A3B8;"><span>ชื่อ</span><span>ตำแหน่ง</span><span style="text-align:right;">จัดการ</span></div>
             <sc-for list="{{ teamRows }}" as="p" hint-placeholder-count="6">
@@ -541,38 +547,43 @@
 
       <!-- ============ HISTORY VIEW ============ -->
       <sc-if value="{{ isHistory }}" hint-placeholder-val="{{ false }}">
-        <div style="max-width:900px;">
+        <div>
           <div class="mp-frow" style="margin-bottom:16px;">
-            <div class="mp-fbox"><div class="mp-flabel">จากวันที่</div><input type="date" value="{{ hFrom }}" onChange="{{ onHFrom }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"></div>
-            <div class="mp-fbox"><div class="mp-flabel">ถึงวันที่</div><input type="date" value="{{ hTo }}" onChange="{{ onHTo }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"></div>
-            <div class="mp-fbox"><div class="mp-flabel">หน้า</div><select value="{{ hArea }}" onChange="{{ onHArea }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histAreaOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
-            <div class="mp-fbox"><div class="mp-flabel">การกระทำ</div><select value="{{ hAction }}" onChange="{{ onHAction }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histActionOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">จากวันที่</div><input type="date" value="{{ hFrom }}" onChange="{{ onHFrom }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
+            <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">ถึงวันที่</div><input type="date" value="{{ hTo }}" onChange="{{ onHTo }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
+            <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">พนักงาน</div><select value="{{ hPerson }}" onChange="{{ onHPerson }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histPersonOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="width:140px;"><div class="mp-flabel">Online / Offline</div><select value="{{ hMedium }}" onChange="{{ onHMedium }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histMediumOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="width:170px;"><div class="mp-flabel">ช่องทาง</div><select value="{{ hChannel }}" onChange="{{ onHChannel }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histChannelOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">หน้า</div><select value="{{ hArea }}" onChange="{{ onHArea }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histAreaOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="width:150px;"><div class="mp-flabel">การกระทำ</div><select value="{{ hAction }}" onChange="{{ onHAction }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ histActionOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            <div class="mp-fbox" style="width:220px;"><div class="mp-flabel">ค้นหา</div><input value="{{ hSearch }}" onChange="{{ onHSearch }}" placeholder="พิมพ์คำค้น เช่น ชื่องาน / ค่าที่แก้" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox" style="justify-content:flex-end;"><div class="mp-flabel">&nbsp;</div><button onClick="{{ clearHistFilter }}" style="font-size:12px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:8px 12px; border-radius:9px; cursor:pointer; white-space:nowrap;">ล้างตัวกรอง</button></div>
           </div>
-          <div style="display:flex; flex-direction:column; gap:10px;">
-            <sc-for list="{{ historyRows }}" as="h" hint-placeholder-count="6">
-              <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; padding:14px 16px;">
-                <div style="display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px;">
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; overflow-x:auto;">
+            <div style="min-width:720px;">
+              <div style="display:grid; grid-template-columns:120px 130px 78px 96px 1fr; gap:10px; padding:12px 18px; background:#FAFBFC; border-bottom:1px solid #EEF2F6; font-size:11px; font-weight:700; color:#94A3B8;"><span>เวลา</span><span>พนักงาน</span><span>การกระทำ</span><span>หน้า</span><span>รายการ · รายละเอียด (เก่า → ใหม่)</span></div>
+              <sc-for list="{{ historyRows }}" as="h" hint-placeholder-count="6">
+                <div style="display:grid; grid-template-columns:120px 130px 78px 96px 1fr; gap:10px; padding:12px 18px; border-bottom:1px solid #F1F5F9; align-items:start;">
+                  <span style="font-size:12px; color:#64748B;">{{ h.ts }}</span>
+                  <div style="display:flex; align-items:center; gap:7px; min-width:0;"><span style="width:20px; height:20px; border-radius:6px; background:{{ h.color }}; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ h.initials }}</span><span style="font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ h.actor }}</span></div>
                   <span style="{{ h.actionStyle }}">{{ h.action }}</span>
-                  <span style="font-size:11px; font-weight:700; color:#4F46E5; background:#EEF2FF; padding:3px 10px; border-radius:99px;">{{ h.area }}</span>
-                  <div style="display:flex; align-items:center; gap:7px;"><span style="width:20px; height:20px; border-radius:6px; background:{{ h.color }}; color:#fff; font-size:8px; font-weight:700; display:flex; align-items:center; justify-content:center;">{{ h.initials }}</span><span style="font-size:12px; font-weight:600; color:#475569;">{{ h.actor }}</span></div>
-                  <span style="margin-left:auto; font-size:12px; color:#94A3B8; white-space:nowrap;">{{ h.ts }}</span>
+                  <span style="font-size:11px; font-weight:700; color:#4F46E5;">{{ h.area }}</span>
+                  <div style="min-width:0;">
+                    <div style="font-size:13px; font-weight:600; color:#0F172A; margin-bottom:4px;">{{ h.detail }}</div>
+                    <sc-for list="{{ h.changes }}" as="c" hint-placeholder-count="1">
+                      <div style="display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:12px; line-height:1.5;">
+                        <span style="color:#94A3B8; font-weight:600; min-width:90px;">{{ c.field }}</span>
+                        <span style="color:#EF4444; text-decoration:line-through;">{{ c.from }}</span>
+                        <span style="color:#94A3B8;">→</span>
+                        <span style="color:#16A34A; font-weight:600;">{{ c.to }}</span>
+                      </div>
+                    </sc-for>
+                    <sc-if value="{{ h.noChanges }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#CBD5E1;">—</span></sc-if>
+                  </div>
                 </div>
-                <div style="font-size:14px; font-weight:600; color:#0F172A; margin-top:9px;">{{ h.detail }}</div>
-                <div style="display:flex; flex-direction:column; gap:4px; margin-top:9px;">
-                  <sc-for list="{{ h.changes }}" as="c" hint-placeholder-count="1">
-                    <div style="display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:12px; line-height:1.5;">
-                      <span style="color:#94A3B8; font-weight:600; min-width:96px;">{{ c.field }}</span>
-                      <span style="color:#EF4444; text-decoration:line-through;">{{ c.from }}</span>
-                      <span style="color:#94A3B8;">→</span>
-                      <span style="color:#16A34A; font-weight:600;">{{ c.to }}</span>
-                    </div>
-                  </sc-for>
-                  <sc-if value="{{ h.noChanges }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#CBD5E1;">— ไม่มีรายละเอียดการเปลี่ยนแปลง</span></sc-if>
-                </div>
-              </div>
-            </sc-for>
-            <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px; text-align:center; color:#94A3B8; font-size:13px; background:#fff; border:1px solid #E2E8F0; border-radius:14px;">ไม่มีประวัติตามตัวกรองนี้</div></sc-if>
+              </sc-for>
+              <sc-if value="{{ historyEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px; text-align:center; color:#94A3B8; font-size:13px;">ไม่มีประวัติตามตัวกรองนี้</div></sc-if>
+            </div>
           </div>
         </div>
       </sc-if>
@@ -894,9 +905,9 @@ class Component extends DCLogic {
   componentDidMount(){ this._onR=()=>this.forceUpdate(); window.addEventListener('resize',this._onR); this._initSync(); }
   componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); }
 
-  commit(patch, action, detail, changes){
+  commit(patch, action, detail, changes, meta){
     this.setState(s=>{
-      const log = action ? [{ id:'l'+Date.now()+Math.floor(Math.random()*999), ts:this.nowStamp(), iso:new Date().toISOString(), actorId:this.state.actor, action, detail, changes:changes||[] }, ...s.log] : s.log;
+      const log = action ? [{ id:'l'+Date.now()+Math.floor(Math.random()*999), ts:this.nowStamp(), iso:new Date().toISOString(), actorId:this.state.actor, action, detail, changes:changes||[], meta:meta||null }, ...s.log] : s.log;
       return { ...patch, log };
     }, ()=>this.persist());
   }
@@ -966,9 +977,9 @@ class Component extends DCLogic {
       if(f.jobType==='central' && this.branchTotal(f.branchQty)===0){ this.setState({ form:{ ...f, _err:'งานกลาง ต้องระบุสาขาและจำนวนชิ้น (อย่างน้อย 1 สาขา)' } }); return; }
       const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:f.proc||'', imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date };
       if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
-        this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec)); }
+        this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec), { medium:rec.medium, ch:rec.ch }); }
       else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
-        this.commit({ tasks, modal:null, form:{} }, 'แก้ไข', 'งาน "'+rec.title+'"', diffs); }
+        this.commit({ tasks, modal:null, form:{} }, 'แก้ไข', 'งาน "'+rec.title+'"', diffs, { medium:rec.medium, ch:rec.ch }); }
     } else if (m.kind==='person'){
       if(!f.name || !f.name.trim()) return;
       if (m.mode==='add'){ const p={ id:'p'+Date.now(), name:f.name.trim(), position:f.position||'', color:f.color, pass:f.pass||'1234' };
@@ -1006,7 +1017,7 @@ class Component extends DCLogic {
   }
 
   askDeleteTask(t){ const S=this.state; const cn=(S.channels.find(c=>c.id===t.ch)||{}).name;
-    this.setState({ modal:{ kind:'confirm', msg:'ลบงาน "'+t.title+'" ('+cn+') ใช่หรือไม่?', onYes:()=>this.commit({ tasks:S.tasks.filter(x=>x.id!==t.id), modal:null }, 'ลบ', 'งาน "'+t.title+'"') } }); }
+    this.setState({ modal:{ kind:'confirm', msg:'ลบงาน "'+t.title+'" ('+cn+') ใช่หรือไม่?', onYes:()=>this.commit({ tasks:S.tasks.filter(x=>x.id!==t.id), modal:null }, 'ลบ', 'งาน "'+t.title+'"', [], { medium:t.medium, ch:t.ch }) } }); }
   askDeletePerson(p){ const S=this.state; const cnt=S.tasks.filter(t=>t.creative===p.id||t.graphic===p.id).length;
     this.setState({ modal:{ kind:'confirm', msg:'ลบพนักงาน "'+p.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นที่เกี่ยวข้องจะถูกปลดชื่อออก':''), onYes:()=>this.commit({ people:S.people.filter(x=>x.id!==p.id), tasks:S.tasks.map(t=>({ ...t, creative:t.creative===p.id?'':t.creative, graphic:t.graphic===p.id?'':t.graphic })), modal:null }, 'ลบ', 'พนักงาน "'+p.name+'"') } }); }
   askDeleteChannel(c){ const S=this.state; const cnt=S.tasks.filter(t=>t.ch===c.id).length;
@@ -1112,6 +1123,8 @@ class Component extends DCLogic {
     const fs=t=>S.fStatus==='all'||t.status===S.fStatus;
     const fj=t=>S.fJob==='all'||t.jobType===S.fJob;
     const fm=t=>S.fMedium==='all'||(t.medium||'online')===S.fMedium;
+    const fSearchQ=(S.fSearch||'').trim().toLowerCase();
+    const ftxt=t=>!fSearchQ||(t.title||'').toLowerCase().indexOf(fSearchQ)>=0;
 
     const days=this.buildDays(); const daySet=new Set(days); const compact=days.length>10;
     const dayObjs=days.map(iso=>{ const d=this.parse(iso), we=d.getDay()===0||d.getDay()===6, sel=iso===S.selDate;
@@ -1124,7 +1137,7 @@ class Component extends DCLogic {
     const hasOther=T.some(t=>daySet.has(t.date)&&!realIds.has(t.ch));
     const rowChannels=(S.fChannel==='all'&&hasOther)?[...baseRowChannels, otherCh]:baseRowChannels;
     const matrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
-      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fj(t)&&fm(t)); total+=ct.length;
+      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fj(t)&&fm(t)&&ftxt(t)); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
         const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status);
           return { title:t.title, tip:t.title+' · '+(p.name||'')+' · '+s.label, color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name) }; });
@@ -1136,7 +1149,7 @@ class Component extends DCLogic {
       return { name:c.name, color:c.color, total, cells };
     });
 
-    const scoped=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fj(t)&&fm(t));
+    const scoped=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fj(t)&&fm(t)&&ftxt(t));
     const cntBy=id=>scoped.filter(t=>t.status===id).length;
     const statCards=[
       { label:'งานทั้งหมด', value:scoped.length, color:'#4F46E5' },
@@ -1146,7 +1159,7 @@ class Component extends DCLogic {
       { label:'ช่องทางที่ใช้', value:new Set(scoped.map(t=>t.ch)).size, color:'#0EA5E9' },
     ];
 
-    const wlBase=S.people.map(p=>({ ...p, total:T.filter(t=>daySet.has(t.date)&&(t.creative===p.id||t.graphic===p.id)&&fc(t)&&fs(t)&&fj(t)&&fm(t)).length }));
+    const wlBase=S.people.map(p=>({ ...p, total:T.filter(t=>daySet.has(t.date)&&(t.creative===p.id||t.graphic===p.id)&&fc(t)&&fs(t)&&fj(t)&&fm(t)&&ftxt(t)).length }));
     const maxWk=Math.max(1,...wlBase.map(w=>w.total));
     const workload=wlBase.slice().sort((a,b)=>b.total-a.total).map(w=>{ const active=S.fPerson===w.id;
       return { name:w.name, position:w.position, color:w.color, initials:init(w.name), total:w.total, pct:Math.round(w.total/maxWk*100),
@@ -1172,7 +1185,7 @@ class Component extends DCLogic {
     const gridCols='176px repeat('+days.length+', minmax('+(compact?'48px':'112px')+',1fr))';
 
     // content calendar
-    const calFilter=t=>fc(t)&&fp(t)&&fs(t)&&fj(t)&&fm(t);
+    const calFilter=t=>fc(t)&&fp(t)&&fs(t)&&fj(t)&&fm(t)&&ftxt(t);
     let calS, calE;
     if (S.dateMode==='week'){ calS=S.weekStart; calE=this.addDays(S.weekStart,6); }
     else if (S.dateMode==='custom'){ let s=S.rangeStart,e=S.rangeEnd; if(s>e){ const _t=s; s=e; e=_t; } calS=s; calE=e; }
@@ -1214,7 +1227,8 @@ class Component extends DCLogic {
     ];
     const reportSections=secDefs.map(s=>({ ...s, empty:s.items.length===0 }));
 
-    const teamRows=S.people.map(p=>({ name:p.name, position:p.position, color:p.color, initials:init(p.name), onEdit:()=>this.openEditPerson(p), onDelete:()=>this.askDeletePerson(p) }));
+    const teamQ=(S.fTeamSearch||'').trim().toLowerCase();
+    const teamRows=S.people.filter(p=>!teamQ||(p.name||'').toLowerCase().indexOf(teamQ)>=0||(p.position||'').toLowerCase().indexOf(teamQ)>=0).map(p=>({ name:p.name, position:p.position, color:p.color, initials:init(p.name), onEdit:()=>this.openEditPerson(p), onDelete:()=>this.askDeletePerson(p) }));
     const positionsUsed=[...new Set([...(S.positions||[]), ...S.people.map(p=>p.position).filter(Boolean)])];
     const canPosEdit=can('team','edit'), canPosDel=can('team','del');
     const areaDefs=this.areas();
@@ -1237,15 +1251,22 @@ class Component extends DCLogic {
     const actClr={ 'เพิ่ม':'#22C55E','แก้ไข':'#F97316','ลบ':'#EF4444' };
     const clip=v=>{ const s=String(v==null?'':v); return s.length>60?s.slice(0,60)+'…':s; };
     const areaOf=d=>(((d||'').split('"')[0])||'').trim()||'อื่นๆ';
-    const hArea=S.hArea||'all', hAction=S.hAction||'all', hFrom=S.hFrom||'', hTo=S.hTo||'';
+    const hArea=S.hArea||'all', hAction=S.hAction||'all', hFrom=S.hFrom||'', hTo=S.hTo||'', hPerson=S.hPerson||'all', hMedium=S.hMedium||'all', hChannel=S.hChannel||'all', hSearch=(S.hSearch||'').trim().toLowerCase();
     const logFiltered=S.log.filter(l=>{
       if(hAction!=='all' && l.action!==hAction) return false;
       if(hArea!=='all' && areaOf(l.detail)!==hArea) return false;
+      if(hPerson!=='all' && l.actorId!==hPerson) return false;
+      if(hMedium!=='all' && !(l.meta && l.meta.medium===hMedium)) return false;
+      if(hChannel!=='all' && !(l.meta && l.meta.ch===hChannel)) return false;
       if(hFrom||hTo){ if(!l.iso) return false; const d=l.iso.slice(0,10); if(hFrom&&d<hFrom) return false; if(hTo&&d>hTo) return false; }
+      if(hSearch){ const hay=((l.detail||'')+' '+(l.changes||[]).map(c=>c.f+' '+c.from+' '+c.to).join(' ')).toLowerCase(); if(hay.indexOf(hSearch)<0) return false; }
       return true;
     });
     const histAreaOpts=[{value:'all',label:'ทุกหน้า'}, ...[...new Set(S.log.map(l=>areaOf(l.detail)))].map(a=>({value:a,label:a}))];
     const histActionOpts=[{value:'all',label:'ทุกการกระทำ'},{value:'เพิ่ม',label:'เพิ่ม'},{value:'แก้ไข',label:'แก้ไข'},{value:'ลบ',label:'ลบ'}];
+    const histPersonOpts=[{value:'all',label:'ทุกคน'}, ...S.people.map(p=>({value:p.id,label:p.name}))];
+    const histMediumOpts=[{value:'all',label:'ทั้งหมด'},{value:'online',label:'Online'},{value:'offline',label:'Offline'}];
+    const histChannelOpts=[{value:'all',label:'ทุกช่องทาง'}, ...S.channels.map(c=>({value:c.id,label:c.name}))];
     const historyRows=logFiltered.map(l=>{ const a=pMap[l.actorId]||{name:'—',color:'#94A3B8'};
       const ch=(l.changes||[]).map(c=>({ field:c.f, from:clip(c.from), to:clip(c.to) }));
       return { ts:l.ts, area:areaOf(l.detail), actor:a.name, color:a.color, initials:init(a.name), action:l.action, detail:l.detail,
@@ -1337,15 +1358,19 @@ class Component extends DCLogic {
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
       rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
       statCards, channelChips, statusChips, peopleOpts, channelSelOpts, fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
+      fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
       reportSections, reportTotal:rep.length,
       teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, openAddChannel:()=>this.openAddChannel(),
       contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
       historyRows, historyEmpty:logFiltered.length===0,
-      histAreaOpts, histActionOpts, hArea, hAction, hFrom, hTo,
+      histAreaOpts, histActionOpts, histPersonOpts, histMediumOpts, histChannelOpts,
+      hArea, hAction, hFrom, hTo, hPerson, hMedium, hChannel, hSearch:S.hSearch||'',
       onHArea:e=>this.setState({hArea:e.target.value}), onHAction:e=>this.setState({hAction:e.target.value}),
       onHFrom:e=>this.setState({hFrom:e.target.value}), onHTo:e=>this.setState({hTo:e.target.value}),
-      clearHistFilter:()=>this.setState({hArea:'all',hAction:'all',hFrom:'',hTo:''}),
+      onHPerson:e=>this.setState({hPerson:e.target.value}), onHMedium:e=>this.setState({hMedium:e.target.value}),
+      onHChannel:e=>this.setState({hChannel:e.target.value}), onHSearch:e=>this.setState({hSearch:e.target.value}),
+      clearHistFilter:()=>this.setState({hArea:'all',hAction:'all',hFrom:'',hTo:'',hPerson:'all',hMedium:'all',hChannel:'all',hSearch:''}),
       modalOpen:!!m, modalTitle, closeModal:()=>this.closeModal(), stop:e=>e.stopPropagation(),
       isConfirm:!!m&&m.kind==='confirm', confirmMsg:m&&m.msg, confirmYes:()=>{ if(m&&m.onYes)m.onYes(); },
       isTaskForm:!!m&&m.kind==='task', isPersonForm:!!m&&m.kind==='person', isChannelForm:!!m&&m.kind==='channel', isTagForm:!!m&&m.kind==='tag',
