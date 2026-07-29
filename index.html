@@ -924,7 +924,8 @@ class Component extends DCLogic {
   addFiles(field, files){ const arr=[...files]; if(!arr.length) return; Promise.all(arr.map(f=>new Promise(res=>{ const r=new FileReader(); r.onload=()=>res({ name:f.name, data:r.result }); r.readAsDataURL(f); }))).then(items=>this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } }))); }
   removeAttach(field, idx){ this.setState(s=>({ form:{ ...s.form, [field]:(s.form[field]||[]).filter((_,i)=>i!==idx) } })); }
 
-  blankTask(over){ const S=this.state; return Object.assign({ title:'', ch:S.channels[0].id, date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:(S.fJob!=='all'?S.fJob:'online'), status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), tab:'detail' }, over||{}); }
+  setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; if(v==='online'){ if(!s.channels.find(c=>c.id===form.ch)) form.ch=(s.channels[0]||{}).id||''; } else { form.ch='other'; } return { form }; }); }
+  blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const base={ title:'', ch:(jt==='online'?S.channels[0].id:'other'), date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:(jt==='central'||jt==='kol'?'online':'online'), delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), tab:'detail' }; const o=Object.assign(base, over||{}); if(o.jobType!=='online' && !o.ch) o.ch='other'; return o; }
   openAddTask(){ this.openModal('task','add',this.blankTask()); }
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, tab:'detail' }); }
   openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
@@ -935,7 +936,7 @@ class Component extends DCLogic {
   openEditTag(entity, it){ this.setState({ modal:{ kind:'tag', mode:'edit', entity }, form:{ id:it.id, name:it.name, color:it.color, scope:it.scope||'both' } }); }
 
   taskDiff(o,n){
-    const S=this.state; const cn=id=>(S.channels.find(c=>c.id===id)||{}).name||'—'; const pn=id=>id?((S.people.find(p=>p.id===id)||{}).name||'—'):'—'; const ctn=id=>id?((S.contentTypes.find(c=>c.id===id)||{}).name||'—'):'—'; const prn=id=>id?((S.procedures.find(c=>c.id===id)||{}).name||'—'):'—'; const sn=id=>(S.statuses.find(s=>s.id===id)||{}).label||id; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
+    const S=this.state; const cn=id=>id==='other'?'อื่นๆ':((S.channels.find(c=>c.id===id)||{}).name||'—'); const pn=id=>id?((S.people.find(p=>p.id===id)||{}).name||'—'):'—'; const ctn=id=>id?((S.contentTypes.find(c=>c.id===id)||{}).name||'—'):'—'; const prn=id=>id?((S.procedures.find(c=>c.id===id)||{}).name||'—'):'—'; const sn=id=>(S.statuses.find(s=>s.id===id)||{}).label||id; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
     const out=[]; const cmp=(label,a,b)=>{ if((a||'')!==(b||'')) out.push({ f:label, from:(a||'—'), to:(b||'—') }); };
     cmp('ชื่องาน',o.title,n.title); cmp('ช่องทาง',cn(o.ch),cn(n.ch)); cmp('วันลงงาน',o.date,n.date); cmp('ประเภทงาน',jn(o.jobType),jn(n.jobType));
     const brn=q=>this.branchText(q, S.branches);
@@ -953,7 +954,7 @@ class Component extends DCLogic {
 
   saveModal(){
     const S=this.state, f=S.form, m=S.modal; if(!m) return;
-    const chName=id=>(S.channels.find(c=>c.id===id)||{}).name;
+    const chName=id=>id==='other'?'อื่นๆ':(S.channels.find(c=>c.id===id)||{}).name;
     if (m.kind==='task'){
       if(!f.title || !f.title.trim()){ this.setState({ form:{ ...f, _err:'กรุณาระบุชื่องาน' } }); return; }
       if((f.jobType==='central'||f.jobType==='kol') && !f.delivery){ this.setState({ form:{ ...f, _err:'งานกลาง / KOL ต้องระบุวันส่งมอบงาน' } }); return; }
@@ -1017,7 +1018,7 @@ class Component extends DCLogic {
     this.setState({ modal:{ kind:'confirm', msg:'ลบ'+lbl+' "'+it.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นจะถูกตั้งเป็น "ไม่ระบุ"':''), onYes:()=>this.commit({ [key]:S[key].filter(x=>x.id!==it.id), tasks:S.tasks.map(t=>t[field]===it.id?{ ...t,[field]:'' }:t), modal:null }, 'ลบ', lbl+' "'+it.name+'"') } }); }
 
   download(name, text, mime){ const b=new Blob(['\ufeff'+text],{type:mime}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),800); }
-  exportCSV(){ const S=this.state; const cn=id=>(S.channels.find(c=>c.id===id)||{}).name||''; const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||k; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
+  exportCSV(){ const S=this.state; const cn=id=>id==='other'?'อื่นๆ':((S.channels.find(c=>c.id===id)||{}).name||''); const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||k; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
     const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
     const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
     const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
@@ -1035,7 +1036,7 @@ class Component extends DCLogic {
   }
   exportExcel(){
     const S=this.state;
-    const cn=id=>(S.channels.find(c=>c.id===id)||{}).name||''; const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||''; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||''; const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
+    const cn=id=>id==='other'?'อื่นๆ':((S.channels.find(c=>c.id===id)||{}).name||''); const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||''; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||''; const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
     const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
     const tasks=[['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา (วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบงาน','Size งาน','Creative','Graphic','สถานะ','คำบรรยายภาพ','แคปชั่น','รายละเอียดอื่นๆ','ลิงก์งาน','จำนวนรูป','จำนวนไฟล์ AW']];
     S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(t=>tasks.push([t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),prn(t.proc),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),t.imgDesc||'',t.caption||'',t.details||'',t.link||'',(t.images||[]).length,(t.aw||[]).length]));
@@ -1112,16 +1113,20 @@ class Component extends DCLogic {
       const headStyle='display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 3px;cursor:pointer;border:none;border-left:1px solid #F1F5F9;'+(sel?'background:#4F46E5;color:#fff;':(we?'background:#F8FAFC;color:#94A3B8;':'background:#fff;color:#334155;'));
       return { iso, dow:this.dow(iso), dnum:d.getDate(), isSel:sel, isWe:we, headStyle, onClick:()=>this.setDate(iso) }; });
 
-    const rowChannels=S.channels.filter(c=>S.fChannel==='all'||c.id===S.fChannel);
-    const matrixRows=rowChannels.map(c=>{ let total=0;
-      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&t.ch===c.id&&fp(t)&&fs(t)&&fj(t)&&fm(t)); total+=ct.length;
+    const realIds=new Set(S.channels.map(c=>c.id));
+    const otherCh={ id:'other', name:'อื่นๆ (งานกลาง/KOL/Offline)', color:'#94A3B8' };
+    const baseRowChannels=S.channels.filter(c=>S.fChannel==='all'||c.id===S.fChannel);
+    const hasOther=T.some(t=>daySet.has(t.date)&&!realIds.has(t.ch));
+    const rowChannels=(S.fChannel==='all'&&hasOther)?[...baseRowChannels, otherCh]:baseRowChannels;
+    const matrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
+      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fj(t)&&fm(t)); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
         const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status);
           return { title:t.title, tip:t.title+' · '+(p.name||'')+' · '+s.label, color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name) }; });
         const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''));
         const first=ct[0];
         return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown, more:(!compact&&ct.length>3)?ct.length-3:0, style,
-          onClick:()=> first ? this.openEditTask(first) : this.openModal('task','add',this.blankTask({ ch:c.id, date:d.iso })) };
+          onClick:()=> first ? this.openEditTask(first) : this.openModal('task','add',this.blankTask(isOther?{ ch:'other', jobType:'central', date:d.iso }:{ ch:c.id, date:d.iso })) };
       });
       return { name:c.name, color:c.color, total, cells };
     });
@@ -1198,7 +1203,7 @@ class Component extends DCLogic {
       { title:'ตามประเภทงาน', items:withPct(this.jobTypes.map(j=>({ name:j.label, color:j.id==='online'?'#3B82F6':(j.id==='central'?'#8B5CF6':'#EC4899'), count:rep.filter(t=>t.jobType===j.id).length }))) },
       { title:'ตามประเภทคอนเทนต์', items:bd(S.contentTypes,'ctype',true) },
       { title:'ตามหัตถการ', items:bd(S.procedures,'proc',true) },
-      { title:'ตามช่องทาง', items:bd(S.channels,'ch',false) },
+      { title:'ตามช่องทาง', items:withPct([...S.channels.map(x=>({ name:x.name, color:x.color, count:rep.filter(t=>t.ch===x.id).length })), { name:'อื่นๆ', color:'#94A3B8', count:rep.filter(t=>!S.channels.find(c=>c.id===t.ch)).length }]) },
       { title:'ตามสถานะ', items:withPct(S.statuses.map(s=>({ name:s.label, color:s.color, count:rep.filter(t=>t.status===s.id).length }))) },
       { title:'ตามคน (Creative/Graphic)', items:withPct(S.people.map(p=>({ name:p.name, color:p.color, count:rep.filter(t=>t.creative===p.id||t.graphic===p.id).length }))) },
     ];
@@ -1255,7 +1260,7 @@ class Component extends DCLogic {
     if (m){ if(m.kind==='confirm') modalTitle='ยืนยันการลบ';
       else if(m.kind==='tag') modalTitle=(m.mode==='edit'?'แก้ไข':'เพิ่ม')+({ contentType:'ประเภทคอนเทนต์', status:'สถานะ', procedure:'หัตถการ', format:'รูปแบบงาน', size:'Size งาน', branch:'สาขา' }[m.entity]||'');
       else { const t={ task:['เพิ่มงานใหม่','แก้ไขงาน'], person:['เพิ่มพนักงาน','แก้ไขพนักงาน'], channel:['เพิ่มช่องทาง','แก้ไขช่องทาง'] }[m.kind]; modalTitle=t[m.mode==='edit'?1:0]; } }
-    const channelOpts=S.channels.map(c=>({ value:c.id, label:c.name }));
+    const channelOpts=(f.jobType==='online')?S.channels.map(c=>({ value:c.id, label:c.name })):[{ value:'other', label:'อื่นๆ' }];
     const personPick=[{ value:'', label:'— ไม่ระบุ —' }, ...S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position }))];
     const formatOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.formats,f.format).map(x=>({ value:x.id, label:x.name }))];
     const sizeOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.sizes,f.size).map(x=>({ value:x.id, label:x.name }))];
@@ -1265,7 +1270,7 @@ class Component extends DCLogic {
     const statusPick=S.statuses.map(s=>({ label:s.label, onClick:()=>this.setF('status',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid '+(f.status===s.id?s.color+';background:'+s.color+'1A;color:'+s.color:'#E2E8F0;background:#fff;color:#64748B') }));
     const palette=this.PAL.map(hex=>({ onClick:()=>this.setF('color',hex), style:'width:30px;height:30px;border-radius:9px;cursor:pointer;background:'+hex+';border:3px solid '+(f.color===hex?'#0F172A':'transparent')+';box-shadow:0 0 0 1px #E2E8F0;' }));
     const groupOpts=[...new Set(S.channels.map(c=>c.group))];
-    const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setState(s=>{ const form={ ...s.form, medium:x.id, _err:'' }; form.jobType = (x.id==='offline') ? 'central' : 'online'; return { form }; }),
+    const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setState(s=>{ const form={ ...s.form, medium:x.id, _err:'' }; if(x.id==='offline'){ form.jobType='central'; form.ch='other'; } else { form.jobType='online'; if(!s.channels.find(c=>c.id===form.ch)) form.ch=(s.channels[0]||{}).id||''; } return { form }; }),
       style:'flex:1;font-size:13px;font-weight:700;padding:9px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(fMed===x.id?(x.id==='online'?'#0EA5E9;background:#0EA5E918;color:#0369A1':'#F59E0B;background:#F59E0B18;color:#B45309'):'#E2E8F0;background:#fff;color:#64748B') }));
     const setQty=(id,v)=>this.setState(s=>{ const q=Object.assign({}, s.form.branchQty||{}); const n=Math.max(0, Math.min(999, Number(v)||0)); if(n>0) q[id]=n; else delete q[id]; return { form:{ ...s.form, branchQty:q } }; });
     const fq=f.branchQty||{};
@@ -1306,7 +1311,7 @@ class Component extends DCLogic {
       taskErr:(m&&m.kind==='task')?(f._err||''):'',
       onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
       onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFStart:e=>this.setF('start',e.target.value), durationLabel,
-      onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setF('jobType',e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
+      onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setJobType(e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
       calWeekHeads, calCells, permRows, permAreas, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
       newPos:S.newPos, onNewPos:e=>this.setState({ newPos:e.target.value }), onNewPosKey:e=>{ if(e.key==='Enter') this.addPosition(); }, addPosition:()=>this.addPosition(),
       canTeamEdit:can('team','edit'), canTeamDel:can('team','del'), canChEdit:can('channels','edit'), canChDel:can('channels','del'), canCtEdit:can('content','edit'), canCtDel:can('content','del'), canPrEdit:can('procedure','edit'), canPrDel:can('procedure','del'), canStEdit:can('status','edit'), canStDel:can('status','del'), canSaveTask:can('tasks','edit'),
