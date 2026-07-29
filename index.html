@@ -720,7 +720,7 @@
         <sc-if value="{{ isChannelForm }}" hint-placeholder-val="{{ false }}">
           <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ชื่อช่องทาง</span><input value="{{ form.name }}" onChange="{{ onFName }}" placeholder="เช่น Facebook รอง" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
-            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภท</span><select value="{{ form.kind }}" onChange="{{ onFKind }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="online">Online</option><option value="offline">Offline</option><option value="kol">KOL</option></select></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภท</span><select value="{{ form.kind }}" onChange="{{ onFKind }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="online">Online</option><option value="offline">Offline</option></select></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
               <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
                 <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
@@ -1217,7 +1217,7 @@ class Component extends DCLogic {
     const pchip=(on,kind)=>{ const c=kind==='del'?'#EF4444':(kind==='view'?'#0EA5E9':'#4F46E5'); return 'font-size:12px;width:30px;height:28px;border-radius:8px;cursor:pointer;'+(on?'border:1px solid '+c+'55;background:'+c+'18;color:'+c+';':'border:1px solid #E2E8F0;background:#fff;color:#CBD5E1;'); };
     const permRows=positionsUsed.map(pos=>({ pos, onDelete:()=>this.askDeletePosition(pos), cells: areaDefs.map(([ak])=>{ const v=getP(pos,ak,'view'), e=getP(pos,ak,'edit'), d=getP(pos,ak,'del'); return { viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,ak,'view'), onEdit:()=>this.togglePerm(pos,ak,'edit'), onDel:()=>this.togglePerm(pos,ak,'del') }; }) }));
 
-    const chKinds=[['online','Online'],['offline','Offline'],['kol','KOL']];
+    const chKinds=[['online','Online'],['offline','Offline']];
     const gmap={}; chKinds.forEach(([id,label])=>{ gmap[id]={ name:label, channels:[] }; });
     S.channels.forEach(c=>{ const g=gmap[c.kind]||gmap['online']; g.channels.push({ name:c.name, color:c.color, onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c) }); });
     const groups=chKinds.map(([id])=>gmap[id]).filter(g=>g.channels.length);
