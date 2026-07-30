@@ -765,10 +765,9 @@
                 <div style="font-size:10px; font-weight:700; letter-spacing:.08em; color:#94A3B8; text-transform:uppercase; margin-bottom:5px;">Meta Ad Name (สร้างอัตโนมัติ)</div>
                 <div style="font-size:13px; font-weight:600; color:#fff; word-break:break-all; line-height:1.6;">{{ metaAdName }}</div>
               </div>
-              <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end;">
-                <label style="flex:1; min-width:180px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">สถานะ ADS</span><select value="{{ briefAdStatus }}" onChange="{{ onBriefAdStatus }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefAdStatusOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
-                <div style="flex:1; min-width:180px; font-size:11px; color:#94A3B8; line-height:1.6; padding-bottom:11px;">รายการ KOL/KOC, Doctor, Price แสดงเฉพาะที่ใช้ได้ตามวันลงงาน ({{ form.date }}) · จัดการที่เมนู DATA / ADS</div>
-              </div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">สถานะ ADS</span>
+                <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefAdStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
+              <div style="font-size:11px; color:#94A3B8; line-height:1.6;">รายการ KOL/KOC, Doctor, Price แสดงเฉพาะที่ใช้ได้ตามวันลงงาน ({{ form.date }}) · จัดการที่เมนู DATA / ADS</div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Platform Ads <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
                 <sc-if value="{{ briefPlatformEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มีช่องทาง Online · เพิ่มได้ที่เมนู ช่องทาง</div></sc-if>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefPlatformChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
@@ -795,7 +794,7 @@
               </div>
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Objective</span><select value="{{ briefObjective }}" onChange="{{ onBriefObjective }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
-                <div style="flex:1; min-width:150px;"></div>
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">สถานะ ADS</span><select value="{{ briefAdStatus }}" onChange="{{ onBriefAdStatus }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefAdStatusOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
               </div>
             </div>
           </sc-if>
@@ -1070,6 +1069,7 @@ class Component extends DCLogic {
   setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; const k=(form.medium==='offline')?'offline':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k&&(c.jobcat||'online')===v)){ const fc=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===v); form.ch=fc?fc.id:''; } return { form }; }); }
   blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const firstCh=(S.channels.find(c=>(c.kind||'online')==='online'&&(c.jobcat||'online')===jt)||{}).id||'';
     const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', procs:[], imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), tab:'detail' };
+    base.brief.adStatus=(S.adStatuses[0]||{}).id||'';
     const o=Object.assign(base, over||{});
     const chObj=S.channels.find(c=>c.id===o.ch);
     if(chObj){ o.medium=(chObj.kind==='offline')?'offline':'online'; o.jobType=(o.medium==='offline')?'central':(chObj.jobcat||'online'); }
@@ -1549,6 +1549,7 @@ class Component extends DCLogic {
     const briefAudienceOpts=briefSingle('audience',S.adAudiences);
     const briefObjectiveOpts=briefSingle('objective',S.adObjectives);
     const briefAdStatusOpts=briefSingle('adStatus',S.adStatuses);
+    const briefAdStatusPick=S.adStatuses.map(s=>({ label:s.name, onClick:()=>this.setBrief('adStatus',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+((brf.adStatus||'')===s.id?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#64748B;') }));
     const briefAdStart=(brf.adStart||briefDate||'');
     // --- Meta Ad Name (auto) ---
     const nm=(list,id)=>{ const x=(list||[]).find(o=>o.id===id); return x?x.name:''; };
@@ -1582,7 +1583,7 @@ class Component extends DCLogic {
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabAW:formTab==='aw', tabBrief:formTab==='brief',
-      briefPlatformChips, briefKolChips, briefDoctorChips, briefPriceChips, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStart, briefAdEnd:brf.adEnd||'',
+      briefPlatformChips, briefKolChips, briefDoctorChips, briefPriceChips, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
       briefPostType:brf.postType||'', briefFunnel:brf.funnel||'', briefCampaign:brf.campaign||'', briefAudience:brf.audience||'', briefObjective:brf.objective||'', briefAdStatus:brf.adStatus||'',
       metaAdName, procChips, procEmpty:procChips.length===0,
       briefKolEmpty:briefKolChips.length===0, briefDoctorEmpty:briefDoctorChips.length===0, briefPlatformEmpty:briefPlatformChips.length===0, briefPriceEmpty:briefPriceChips.length===0,
