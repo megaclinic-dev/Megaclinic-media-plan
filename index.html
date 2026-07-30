@@ -219,8 +219,11 @@
               </div>
             </div>
             <div class="mp-workload" style="width:264px; flex-shrink:0; border-left:1px solid #EEF2F6; padding:16px 18px; background:#FCFCFD;">
-              <div style="font-size:13px; font-weight:700; margin-bottom:2px;">Workload / คน</div>
-              <div style="font-size:11px; color:#94A3B8; margin-bottom:14px;">งานในช่วงที่เลือก · มาก→น้อย</div>
+              <div style="font-size:13px; font-weight:700; margin-bottom:8px;">Workload / คน</div>
+              <div style="display:inline-flex; background:#E9EDF3; border-radius:9px; padding:3px; margin-bottom:12px;">
+                <button onClick="{{ onWlCreative }}" style="{{ wlTabCreativeStyle }}">Creative</button>
+                <button onClick="{{ onWlGraphic }}" style="{{ wlTabGraphicStyle }}">Graphic</button>
+              </div>
               <div style="display:flex; flex-direction:column; gap:10px; max-height:420px; overflow-y:auto;">
                 <sc-for list="{{ workload }}" as="w" hint-placeholder-count="8">
                   <button onClick="{{ w.onClick }}" style="{{ w.rowStyle }}">
@@ -228,13 +231,10 @@
                     <div style="flex:1; min-width:0; text-align:left;">
                       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
                         <span style="font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ w.name }}</span>
-                        <span style="font-size:12px; font-weight:700; margin-left:6px;">{{ w.total }}</span>
+                        <span style="font-size:12px; font-weight:700; margin-left:6px;">{{ w.count }}</span>
                       </div>
-                      <div style="font-size:10px; color:#94A3B8; margin-bottom:4px;">{{ w.position }}</div>
-                      <div style="display:flex; gap:6px;">
-                        <span style="font-size:10px; font-weight:700; color:#4F46E5; background:#EEF2FF; padding:1px 7px; border-radius:99px;">Creative {{ w.cN }}</span>
-                        <span style="font-size:10px; font-weight:700; color:#EC4899; background:#FCE7F3; padding:1px 7px; border-radius:99px;">Graphic {{ w.gN }}</span>
-                      </div>
+                      <div style="font-size:10px; color:#94A3B8; margin-bottom:3px;">{{ w.position }}</div>
+                      <div style="height:6px; background:#EEF2F6; border-radius:99px; overflow:hidden;"><div style="height:100%; width:{{ w.pct }}%; background:{{ w.barColor }}; border-radius:99px;"></div></div>
                     </div>
                   </button>
                 </sc-for>
@@ -673,10 +673,10 @@
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">คำบรรยายภาพ / บทพูด</span>
                 <textarea value="{{ form.imgDesc }}" onChange="{{ onFImgDesc }}" rows="4" placeholder="อธิบายภาพ หรือใส่บทพูดประกอบภาพ..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
               <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดรูปภาพ<input type="file" accept="image/*" multiple onChange="{{ onUploadImages }}" style="display:none;"></label>
-              <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px;">
+              <div style="display:flex; flex-direction:column; gap:12px;">
                 <sc-for list="{{ imgList }}" as="im" hint-placeholder-count="0">
-                  <div style="position:relative; border-radius:9px; overflow:hidden; border:1px solid #EEF2F6; height:82px;">
-                    <img src="{{ im.data }}" style="width:100%; height:100%; object-fit:cover; display:block;">
+                  <div style="position:relative; border-radius:10px; overflow:hidden; border:1px solid #E2E8F0; background:#F8FAFC;">
+                    <img src="{{ im.data }}" style="width:100%; height:auto; display:block;">
                     <button onClick="{{ im.onDownload }}" title="ดาวน์โหลดรูปนี้" style="position:absolute; bottom:4px; left:4px; width:22px; height:22px; border:none; border-radius:6px; background:rgba(15,23,42,.65); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer;">⬇</button>
                     <button onClick="{{ im.onRemove }}" style="position:absolute; top:4px; right:4px; width:22px; height:22px; border:none; border-radius:6px; background:rgba(15,23,42,.65); color:#fff; font-size:12px; cursor:pointer;">✕</button>
                   </div>
@@ -1171,11 +1171,15 @@ class Component extends DCLogic {
 
     const wlPool=T.filter(t=>daySet.has(t.date)&&fc(t)&&fs(t)&&fj(t)&&fm(t)&&ftxt(t));
     const wlBase=S.people.map(p=>{ const cN=wlPool.filter(t=>t.creative===p.id).length; const gN=wlPool.filter(t=>t.graphic===p.id && t.creative!==p.id).length; return { ...p, cN, gN, total:cN+gN }; });
-    const maxWk=Math.max(1,...wlBase.map(w=>w.total));
-    const workload=wlBase.slice().sort((a,b)=>b.total-a.total).map(w=>{ const active=S.fPerson===w.id;
-      return { name:w.name, position:w.position, color:w.color, initials:init(w.name), total:w.total, cN:w.cN, gN:w.gN, pct:Math.round(w.total/maxWk*100),
+    const wlTab=S.wlTab==='graphic'?'graphic':'creative';
+    const wlKey=wlTab==='creative'?'cN':'gN';
+    const wlColor=wlTab==='creative'?'#4F46E5':'#EC4899';
+    const maxWk=Math.max(1,...wlBase.map(w=>w[wlKey]));
+    const workload=wlBase.slice().sort((a,b)=>b[wlKey]-a[wlKey]).map(w=>{ const active=S.fPerson===w.id; const count=w[wlKey];
+      return { name:w.name, position:w.position, color:w.color, initials:init(w.name), count:count, pct:Math.round(count/maxWk*100), barColor:wlColor,
         rowStyle:'display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;cursor:pointer;text-align:left;border:1px solid '+(active?'#C7D2FE;background:#EEF2FF;':'transparent;background:transparent;'),
         onClick:()=>this.setState({ fPerson:S.fPerson===w.id?'all':w.id }) }; });
+    const wlTabBtn=(on,col)=>'font-size:12px;font-weight:700;padding:5px 16px;border-radius:7px;border:none;cursor:pointer;'+(on?'background:#fff;color:'+col+';box-shadow:0 1px 2px rgba(15,23,42,.12);':'background:none;color:#64748B;');
 
     const chipBtn=active=>'display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;font-size:12px;font-weight:600;padding:6px 11px;border-radius:99px;cursor:pointer;'+(active?'background:#0F172A;color:#fff;border:1px solid #0F172A;':'background:#fff;color:#475569;border:1px solid #E2E8F0;');
     const CH_CAT=[['online','online','Online · ช่องทางต่างๆ'],['online','central','Online · งานกลาง'],['online','kol','Online · KOL'],['offline','central','Offline · งานกลาง']];
@@ -1382,6 +1386,8 @@ class Component extends DCLogic {
       statCards, channelChips, statusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
+      wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'),
+      onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}),
       reportSections, reportTotal:rep.length,
       teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, openAddChannel:()=>this.openAddChannel(),
       contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
