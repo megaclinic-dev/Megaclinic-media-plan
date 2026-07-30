@@ -173,7 +173,17 @@
             <div class="mp-fbox"><div class="mp-flabel">งาน Online / Offline</div><div class="mp-fchips"><sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
-            <div class="mp-fbox" style="width:230px;"><div class="mp-flabel">ช่องทาง</div><select value="{{ fChannel }}" onChange="{{ onChannelSel }}" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><option value="all">ทุกช่องทาง</option><sc-for list="{{ chanFilterGroups }}" as="g" hint-placeholder-count="3"><optgroup label="{{ g.label }}"><sc-for list="{{ g.opts }}" as="op" hint-placeholder-count="3"><option value="{{ op.value }}">{{ op.label }}</option></sc-for></optgroup></sc-for></select></div>
+            <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง (เลือกได้หลายอัน · กดหัวข้อเพื่อเลือกทั้งกลุ่ม)</div>
+              <div class="mp-fchips" style="align-items:flex-start; gap:10px;">
+                <button onClick="{{ onClearChans }}" style="{{ chansAllStyle }}">ทุกช่องทาง</button>
+                <sc-for list="{{ chanMultiGroups }}" as="g" hint-placeholder-count="3">
+                  <div style="display:flex; flex-direction:column; gap:5px;">
+                    <button onClick="{{ g.onHeader }}" style="{{ g.headerStyle }}">{{ g.label }}</button>
+                    <div class="mp-fchips"><sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block;"></span>{{ c.label }}</button></sc-for></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
           </div>
 
           <div class="mp-plan-split" style="display:flex; gap:0; background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
@@ -268,10 +278,17 @@
           </div>
           <div class="mp-frow">
             <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
-            <div class="mp-fbox"><div class="mp-flabel">ช่องทาง</div>
-              <select value="{{ fChannel }}" onChange="{{ onChannelSel }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
-                <option value="all">ทุกช่องทาง</option><sc-for list="{{ chanFilterGroups }}" as="g" hint-placeholder-count="3"><optgroup label="{{ g.label }}"><sc-for list="{{ g.opts }}" as="op" hint-placeholder-count="3"><option value="{{ op.value }}">{{ op.label }}</option></sc-for></optgroup></sc-for>
-              </select></div>
+            <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง (เลือกได้หลายอัน · กดหัวข้อเพื่อเลือกทั้งกลุ่ม)</div>
+              <div class="mp-fchips" style="align-items:flex-start; gap:10px;">
+                <button onClick="{{ onClearChans }}" style="{{ chansAllStyle }}">ทุกช่องทาง</button>
+                <sc-for list="{{ chanMultiGroups }}" as="g" hint-placeholder-count="3">
+                  <div style="display:flex; flex-direction:column; gap:5px;">
+                    <button onClick="{{ g.onHeader }}" style="{{ g.headerStyle }}">{{ g.label }}</button>
+                    <div class="mp-fchips"><sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block;"></span>{{ c.label }}</button></sc-for></div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
             <div class="mp-fbox"><div class="mp-flabel">คน</div>
               <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
                 <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
@@ -782,7 +799,7 @@ class Component extends DCLogic {
       formats: seed.formats || this.defaultFormats(), sizes: seed.sizes || this.defaultSizes(), branches: seed.branches || this.defaultBranches(),
       fMedium:'all',
       dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
-      fChannel:'all', fPerson:'all', fStatus:'all', fJob:'all', selDate:'2026-07-08',
+      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fJob:'all', selDate:'2026-07-08',
       modal:null, form:{}
     };
   }
@@ -920,8 +937,11 @@ class Component extends DCLogic {
     else if (S.dateMode==='month'){ let [y,m]=S.calMonth.split('-').map(Number); m+=dir; if(m<1){m=12;y--;} if(m>12){m=1;y++;} this.setState({ calMonth:y+'-'+String(m).padStart(2,'0') }); }
   }
   setChannel(k){ this.setState({ fChannel:this.state.fChannel===k?'all':k }); }
+  toggleChan(id){ this.setState(s=>{ const cur=Array.isArray(s.fChans)?s.fChans:[]; const i=cur.indexOf(id); return { fChans: i>=0?cur.filter(x=>x!==id):[...cur,id] }; }); }
+  toggleChanGroup(ids){ this.setState(s=>{ const cur=Array.isArray(s.fChans)?s.fChans:[]; const all=ids.length>0&&ids.every(id=>cur.indexOf(id)>=0); return { fChans: all?cur.filter(id=>ids.indexOf(id)<0):[...new Set([...cur,...ids])] }; }); }
+  clearChans(){ this.setState({ fChans:[] }); }
   setStatus(k){ this.setState({ fStatus:this.state.fStatus===k?'all':k }); }
-  setJob(k){ this.setState({ fJob:this.state.fJob===k?'all':k, fChannel:'all' }); }
+  setJob(k){ this.setState({ fJob:this.state.fJob===k?'all':k, fChans:[] }); }
   setDate(iso){ this.setState({ selDate:iso }); }
 
   openModal(kind, mode, form){ this.setState({ modal:{ kind, mode }, form:form||{} }); }
@@ -1120,7 +1140,8 @@ class Component extends DCLogic {
     const scoped2=(list,cur)=>list.filter(x=>this.inScope(x,fMed)||x.id===cur);
     const scopeChip=s=>{ const sc=s||'both'; const c=sc==='online'?'#0EA5E9':(sc==='offline'?'#F59E0B':'#94A3B8'); return 'font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;color:'+c+';background:'+c+'18;border:1px solid '+c+'44;'; };
 
-    const fc=t=>S.fChannel==='all'||t.ch===S.fChannel;
+    const fChans=Array.isArray(S.fChans)?S.fChans:[]; const fcSet=new Set(fChans);
+    const fc=t=> fChans.length===0 || fcSet.has(t.ch);
     const fp=t=>S.fPerson==='all'||t.creative===S.fPerson||t.graphic===S.fPerson;
     const fs=t=>S.fStatus==='all'||t.status===S.fStatus;
     const fj=t=>S.fJob==='all'||t.jobType===S.fJob;
@@ -1135,9 +1156,9 @@ class Component extends DCLogic {
 
     const realIds=new Set(S.channels.map(c=>c.id));
     const otherCh={ id:'other', name:'อื่นๆ (งานกลาง/KOL/Offline)', color:'#94A3B8' };
-    const baseRowChannels=S.channels.filter(c=>(S.fChannel==='all'||c.id===S.fChannel) && (S.fMedium==='all'||(c.kind||'online')===S.fMedium) && (S.fJob==='all'||(c.jobcat||'online')===S.fJob));
+    const baseRowChannels=S.channels.filter(c=>(fChans.length===0||fcSet.has(c.id)) && (S.fMedium==='all'||(c.kind||'online')===S.fMedium) && (S.fJob==='all'||(c.jobcat||'online')===S.fJob));
     const hasOther=T.some(t=>daySet.has(t.date)&&!realIds.has(t.ch));
-    const rowChannels=(S.fChannel==='all'&&hasOther)?[...baseRowChannels, otherCh]:baseRowChannels;
+    const rowChannels=(fChans.length===0&&hasOther)?[...baseRowChannels, otherCh]:baseRowChannels;
     const matrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
       const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fj(t)&&fm(t)&&ftxt(t)); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
@@ -1180,9 +1201,15 @@ class Component extends DCLogic {
     const chanSelGroups=CH_CAT.map((cat,i)=>({ label:cat[2], opts:channelsSorted.filter(c=>chCatIdx(c)===i).map(c=>({ value:c.id, label:c.name })) })).filter(g=>g.opts.length);
     const catMatchesFilter=(k,j)=>(S.fMedium==='all'||k===S.fMedium)&&(S.fJob==='all'||j===S.fJob);
     const chanFilterGroups=CH_CAT.map((cat,i)=>({ k:cat[0], j:cat[1], label:cat[2], opts:channelsSorted.filter(c=>chCatIdx(c)===i).map(c=>({ value:c.id, label:c.name })) })).filter(g=>g.opts.length && catMatchesFilter(g.k,g.j));
+    const headerChipBtn=on=>'display:inline-flex;align-items:center;gap:5px;white-space:nowrap;flex-shrink:0;font-size:11px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;'+(on?'background:#4F46E5;color:#fff;border:1px solid #4F46E5;':'background:#EEF2FF;color:#4F46E5;border:1px dashed #C7D2FE;');
+    const chanMultiGroups=chanFilterGroups.map(g=>{ const ids=g.opts.map(o=>o.value); const headerActive=ids.length>0&&ids.every(id=>fcSet.has(id));
+      return { label:g.label, headerStyle:headerChipBtn(headerActive), onHeader:()=>this.toggleChanGroup(ids),
+        chips:g.opts.map(o=>{ const cc=S.channels.find(x=>x.id===o.value)||{}; const active=fcSet.has(o.value);
+          return { label:o.label, color:cc.color||'#94A3B8', style:chipBtn(active), onClick:()=>this.toggleChan(o.value) }; }) }; });
+    const chansAllActive=fChans.length===0;
     const channelChips=[{ id:'all', name:'ทุกช่องทาง', color:'#94A3B8' }, ...channelsSorted].map(c=>({ label:c.name, color:c.color, style:chipBtn(S.fChannel===c.id), onClick:()=> c.id==='all'?this.setState({fChannel:'all'}):this.setChannel(c.id) }));
     const statusChips=[{ id:'all', label:'ทุกสถานะ' }, ...S.statuses].map(s=>({ label:s.label, style:chipBtn(S.fStatus===s.id), onClick:()=> s.id==='all'?this.setState({fStatus:'all'}):this.setStatus(s.id) }));
-    const mediumChips=[{ id:'all', label:'Online + Offline' }, ...this.mediums].map(x=>({ label:x.label, style:chipBtn(S.fMedium===x.id), onClick:()=>this.setState(s=>{ const fMedium=s.fMedium===x.id?'all':x.id; let fJob=s.fJob; if(fMedium==='offline' && fJob!=='all' && fJob!=='central') fJob='all'; return { fMedium, fJob, fChannel:'all' }; }) }));
+    const mediumChips=[{ id:'all', label:'Online + Offline' }, ...this.mediums].map(x=>({ label:x.label, style:chipBtn(S.fMedium===x.id), onClick:()=>this.setState(s=>{ const fMedium=s.fMedium===x.id?'all':x.id; let fJob=s.fJob; if(fMedium==='offline' && fJob!=='all' && fJob!=='central') fJob='all'; return { fMedium, fJob, fChans:[] }; }) }));
     const jobTypesForFilter=(S.fMedium==='offline')?this.jobTypes.filter(j=>j.id==='central'):this.jobTypes;
     const jobChips=[{ id:'all', label:'ทุกประเภทงาน' }, ...jobTypesForFilter].map(j=>({ label:j.label, style:chipBtn(S.fJob===j.id), onClick:()=> j.id==='all'?this.setState({fJob:'all'}):this.setJob(j.id) }));
     const peopleOpts=[{ value:'all', label:'ทุกคน' }, ...S.people.map(p=>({ value:p.id, label:p.name }))];
@@ -1218,7 +1245,7 @@ class Component extends DCLogic {
       calCells.push({ blank:false, day:true, dnum:this.parse(iso).getDate(), items, more: dts.length>4?dts.length-4:0,
         numStyle:'font-size:12px;font-weight:700;'+(isToday?'background:#4F46E5;color:#fff;border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;':'color:#334155;'),
         style:'min-height:120px;padding:6px;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;cursor:pointer;display:flex;flex-direction:column;gap:4px;',
-        onClick:()=>this.openModal('task','add',this.blankTask({ ch:(S.fChannel!=='all'?S.fChannel:S.channels[0].id), date:iso, start:iso })) });
+        onClick:()=>this.openModal('task','add',this.blankTask({ ch:(fChans.length===1?fChans[0]:(S.channels[0]||{}).id), date:iso, start:iso })) });
     }
     const calWeekHeads=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
     const durDays=(a,b)=>{ if(!a||!b) return null; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
@@ -1375,7 +1402,7 @@ class Component extends DCLogic {
       modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
       rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
-      statCards, channelChips, statusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
+      statCards, channelChips, statusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
       wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'),
