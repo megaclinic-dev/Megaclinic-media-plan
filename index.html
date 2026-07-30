@@ -389,14 +389,14 @@
               </div>
             </sc-if>
             <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow-x:auto;">
-              <div style="min-width:1290px;">
-                <div style="display:grid; grid-template-columns:150px repeat(9,1fr) 60px; background:#FAFBFC; border-bottom:1px solid #EEF2F6;">
+              <div style="min-width:1420px;">
+                <div style="display:grid; grid-template-columns:150px repeat(10,1fr) 60px; background:#FAFBFC; border-bottom:1px solid #EEF2F6;">
                   <div style="padding:12px 14px; font-size:11px; font-weight:700; color:#94A3B8;">ตำแหน่ง</div>
                   <sc-for list="{{ permAreas }}" as="a" hint-placeholder-count="9"><div style="padding:12px 8px; font-size:11px; font-weight:700; color:#94A3B8; text-align:center;">{{ a }}</div></sc-for>
                   <div></div>
                 </div>
                 <sc-for list="{{ permRows }}" as="row" hint-placeholder-count="4">
-                  <div style="display:grid; grid-template-columns:150px repeat(9,1fr) 60px; border-bottom:1px solid #F1F5F9; align-items:center;">
+                  <div style="display:grid; grid-template-columns:150px repeat(10,1fr) 60px; border-bottom:1px solid #F1F5F9; align-items:center;">
                     <div style="padding:12px 14px; font-size:13px; font-weight:600;">{{ row.pos }}</div>
                     <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="9">
                       <div style="padding:10px 6px; display:flex; gap:5px; justify-content:center;">
@@ -833,7 +833,7 @@ class Component extends DCLogic {
     this.setState({ modal:{ kind:'confirm', msg:'ลบตำแหน่ง "'+pos+'"?'+(cnt?' มีพนักงาน '+cnt+' คนใช้ตำแหน่งนี้อยู่ (ชื่อตำแหน่งของเขาจะยังคงอยู่ แต่จะไม่มีสิทธิ์กำหนดไว้)':''),
       onYes:()=>{ let perms=JSON.parse(JSON.stringify(S.perms||{})); delete perms[pos]; const positions=S.positions.filter(p=>p!==pos); perms=this.ensureTeamAccess(perms, positions, S.people); this.commit({ positions, perms, modal:null }, 'ลบ', 'ตำแหน่ง "'+pos+'"'); } } }); }
 
-  areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา']]; }
+  areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา'],['history','ประวัติ']]; }
   defaultPerms(){ const p={}; this.positions.forEach(pos=>{ const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del: a==='tasks' }; }); p[pos]=o; }); return p; }
   togglePerm(pos,area,act){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; if(!perms[pos][area]) perms[pos][area]={view:true,edit:true,del:true}; const cur=perms[pos][area][act]!==false; perms[pos][area][act]=!cur;
     if(area==='team'&&act==='view'&&cur){ const held=[...new Set(s.people.map(p=>p.position).filter(Boolean))]; const posList=held.length?held:[...new Set(s.positions||[])]; const anyLeft=posList.some(p=>{ const o=perms[p]; return !o||!o.team||o.team.view!==false; }); if(!anyLeft){ return {}; } }
@@ -845,7 +845,7 @@ class Component extends DCLogic {
     if(!anyLeft && posList.length){ const first=posList[0]; if(!P[first]) P[first]={}; if(!P[first].team) P[first].team={view:true,edit:true,del:false}; P[first].team.view=true; P[first].team.edit=true; }
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return true; return p[area].view!==false; }
-  navArea(v){ return { plan:'tasks', table:'tasks', report:'tasks', team:'team', channels:'channels', content:'content', procedure:'procedure', status:'status', format:'format', size:'size', branch:'branch', history:null }[v]; }
+  navArea(v){ return { plan:'tasks', table:'tasks', report:'tasks', team:'team', channels:'channels', content:'content', procedure:'procedure', status:'status', format:'format', size:'size', branch:'branch', history:'history' }[v]; }
   firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
   defaultSeed(){
