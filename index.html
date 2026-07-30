@@ -158,14 +158,12 @@
             </sc-if>
           </div>
 
-          <div style="display:flex; flex-wrap:wrap; gap:12px;">
-            <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="5">
-              <div style="flex:1; min-width:130px; background:#fff; border:1px solid #E2E8F0; border-radius:14px; padding:14px 16px;">
-                <div style="display:flex; align-items:center; gap:7px; margin-bottom:6px;">
-                  <span style="width:9px; height:9px; border-radius:3px; background:{{ s.color }};"></span>
-                  <span style="font-size:12px; color:#64748B; font-weight:600;">{{ s.label }}</span>
-                </div>
-                <div style="font-size:26px; font-weight:700; letter-spacing:-.02em;">{{ s.value }}</div>
+          <div style="display:flex; flex-wrap:wrap; gap:9px;">
+            <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
+              <div style="flex:1; min-width:92px; background:#fff; border:1px solid #E2E8F0; border-radius:11px; padding:8px 12px; display:flex; align-items:center; gap:9px;">
+                <span style="width:8px; height:8px; border-radius:3px; background:{{ s.color }}; flex-shrink:0;"></span>
+                <span style="font-size:11px; color:#64748B; font-weight:600; white-space:nowrap;">{{ s.label }}</span>
+                <span style="font-size:18px; font-weight:700; letter-spacing:-.02em; margin-left:auto;">{{ s.value }}</span>
               </div>
             </sc-for>
           </div>
@@ -1213,7 +1211,6 @@ class Component extends DCLogic {
       { label:'เสร็จ', value:cntBy('done'), color:'#22C55E' },
       { label:'กำลังทำ', value:cntBy('doing'), color:'#F97316' },
       { label:'ยังไม่เริ่ม', value:cntBy('todo'), color:'#94A3B8' },
-      { label:'ช่องทางที่ใช้', value:new Set(scoped.map(t=>t.ch)).size, color:'#0EA5E9' },
     ];
 
     const wlPool=T.filter(t=>daySet.has(t.date)&&fc(t)&&fs(t)&&fj(t)&&fm(t)&&ftxt(t));
