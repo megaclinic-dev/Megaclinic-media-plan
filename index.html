@@ -179,19 +179,24 @@
             <div class="mp-fbox"><div class="mp-flabel">งาน Online / Offline</div><div class="mp-fchips"><sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
-            <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง · เลือกได้หลายอัน</div>
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
-                <button onClick="{{ onClearChans }}" style="{{ chansAllStyle }}">ทุกช่องทาง</button>
-                <span style="font-size:11px; color:#94A3B8;">กดชื่อกลุ่ม (เช่น Online · ช่องทางต่างๆ) เพื่อเลือกทั้งกลุ่มในครั้งเดียว</span>
-              </div>
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <sc-for list="{{ chanMultiGroups }}" as="g" hint-placeholder-count="3">
-                  <div style="border:1px solid #EEF2F6; background:#FBFCFE; border-radius:12px; padding:11px 13px;">
-                    <div style="margin-bottom:9px;"><button onClick="{{ g.onHeader }}" style="{{ g.headerStyle }}">{{ g.label }}</button></div>
-                    <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:10px; height:10px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div>
+            <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง</div>
+              <button onClick="{{ onToggleChanFilter }}" style="{{ chanToggleStyle }}"><span>📡</span><span style="flex:1; text-align:left;">{{ chanSummary }}</span><span style="font-size:10px;">{{ chanCaret }}</span></button>
+              <sc-if value="{{ chanFilterOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:10px;">
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button onClick="{{ onClearChans }}" style="{{ chansAllStyle }}">ทุกช่องทาง</button>
+                    <span style="font-size:11px; color:#94A3B8;">กดชื่อกลุ่มเพื่อเลือกทั้งกลุ่มในครั้งเดียว</span>
                   </div>
-                </sc-for>
-              </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <sc-for list="{{ chanMultiGroups }}" as="g" hint-placeholder-count="3">
+                      <div style="border:1px solid #EEF2F6; background:#FBFCFE; border-radius:12px; padding:11px 13px;">
+                        <div style="margin-bottom:9px;"><button onClick="{{ g.onHeader }}" style="{{ g.headerStyle }}">{{ g.label }}</button></div>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:10px; height:10px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
             </div>
           </div>
 
@@ -288,19 +293,24 @@
           </div>
           <div class="mp-frow">
             <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
-            <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง · เลือกได้หลายอัน</div>
-              <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
-                <button onClick="{{ onClearChans }}" style="{{ chansAllStyle }}">ทุกช่องทาง</button>
-                <span style="font-size:11px; color:#94A3B8;">กดชื่อกลุ่ม (เช่น Online · ช่องทางต่างๆ) เพื่อเลือกทั้งกลุ่มในครั้งเดียว</span>
-              </div>
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <sc-for list="{{ chanMultiGroups }}" as="g" hint-placeholder-count="3">
-                  <div style="border:1px solid #EEF2F6; background:#FBFCFE; border-radius:12px; padding:11px 13px;">
-                    <div style="margin-bottom:9px;"><button onClick="{{ g.onHeader }}" style="{{ g.headerStyle }}">{{ g.label }}</button></div>
-                    <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:10px; height:10px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div>
+            <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง</div>
+              <button onClick="{{ onToggleChanFilter }}" style="{{ chanToggleStyle }}"><span>📡</span><span style="flex:1; text-align:left;">{{ chanSummary }}</span><span style="font-size:10px;">{{ chanCaret }}</span></button>
+              <sc-if value="{{ chanFilterOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:10px;">
+                  <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
+                    <button onClick="{{ onClearChans }}" style="{{ chansAllStyle }}">ทุกช่องทาง</button>
+                    <span style="font-size:11px; color:#94A3B8;">กดชื่อกลุ่มเพื่อเลือกทั้งกลุ่มในครั้งเดียว</span>
                   </div>
-                </sc-for>
-              </div>
+                  <div style="display:flex; flex-direction:column; gap:8px;">
+                    <sc-for list="{{ chanMultiGroups }}" as="g" hint-placeholder-count="3">
+                      <div style="border:1px solid #EEF2F6; background:#FBFCFE; border-radius:12px; padding:11px 13px;">
+                        <div style="margin-bottom:9px;"><button onClick="{{ g.onHeader }}" style="{{ g.headerStyle }}">{{ g.label }}</button></div>
+                        <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:10px; height:10px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
             </div>
             <div class="mp-fbox"><div class="mp-flabel">คน</div>
               <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
@@ -1231,6 +1241,11 @@ class Component extends DCLogic {
       return { label:g.label, headerStyle:headerChipBtn(headerActive), onHeader:()=>this.toggleChanGroup(ids),
         chips:g.opts.map(o=>{ const cc=S.channels.find(x=>x.id===o.value)||{}; const active=fcSet.has(o.value);
           return { label:o.label, color:cc.color||'#94A3B8', style:chFilterChip(active), onClick:()=>this.toggleChan(o.value) }; }) }; });
+    const chanFilterOpen=!!S.chanOpen;
+    const chanSummary=fChans.length?('เลือกไว้ '+fChans.length+' ช่องทาง'):'ทุกช่องทาง';
+    const chanCaret=chanFilterOpen?'▲':'▼';
+    const chanToggleStyle='display:inline-flex;align-items:center;gap:9px;font-size:13px;font-weight:700;padding:9px 15px;border-radius:10px;cursor:pointer;'+(fChans.length?'background:#EEF2FF;color:#4F46E5;border:1px solid #C7D2FE;':'background:#fff;color:#0F172A;border:1px solid #E2E8F0;');
+    const onToggleChanFilter=()=>this.setState({ chanOpen:!S.chanOpen });
     const chansAllActive=fChans.length===0;
     const channelChips=[{ id:'all', name:'ทุกช่องทาง', color:'#94A3B8' }, ...channelsSorted].map(c=>({ label:c.name, color:c.color, style:chipBtn(S.fChannel===c.id), onClick:()=> c.id==='all'?this.setState({fChannel:'all'}):this.setChannel(c.id) }));
     const statusChips=[{ id:'all', label:'ทุกสถานะ' }, ...S.statuses].map(s=>({ label:s.label, style:chipBtn(S.fStatus===s.id), onClick:()=> s.id==='all'?this.setState({fStatus:'all'}):this.setStatus(s.id) }));
@@ -1441,7 +1456,7 @@ class Component extends DCLogic {
       modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
       rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
-      statCards, channelChips, statusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
+      statCards, channelChips, statusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
       wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'),
