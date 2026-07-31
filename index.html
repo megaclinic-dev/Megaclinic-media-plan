@@ -267,6 +267,72 @@
         </div>
       </sc-if>
 
+      <!-- ============ ADS PLAN VIEW ============ -->
+      <sc-if value="{{ isAdsPlan }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px;">
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;">
+              <sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for>
+            </div>
+            <div style="display:inline-flex; align-items:center; gap:7px;"><span style="font-size:11px; color:#94A3B8; font-weight:600;">วันแอด</span><div style="display:inline-flex; background:#E9EDF3; border-radius:9px; padding:3px;"><sc-for list="{{ adsDateModeTabs }}" as="v" hint-placeholder-count="3"><button onClick="{{ v.onClick }}" style="{{ v.style }}">{{ v.label }}</button></sc-for></div></div>
+            <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button onClick="{{ prevPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">‹</button>
+                <div style="font-size:14px; font-weight:600; min-width:170px; text-align:center;">{{ periodLabel }}</div>
+                <button onClick="{{ nextPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">›</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ showRange }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="date" value="{{ rangeStart }}" onChange="{{ onRangeStart }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; color:#0F172A;">
+                <span style="color:#94A3B8;">–</span>
+                <input type="date" value="{{ rangeEnd }}" onChange="{{ onRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; color:#0F172A;">
+              </div>
+            </sc-if>
+            <span style="margin-left:auto; font-size:12px; color:#64748B; font-weight:600;">งาน ADS ในช่วงนี้ · {{ adsTaskCount }}</span>
+          </div>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
+            <div style="overflow-x:auto;">
+              <div style="min-width:{{ matrixMinW }}px;">
+                <div style="display:grid; grid-template-columns:{{ gridCols }}; border-bottom:1px solid #EEF2F6;">
+                  <div style="padding:12px 14px; font-size:11px; font-weight:600; color:#94A3B8; align-self:end; position:sticky; left:0; background:#fff; z-index:2;">ช่องทาง \ วันแอด</div>
+                  <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
+                    <button onClick="{{ d.onClick }}" style="{{ d.headStyle }}"><span style="font-size:10px; opacity:.85;">{{ d.dow }}</span><span style="font-size:14px; font-weight:700;">{{ d.dnum }}</span></button>
+                  </sc-for>
+                </div>
+                <sc-for list="{{ adsMatrixRows }}" as="row" hint-placeholder-count="8">
+                  <div style="display:grid; grid-template-columns:{{ gridCols }}; border-bottom:1px solid #F1F5F9;">
+                    <div style="padding:11px 14px; display:flex; align-items:center; gap:8px; position:sticky; left:0; background:#fff; z-index:1;">
+                      <span style="width:9px; height:9px; border-radius:3px; background:{{ row.color }}; flex-shrink:0;"></span>
+                      <span style="font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ row.name }}</span>
+                      <span style="margin-left:auto; font-size:11px; color:#94A3B8; font-weight:600;">{{ row.total }}</span>
+                    </div>
+                    <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
+                      <div onClick="{{ cell.onClick }}" style="{{ cell.style }}">
+                        <sc-if value="{{ cell.compact }}" hint-placeholder-val="{{ false }}">
+                          <sc-if value="{{ cell.count }}" hint-placeholder-val="">
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:3px;"><span style="font-size:14px; font-weight:700;">{{ cell.count }}</span><div style="display:flex; gap:2px;"><sc-for list="{{ cell.dots }}" as="ds" hint-placeholder-count="1"><span style="width:5px; height:5px; border-radius:50%; background:{{ ds }};"></span></sc-for></div></div>
+                          </sc-if>
+                        </sc-if>
+                        <sc-if value="{{ cell.wide }}" hint-placeholder-val="{{ true }}">
+                          <sc-for list="{{ cell.tasks }}" as="t" hint-placeholder-count="1">
+                            <button onClick="{{ t.onClick }}" title="{{ t.tip }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
+                              <sc-if value="{{ t.hasTag }}" hint-placeholder-val="{{ false }}"><div style="font-size:9px; font-weight:700; color:{{ t.color }}; margin-bottom:1px;">{{ t.tag }}</div></sc-if>
+                              <div style="display:flex; align-items:center; gap:5px;"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.title }}</span><span style="margin-left:auto; font-size:9px; font-weight:700; color:#fff; background:{{ t.avatarBg }}; border-radius:4px; padding:1px 4px; flex-shrink:0;">{{ t.initials }}</span></div>
+                            </button>
+                          </sc-for>
+                          <sc-if value="{{ cell.more }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px; color:#94A3B8; padding-left:3px;">+{{ cell.more }} เพิ่มเติม</div></sc-if>
+                        </sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
       <!-- ============ CONTENT CALENDAR VIEW ============ -->
       <sc-if value="{{ isTable }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex; flex-direction:column; gap:16px;">
@@ -902,7 +968,7 @@ class Component extends DCLogic {
       kols: seed.kols || [], doctors: seed.doctors || [], prices: seed.prices || [],
       fMedium:'all',
       dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
-      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:'2026-07-08',
+      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:'2026-07-08', adsDateMode:'bar',
       modal:null, form:{}
     };
   }
@@ -979,7 +1045,7 @@ class Component extends DCLogic {
     if(!anyLeft && posList.length){ const first=posList[0]; if(!P[first]) P[first]={}; if(!P[first].team) P[first].team={view:true,edit:true,del:false}; P[first].team.view=true; P[first].team.edit=true; }
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return true; return p[area].view!==false; }
-  navArea(v){ return { plan:'tasks', table:'tasks', report:'tasks', team:'team', channels:'channels', content:'content', procedure:'procedure', status:'status', format:'format', size:'size', branch:'branch', history:'history', kol:'ads', doctor:'ads', price:'ads', adPostType:'ads', adFunnel:'ads', adCampaign:'ads', adAudience:'ads', adObjective:'ads', adStatus:'ads' }[v]; }
+  navArea(v){ return { plan:'tasks', adsplan:'tasks', table:'tasks', report:'tasks', team:'team', channels:'channels', content:'content', procedure:'procedure', status:'status', format:'format', size:'size', branch:'branch', history:'history', kol:'ads', doctor:'ads', price:'ads', adPostType:'ads', adFunnel:'ads', adCampaign:'ads', adAudience:'ads', adObjective:'ads', adStatus:'ads' }[v]; }
   firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
   defaultSeed(){
@@ -1086,6 +1152,7 @@ class Component extends DCLogic {
     else if(o.medium==='offline') o.jobType='central';
     return o; }
   openAddTask(){ this.openModal('task','add',this.blankTask()); }
+  openEditTaskBrief(t){ this.openEditTask(t); this.setState(s=>({ form:{ ...s.form, tab:'brief' } })); }
   blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'' }; }
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), tab:'detail' }); }
@@ -1127,6 +1194,11 @@ class Component extends DCLogic {
       var miss=req.filter(function(x){ var v=f[x[0]]; return !v || (typeof v==='string' && !v.trim()); }).map(function(x){ return x[1]; });
       if(miss.length){ this.setState({ form:{ ...f, _err:'กรุณากรอกให้ครบ: '+miss.join(', ') } }); return; }
       const brief=this.normalizeBrief(f.brief); if(!brief.adStart) brief.adStart=f.date||'';
+      const isAds=(brief.platforms||[]).some(x=>x&&x!=='__none__');
+      if(isAds){ const adReq=[]; const has=a=>Array.isArray(a)&&a.length>0;
+        if(!has(brief.kols)) adReq.push('KOL/KOC'); if(!has(brief.doctors)) adReq.push('Doctor Name'); if(!has(brief.prices)) adReq.push('Price');
+        if(!brief.postType) adReq.push('Post Type'); if(!brief.funnel) adReq.push('Funnel'); if(!brief.campaign) adReq.push('Campaign'); if(!brief.adEnd) adReq.push('วันปิดแอด');
+        if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'งาน ADS (มี Platform Ads) ต้องกรอกใน Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
       const procs=Array.isArray(f.procs)?f.procs:[];
       const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief };
       if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
@@ -1318,6 +1390,26 @@ class Component extends DCLogic {
       return { name:c.name, color:c.color, total, cells };
     });
 
+    const adsMode=['bar','open','two'].indexOf(S.adsDateMode)>=0?S.adsDateMode:'bar';
+    const isAdsTask=t=>((t.brief&&t.brief.platforms)||[]).some(x=>x&&x!=='__none__');
+    const adStartOf=t=>(t.brief&&t.brief.adStart)||t.date;
+    const adEndOf=t=>(t.brief&&t.brief.adEnd)||'';
+    const adsInCell=(t,iso)=>{ const s=adStartOf(t); const e=adEndOf(t)||s; if(adsMode==='open') return iso===s; if(adsMode==='two') return iso===s||iso===e; return iso>=s&&iso<=e; };
+    const adsMatrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
+      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>isAdsTask(t)&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&adsInCell(t,d.iso)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t)); total+=ct.length;
+        const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
+        const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const s0=adStartOf(t), e0=adEndOf(t)||s0; const tag=(d.iso===s0?'▶ เปิด':(d.iso===e0?'■ ปิด':''));
+          return { title:t.title, tip:t.title+' · แอด '+s0+(adEndOf(t)?(' → '+e0):''), color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), tag:tag, hasTag:!!tag, onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTaskBrief(t); } }; });
+        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''));
+        const first=ct[0];
+        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown, more:(!compact&&ct.length>3)?ct.length-3:0, style,
+          onClick:()=> first ? this.openEditTaskBrief(first) : this.openModal('task','add',this.blankTask(isOther?{ ch:'other', jobType:'central', date:d.iso }:{ ch:c.id, date:d.iso })) };
+      });
+      return { name:c.name, color:c.color, total, cells };
+    });
+    const adsDateModeTabs=[['bar','แถบเปิด→ปิด'],['open','ตามวันเปิด'],['two','แยกเปิด/ปิด']].map(x=>({ label:x[1], style:cvBtn(adsMode===x[0]), onClick:()=>this.setState({ adsDateMode:x[0] }) }));
+    const adsTaskCount=T.filter(t=>isAdsTask(t)&&daySet.has(adStartOf(t))&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t)).length;
+
     const scoped=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
     const cntBy=id=>scoped.filter(t=>t.status===id).length;
     const statCards=[
@@ -1474,14 +1566,14 @@ class Component extends DCLogic {
         changes:ch, noChanges:ch.length===0,
         actionStyle:'font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap;color:'+(actClr[l.action]||'#64748B')+';background:'+(actClr[l.action]||'#64748B')+'18;' }; });
 
-    const navMeta={ plan:['📋','แผนงาน'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adStatus:['🚦','สถานะ ADS'] };
+    const navMeta={ plan:['📋','แผนงาน'], adsplan:['📣','แผนงาน ADS'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adStatus:['🚦','สถานะ ADS'] };
     const navBadge={ plan:S.tasks.length, table:null, report:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length, kol:S.kols.length, doctor:S.doctors.length, price:S.prices.length, adPostType:S.adPostTypes.length, adFunnel:S.adFunnels.length, adCampaign:S.adCampaigns.length, adAudience:S.adAudiences.length, adObjective:S.adObjectives.length, adStatus:S.adStatuses.length };
     const mkNav=k=>({ label:navMeta[k][1], icon:navMeta[k][0], badge:navBadge[k]||null,
       style:'display:flex;align-items:center;gap:11px;width:100%;font-size:13px;font-weight:600;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;'+(S.view===k?'background:#4F46E5;color:#fff;':'background:transparent;color:#94A3B8;'),
       onClick:()=>this.setView(k) });
     const navOpen=S.navOpen||{};
     const navSections=[
-      { title:null, keys:['plan','table','report'] },
+      { title:null, keys:['plan','adsplan','table','report'] },
       { title:'DATA', keys:['channels','content','procedure','format','size','branch','status','kol','doctor'] },
       { title:'ADS', keys:['price','adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective'] },
       { title:'SETTING', keys:['team','history'] }
@@ -1495,7 +1587,7 @@ class Component extends DCLogic {
         headStyle:'display:flex;align-items:center;width:100%;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.08em;padding:14px 12px 5px;background:transparent;border:none;cursor:pointer;'+(hasCurrent&&!open?'color:#818CF8;':'') };
     }).filter(sec=>sec.items.length);
     const curArea=this.navArea(S.view); const viewAllowed=curArea==null||can(curArea,'view');
-    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], team:['ทีมงาน','จัดการพนักงานและสิทธิ์ตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
+    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], team:['ทีมงาน','จัดการพนักงานและสิทธิ์ตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
 
     const m=S.modal, f=S.form||{};
     let modalTitle='';
@@ -1630,6 +1722,7 @@ class Component extends DCLogic {
       statCards, channelChips, statusChips, adStatusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
+      isAdsPlan:viewAllowed&&S.view==='adsplan', adsMatrixRows, adsDateModeTabs, adsTaskCount,
       wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'),
       onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}),
       reportSections, reportTotal:rep.length,
