@@ -1296,14 +1296,20 @@ class Component extends DCLogic {
     this.setState({ modal:{ kind:'confirm', msg:'ลบ'+lbl+' "'+it.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นจะถูกตั้งเป็น "ไม่ระบุ"':''), onYes:()=>this.commit({ [key]:S[key].filter(x=>x.id!==it.id), tasks:S.tasks.map(t=>t[field]===it.id?{ ...t,[field]:'' }:t), modal:null }, 'ลบ', lbl+' "'+it.name+'"') } }); }
 
   download(name, text, mime){ const b=new Blob(['\ufeff'+text],{type:mime}); const u=URL.createObjectURL(b); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),800); }
+  briefHeaders(){ return ['Platform Ads','KOL/KOC','Doctor Name','Price','Post Type','Funnel','Campaign','Type of Audience','Objective','สถานะ ADS','วันเปิดแอด','วันปิดแอด','Note','Remark','Meta Ad Name']; }
+  briefRow(t){ const S=this.state; const b=t.brief||{};
+    const nm=(list,id)=>{ const x=(list||[]).find(o=>o.id===id); return x?x.name:''; };
+    const nmM=(list,ids)=>(ids||[]).filter(x=>x!=='__none__').map(id=>nm(list,id)).filter(Boolean).join(', ');
+    return [ nmM(S.channels,b.platforms), nmM(S.kols,b.kols), nmM(S.doctors,b.doctors), nmM(S.prices,b.prices), nm(S.adPostTypes,b.postType), nm(S.adFunnels,b.funnel), nm(S.adCampaigns,b.campaign), nm(S.adAudiences,b.audience), nm(S.adObjectives,b.objective), nm(S.adStatuses,b.adStatus), b.adStart||'', b.adEnd||'', (b.note||'').replace(/\n/g,' '), (b.remark||'').replace(/\n/g,' '), this.buildAdName(t) ]; }
+  isAdsRow(t){ const b=t.brief||{}; const pf=(b.platforms||[]).some(x=>x&&x!=='__none__'); const stt=this.state.adStatuses.find(s=>s.id===b.adStatus); return pf && !this.isNoAds(stt); }
   exportCSV(){ const S=this.state; const cn=id=>id==='other'?'อื่นๆ':((S.channels.find(c=>c.id===id)||{}).name||''); const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||k; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
     const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
     const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
     const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
-    const rows=[['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา(วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบ','Size','Creative','Graphic','สถานะ','แคปชั่น','รายละเอียด','ลิงก์']];
-    S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(t=>rows.push([t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),this.procIds(t).map(prn).join(', '),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),(t.caption||'').replace(/\n/g,' '),(t.details||'').replace(/\n/g,' '),t.link||'']));
+    const rows=[['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา(วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบ','Size','Creative','Graphic','สถานะ','แคปชั่น','รายละเอียด','ลิงก์'].concat(this.briefHeaders())];
+    S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(t=>rows.push([t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),this.procIds(t).map(prn).join(', '),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),(t.caption||'').replace(/\n/g,' '),(t.details||'').replace(/\n/g,' '),t.link||''].concat(this.briefRow(t))));
     this.download('media-plan.csv', rows.map(r=>r.map(esc).join(',')).join('\n'), 'text/csv;charset=utf-8'); }
-  exportJSON(){ const S=this.state; this.download('media-plan.json', JSON.stringify({ channels:S.channels, people:S.people, contentTypes:S.contentTypes, procedures:S.procedures, formats:S.formats, sizes:S.sizes, branches:S.branches, statuses:S.statuses, tasks:S.tasks, log:S.log }, null, 2), 'application/json'); }
+  exportJSON(){ const S=this.state; this.download('media-plan.json', JSON.stringify(this._dataBlob(), null, 2), 'application/json'); }
   xmlEsc(v){ return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\r?\n/g,'&#10;'); }
   sheetXml(name, rows){
     const safe=String(name).replace(/[\\\/\?\*\[\]:]/g,' ').slice(0,31);
@@ -1316,8 +1322,11 @@ class Component extends DCLogic {
     const S=this.state;
     const cn=id=>id==='other'?'อื่นๆ':((S.channels.find(c=>c.id===id)||{}).name||''); const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||''; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||''; const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
     const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
-    const tasks=[['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา (วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบงาน','Size งาน','Creative','Graphic','สถานะ','คำบรรยายภาพ','แคปชั่น','รายละเอียดอื่นๆ','ลิงก์งาน','จำนวนรูป','จำนวนไฟล์ AW']];
-    S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1).forEach(t=>tasks.push([t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),this.procIds(t).map(prn).join(', '),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),t.imgDesc||'',t.caption||'',t.details||'',t.link||'',(t.images||[]).length,(t.aw||[]).length]));
+    const taskHead=['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา (วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบงาน','Size งาน','Creative','Graphic','สถานะ','คำบรรยายภาพ','แคปชั่น','รายละเอียดอื่นๆ','ลิงก์งาน','จำนวนรูป','จำนวนไฟล์ AW'].concat(this.briefHeaders());
+    const taskRow=t=>[t.date,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),this.procIds(t).map(prn).join(', '),t.title,fmn(t.format),szn(t.size),pn(t.creative),pn(t.graphic),sn(t.status),t.imgDesc||'',t.caption||'',t.details||'',t.link||'',(t.images||[]).length,(t.aw||[]).length].concat(this.briefRow(t));
+    const sorted=S.tasks.slice().sort((a,b)=>a.date<b.date?-1:1);
+    const tasks=[taskHead]; sorted.forEach(t=>tasks.push(taskRow(t)));
+    const adsTasks=[taskHead]; sorted.filter(t=>this.isAdsRow(t)).forEach(t=>adsTasks.push(taskRow(t)));
     const team=[['ชื่อ','ตำแหน่ง','สี','จำนวนงาน (Creative)','จำนวนงาน (Graphic)']];
     S.people.forEach(p=>team.push([p.name,p.position,p.color,S.tasks.filter(t=>t.creative===p.id).length,S.tasks.filter(t=>t.graphic===p.id).length]));
     const chKindLbl={online:'Online',offline:'Offline'};
@@ -1335,12 +1344,17 @@ class Component extends DCLogic {
     S.log.forEach(l=>{ const who=(S.people.find(p=>p.id===l.actorId)||{}).name||'—';
       if((l.changes||[]).length) l.changes.forEach(c=>hist.push([l.ts,who,l.action,l.detail||'',c.f,c.from,c.to]));
       else hist.push([l.ts,who,l.action,l.detail||'','','','']); });
+    const dated=(list)=>{ const r=[['ชื่อ','วันเริ่มใช้','วันหมดอายุ','สี']]; list.forEach(x=>r.push([x.name,x.start||'',x.expiry||'',x.color||''])); return r; };
+    const simpleAd=(list)=>{ const r=[['ชื่อ','สี']]; list.forEach(x=>r.push([x.name,x.color||''])); return r; };
     const named={
-      plan:['แผนงาน',tasks], table:['ปฏิทินคอนเทนต์',tasks], report:['สรุป',tasks],
+      plan:['แผนงาน',tasks], table:['ปฏิทินคอนเทนต์',tasks], report:['สรุป',tasks], adsplan:['แผนงาน ADS',adsTasks],
       channels:['ช่องทาง',chs],
       content:['ประเภทคอนเทนต์',simple(S.contentTypes,'ctype')], procedure:['หัตถการ',simple(S.procedures,'proc')],
       format:['รูปแบบงาน',simple(S.formats,'format')], size:['Size งาน',simple(S.sizes,'size')],
       branch:['สาขา',brRows], status:['สถานะ',simple(S.statuses,'status','label')],
+      kol:['KOL-KOC',dated(S.kols)], doctor:['Doctor Name',dated(S.doctors)], price:['Price',dated(S.prices)],
+      adPostType:['Post Type',simpleAd(S.adPostTypes)], adFunnel:['Funnel',simpleAd(S.adFunnels)], adCampaign:['Campaign',simpleAd(S.adCampaigns)],
+      adAudience:['Type of Audience',simpleAd(S.adAudiences)], adObjective:['Objective',simpleAd(S.adObjectives)], adStatus:['สถานะ ADS',simpleAd(S.adStatuses)],
       history:['ประวัติการแก้ไข',hist]
     };
     let sheets, fname;
