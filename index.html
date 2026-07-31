@@ -836,8 +836,10 @@
               </div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">สถานะ ADS</span>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefAdStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
-              <div style="font-size:11px; color:#94A3B8; line-height:1.6;">รายการ KOL/KOC, Doctor, Price แสดงเฉพาะที่ใช้ได้ตามวันลงงาน ({{ form.date }}) · จัดการที่เมนู DATA / ADS</div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Platform Ads <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน · แยกตามช่องทาง</span></span>
+              <sc-if value="{{ adsNoAds }}" hint-placeholder-val="{{ true }}"><div style="font-size:12px; color:#64748B; background:#F8FAFC; border:1px solid #EEF2F6; border-radius:10px; padding:11px 13px; line-height:1.6;">สถานะ <b>"ไม่ยิงแอด"</b> — ไม่ต้องกรอกข้อมูลโฆษณา · ถ้าจะยิงแอด เปลี่ยนสถานะเป็น "ยังไม่ได้ยิง" ด้านบน</div></sc-if>
+              <sc-if value="{{ adsReq }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:11px; color:#94A3B8; line-height:1.6;">รายการ KOL/KOC, Doctor, Price แสดงเฉพาะที่ใช้ได้ตามวันลงงาน ({{ form.date }}) · จัดการที่เมนู DATA / ADS · ช่อง <span style="color:#EF4444; font-weight:700;">*</span> ต้องกรอก</div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Platform Ads<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน · แยกตามช่องทาง</span></span>
                 <sc-if value="{{ briefPlatformEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มีช่องทางที่ติ๊ก Platform Ads · ไปติ๊กที่เมนู DATA › ช่องทาง</div></sc-if>
                 <div style="display:flex; flex-direction:column; gap:10px;">
                   <sc-for list="{{ briefPlatformGroups }}" as="g" hint-placeholder-count="3">
@@ -847,31 +849,32 @@
                     </div>
                   </sc-for>
                 </div></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">KOL / KOC <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">KOL / KOC<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
                 <sc-if value="{{ briefKolEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มี KOL/KOC ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › KOL / KOC</div></sc-if>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefKolChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Doctor Name <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Doctor Name<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
                 <sc-if value="{{ briefDoctorEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มีรายชื่อแพทย์ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › Doctor Name</div></sc-if>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefDoctorChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Price <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Price<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
                 <sc-if value="{{ briefPriceEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มี Price ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › Price</div></sc-if>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefPriceChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Post Type</span><select value="{{ briefPostType }}" onChange="{{ onBriefPostType }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefPostTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
-                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Funnel</span><select value="{{ briefFunnel }}" onChange="{{ onBriefFunnel }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Post Type<span style="color:#EF4444; font-weight:700;"> *</span></span><select value="{{ briefPostType }}" onChange="{{ onBriefPostType }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefPostTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Funnel<span style="color:#EF4444; font-weight:700;"> *</span></span><select value="{{ briefFunnel }}" onChange="{{ onBriefFunnel }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
               </div>
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
-                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Campaign</span><select value="{{ briefCampaign }}" onChange="{{ onBriefCampaign }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefCampaignOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Campaign<span style="color:#EF4444; font-weight:700;"> *</span></span><select value="{{ briefCampaign }}" onChange="{{ onBriefCampaign }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefCampaignOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Type of Audience</span><select value="{{ briefAudience }}" onChange="{{ onBriefAudience }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefAudienceOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
               </div>
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันเปิดแอด <span style="color:#94A3B8; font-weight:500;">· ปรับได้</span></span><input type="date" value="{{ briefAdStart }}" onChange="{{ onBriefAdStart }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
-                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันปิดแอด</span><input type="date" value="{{ briefAdEnd }}" onChange="{{ onBriefAdEnd }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันปิดแอด<span style="color:#EF4444; font-weight:700;"> *</span></span><input type="date" value="{{ briefAdEnd }}" onChange="{{ onBriefAdEnd }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
               </div>
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Objective</span><select value="{{ briefObjective }}" onChange="{{ onBriefObjective }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">สถานะ ADS</span><select value="{{ briefAdStatus }}" onChange="{{ onBriefAdStatus }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefAdStatusOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
               </div>
+              </sc-if>
             </div>
           </sc-if>
           <sc-if value="{{ taskErr }}" hint-placeholder-val=""><div style="padding:10px 22px 0; font-size:12px; font-weight:700; color:#EF4444;">{{ taskErr }}</div></sc-if>
@@ -964,7 +967,7 @@ class Component extends DCLogic {
       adCampaigns: seed.adCampaigns || this.defaultAdList(['AO','Event'],'acm'),
       adAudiences: seed.adAudiences || this.defaultAdList(['Interest','Lookalike','CustomList','ThruplaysData','Location'],'aud'),
       adObjectives: seed.adObjectives || this.defaultAdList(['Eng','Reach','Msg','View','PageLike','Visit','Purchase','Recall','Lead','Click','AddF'],'obj'),
-      adStatuses: seed.adStatuses || this.defaultAdList(['ยังไม่ได้ยิง','ยิง ADS แล้ว'],'ast'),
+      adStatuses: this.ensureAdStatuses(seed.adStatuses || this.defaultAdList(['ไม่ยิงแอด','ยังไม่ได้ยิง','ยิง ADS แล้ว'],'ast')),
       kols: seed.kols || [], doctors: seed.doctors || [], prices: seed.prices || [],
       fMedium:'all',
       dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
@@ -988,6 +991,8 @@ class Component extends DCLogic {
   }
   defaultBranches(){ return this.BRANCHES.map((n,i)=>({ id:'br'+(i+1), name:n, color:this.PAL[(i+4)%this.PAL.length] })); }
   defaultAdList(names,pfx){ return names.map((n,i)=>({ id:pfx+(i+1), name:n, color:this.PAL[(i+6)%this.PAL.length] })); }
+  ensureAdStatuses(list){ let a=Array.isArray(list)?list.slice():[]; if(!a.some(s=>(s&&s.name||'').trim()==='ไม่ยิงแอด')){ a=[{ id:'ast0', name:'ไม่ยิงแอด', color:'#94A3B8' }, ...a]; } return a; }
+  isNoAds(status){ return (status&&status.name||'').trim()==='ไม่ยิงแอด'; }
   adsMeta(){ return {
     kol:{ key:'kols', label:'KOL / KOC', pfx:'kol', dated:true },
     doctor:{ key:'doctors', label:'Doctor Name', pfx:'doc', dated:true },
@@ -1019,7 +1024,7 @@ class Component extends DCLogic {
   _dataBlob(){ const S=this.state; return { channels:S.channels, people:S.people, tasks:S.tasks, log:S.log, contentTypes:S.contentTypes, procedures:S.procedures, statuses:S.statuses, perms:S.perms, positions:S.positions, formats:S.formats, sizes:S.sizes, branches:S.branches, adPostTypes:S.adPostTypes, adFunnels:S.adFunnels, adCampaigns:S.adCampaigns, adAudiences:S.adAudiences, adObjectives:S.adObjectives, adStatuses:S.adStatuses, kols:S.kols, doctors:S.doctors, prices:S.prices }; }
   persist(){ try { localStorage.setItem('mediaPlan.v3', JSON.stringify(this._dataBlob())); } catch(e){} this._pushRemote(); }
   _applyRemote(d){ if(!d || typeof d!=='object' || !Array.isArray(d.channels)) return; const S=this.state;
-    this.setState({ channels:d.channels||S.channels, people:d.people||S.people, tasks:d.tasks||[], log:d.log||[], contentTypes:d.contentTypes||S.contentTypes, procedures:d.procedures||S.procedures, statuses:d.statuses||S.statuses, perms:d.perms||S.perms, positions:d.positions||S.positions, formats:d.formats||S.formats, sizes:d.sizes||S.sizes, branches:d.branches||S.branches, adPostTypes:d.adPostTypes||S.adPostTypes, adFunnels:d.adFunnels||S.adFunnels, adCampaigns:d.adCampaigns||S.adCampaigns, adAudiences:d.adAudiences||S.adAudiences, adObjectives:d.adObjectives||S.adObjectives, adStatuses:d.adStatuses||S.adStatuses, kols:d.kols||S.kols, doctors:d.doctors||S.doctors, prices:d.prices||S.prices }); }
+    this.setState({ channels:d.channels||S.channels, people:d.people||S.people, tasks:d.tasks||[], log:d.log||[], contentTypes:d.contentTypes||S.contentTypes, procedures:d.procedures||S.procedures, statuses:d.statuses||S.statuses, perms:d.perms||S.perms, positions:d.positions||S.positions, formats:d.formats||S.formats, sizes:d.sizes||S.sizes, branches:d.branches||S.branches, adPostTypes:d.adPostTypes||S.adPostTypes, adFunnels:d.adFunnels||S.adFunnels, adCampaigns:d.adCampaigns||S.adCampaigns, adAudiences:d.adAudiences||S.adAudiences, adObjectives:d.adObjectives||S.adObjectives, adStatuses:this.ensureAdStatuses(d.adStatuses||S.adStatuses), kols:d.kols||S.kols, doctors:d.doctors||S.doctors, prices:d.prices||S.prices }); }
   _pushRemote(){ if(!window.sb) return; clearTimeout(this._pushT); this._pushT=setTimeout(()=>{ const blob=this._dataBlob(); this._lastJson=JSON.stringify(blob); window.sb.from('app_state').update({ data:blob, updated_at:new Date().toISOString() }).eq('id',1).then(({error})=>{ if(error) console.error('[sync] push', error.message); }); }, 600); }
   _pullRemote(){ if(!window.sb) return Promise.resolve(); return window.sb.from('app_state').select('data').eq('id',1).maybeSingle().then(({data,error})=>{ if(error){ console.error('[sync] pull', error.message); return; } const d=data&&data.data; if(d&&Array.isArray(d.channels)){ this._lastJson=JSON.stringify(d); this._applyRemote(d); } else { this._pushRemote(); } }); }
   _initSync(){ if(!window.sb || this._syncInit) return; this._syncInit=true; this._pullRemote();
@@ -1145,7 +1150,7 @@ class Component extends DCLogic {
   setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; const k=(form.medium==='offline')?'offline':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k&&(c.jobcat||'online')===v)){ const fc=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===v); form.ch=fc?fc.id:''; } return { form }; }); }
   blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const firstCh=(S.channels.find(c=>(c.kind||'online')==='online'&&(c.jobcat||'online')===jt)||{}).id||'';
     const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', procs:[], imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), tab:'detail' };
-    base.brief.adStatus=(S.adStatuses[0]||{}).id||'';
+    base.brief.adStatus=((S.adStatuses.find(s=>this.isNoAds(s))||S.adStatuses[0]||{}).id)||'';
     const o=Object.assign(base, over||{});
     const chObj=S.channels.find(c=>c.id===o.ch);
     if(chObj){ o.medium=(chObj.kind==='offline')?'offline':'online'; o.jobType=(o.medium==='offline')?'central':(chObj.jobcat||'online'); }
@@ -1194,11 +1199,12 @@ class Component extends DCLogic {
       var miss=req.filter(function(x){ var v=f[x[0]]; return !v || (typeof v==='string' && !v.trim()); }).map(function(x){ return x[1]; });
       if(miss.length){ this.setState({ form:{ ...f, _err:'กรุณากรอกให้ครบ: '+miss.join(', ') } }); return; }
       const brief=this.normalizeBrief(f.brief); if(!brief.adStart) brief.adStart=f.date||'';
-      const isAds=(brief.platforms||[]).some(x=>x&&x!=='__none__');
-      if(isAds){ const adReq=[]; const has=a=>Array.isArray(a)&&a.length>0;
-        if(!has(brief.kols)) adReq.push('KOL/KOC'); if(!has(brief.doctors)) adReq.push('Doctor Name'); if(!has(brief.prices)) adReq.push('Price');
+      const selAdStatus=S.adStatuses.find(s=>s.id===brief.adStatus)||{};
+      const adsReq=!!brief.adStatus && !this.isNoAds(selAdStatus);
+      if(adsReq){ const adReq=[]; const has=a=>Array.isArray(a)&&a.length>0;
+        if(!has(brief.platforms)) adReq.push('Platform Ads'); if(!has(brief.kols)) adReq.push('KOL/KOC'); if(!has(brief.doctors)) adReq.push('Doctor Name'); if(!has(brief.prices)) adReq.push('Price');
         if(!brief.postType) adReq.push('Post Type'); if(!brief.funnel) adReq.push('Funnel'); if(!brief.campaign) adReq.push('Campaign'); if(!brief.adEnd) adReq.push('วันปิดแอด');
-        if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'งาน ADS (มี Platform Ads) ต้องกรอกใน Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
+        if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'สถานะ "'+(selAdStatus.name||'')+'" ต้องกรอก Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
       const procs=Array.isArray(f.procs)?f.procs:[];
       const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief };
       if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
@@ -1391,7 +1397,7 @@ class Component extends DCLogic {
     });
 
     const adsMode=['bar','open','two'].indexOf(S.adsDateMode)>=0?S.adsDateMode:'bar';
-    const isAdsTask=t=>((t.brief&&t.brief.platforms)||[]).some(x=>x&&x!=='__none__');
+    const isAdsTask=t=>{ const b=t.brief||{}; const pf=(b.platforms||[]).some(x=>x&&x!=='__none__'); const stt=S.adStatuses.find(s=>s.id===b.adStatus); return pf && !this.isNoAds(stt); };
     const adStartOf=t=>(t.brief&&t.brief.adStart)||t.date;
     const adEndOf=t=>(t.brief&&t.brief.adEnd)||'';
     const adsInCell=(t,iso)=>{ const s=adStartOf(t); const e=adEndOf(t)||s; if(adsMode==='open') return iso===s; if(adsMode==='two') return iso===s||iso===e; return iso>=s&&iso<=e; };
@@ -1659,6 +1665,8 @@ class Component extends DCLogic {
     const briefObjectiveOpts=briefSingle('objective',S.adObjectives);
     const briefAdStatusOpts=briefSingle('adStatus',S.adStatuses);
     const briefAdStatusPick=S.adStatuses.map(s=>({ label:s.name, onClick:()=>this.setBrief('adStatus',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+((brf.adStatus||'')===s.id?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#64748B;') }));
+    const selAdStatusObj=S.adStatuses.find(s=>s.id===brf.adStatus)||{};
+    const adsFieldsReq=!!brf.adStatus && !this.isNoAds(selAdStatusObj);
     const briefAdStart=(brf.adStart||briefDate||'');
     // --- Meta Ad Name (auto) ---
     const nm=(list,id)=>{ const x=(list||[]).find(o=>o.id===id); return x?x.name:''; };
@@ -1694,7 +1702,7 @@ class Component extends DCLogic {
       taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabAW:formTab==='aw', tabBrief:formTab==='brief',
       briefPlatformChips, briefPlatformGroups, briefKolChips, briefDoctorChips, briefPriceChips, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
       briefPostType:brf.postType||'', briefFunnel:brf.funnel||'', briefCampaign:brf.campaign||'', briefAudience:brf.audience||'', briefObjective:brf.objective||'', briefAdStatus:brf.adStatus||'',
-      metaAdName, procChips, procEmpty:procChips.length===0,
+      metaAdName, procChips, procEmpty:procChips.length===0, adsReq:adsFieldsReq, adsNoAds:!adsFieldsReq,
       briefKolEmpty:kolsAvail.length===0, briefDoctorEmpty:doctorsAvail.length===0, briefPlatformEmpty:briefPlatformChips.length===0, briefPriceEmpty:briefPriceChips.length===0,
       onBriefPostType:e=>this.setBrief('postType',e.target.value), onBriefFunnel:e=>this.setBrief('funnel',e.target.value), onBriefCampaign:e=>this.setBrief('campaign',e.target.value), onBriefAudience:e=>this.setBrief('audience',e.target.value), onBriefObjective:e=>this.setBrief('objective',e.target.value), onBriefAdStatus:e=>this.setBrief('adStatus',e.target.value),
       onBriefAdStart:e=>this.setBrief('adStart',e.target.value), onBriefAdEnd:e=>this.setBrief('adEnd',e.target.value),
