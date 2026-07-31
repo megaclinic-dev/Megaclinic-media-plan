@@ -291,11 +291,18 @@
             </sc-if>
             <span style="margin-left:auto; font-size:12px; color:#64748B; font-weight:600;">งาน ADS ในช่วงนี้ · {{ adsTaskCount }}</span>
           </div>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; padding:14px 16px; display:flex; flex-wrap:wrap; gap:12px 14px; align-items:flex-end;">
+            <div style="flex:2 1 220px;"><div style="font-size:11px; font-weight:600; color:#64748B; margin-bottom:5px;">ค้นหา (ชื่องาน / Meta Ad Name)</div><input value="{{ adfSearch }}" onChange="{{ onAdfSearch }}" placeholder="พิมพ์ชื่องาน หรือ ชื่อ Ad" style="width:100%; font-size:13px; padding:8px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+            <sc-for list="{{ adsFilters }}" as="fl" hint-placeholder-count="11">
+              <div style="flex:1 1 150px; min-width:130px;"><div style="font-size:11px; font-weight:600; color:#64748B; margin-bottom:5px; white-space:nowrap;">{{ fl.label }}</div><select value="{{ fl.value }}" onChange="{{ fl.on }}" style="width:100%; font-size:13px; padding:8px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ fl.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+            </sc-for>
+            <button onClick="{{ onClearAdsFilters }}" style="font-size:12px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 13px; border-radius:9px; cursor:pointer; white-space:nowrap;">ล้างตัวกรอง</button>
+          </div>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
             <div style="overflow-x:auto;">
               <div style="min-width:{{ matrixMinW }}px;">
                 <div style="display:grid; grid-template-columns:{{ gridCols }}; border-bottom:1px solid #EEF2F6;">
-                  <div style="padding:12px 14px; font-size:11px; font-weight:600; color:#94A3B8; align-self:end; position:sticky; left:0; background:#fff; z-index:2;">ช่องทาง \ วันแอด</div>
+                  <div style="padding:12px 14px; font-size:11px; font-weight:600; color:#94A3B8; align-self:end; position:sticky; left:0; background:#fff; z-index:2;">Platform Ads \ วัน</div>
                   <sc-for list="{{ days }}" as="d" hint-placeholder-count="7">
                     <button onClick="{{ d.onClick }}" style="{{ d.headStyle }}"><span style="font-size:10px; opacity:.85;">{{ d.dow }}</span><span style="font-size:14px; font-weight:700;">{{ d.dnum }}</span></button>
                   </sc-for>
@@ -317,7 +324,6 @@
                         <sc-if value="{{ cell.wide }}" hint-placeholder-val="{{ true }}">
                           <sc-for list="{{ cell.tasks }}" as="t" hint-placeholder-count="1">
                             <button onClick="{{ t.onClick }}" title="{{ t.tip }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
-                              <sc-if value="{{ t.hasTag }}" hint-placeholder-val="{{ false }}"><div style="font-size:9px; font-weight:700; color:{{ t.color }}; margin-bottom:1px;">{{ t.tag }}</div></sc-if>
                               <div style="display:flex; align-items:center; gap:5px;"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.title }}</span><span style="margin-left:auto; font-size:9px; font-weight:700; color:#fff; background:{{ t.avatarBg }}; border-radius:4px; padding:1px 4px; flex-shrink:0;">{{ t.initials }}</span></div>
                             </button>
                           </sc-for>
@@ -971,7 +977,8 @@ class Component extends DCLogic {
       kols: seed.kols || [], doctors: seed.doctors || [], prices: seed.prices || [],
       fMedium:'all',
       dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
-      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:'2026-07-08', adsDateMode:'bar',
+      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:'2026-07-08', adsDateMode:'post',
+      adfKol:'all', adfDoctor:'all', adfPrice:'all', adfPost:'all', adfFunnel:'all', adfCamp:'all', adfAud:'all', adfObj:'all', adfProc:'all', adfFormat:'all', adfSearch:'',
       modal:null, form:{}
     };
   }
@@ -1158,6 +1165,11 @@ class Component extends DCLogic {
     return o; }
   openAddTask(){ this.openModal('task','add',this.blankTask()); }
   openEditTaskBrief(t){ this.openEditTask(t); this.setState(s=>({ form:{ ...s.form, tab:'brief' } })); }
+  buildAdName(t){ const S=this.state; const b=t.brief||{};
+    const nm=(list,id)=>{ const x=(list||[]).find(o=>o.id===id); return x?x.name:''; };
+    const nmM=(list,ids)=>(ids||[]).map(id=>nm(list,id)).filter(Boolean).join(',');
+    const pairs=[[nm(S.formats,t.format),'Post Format'],[nm(S.adCampaigns,b.campaign),'Campaign'],[(t.title||'').trim(),'ชื่องาน'],[nmM(S.procedures,this.procIds(t)),'Product'],[nmM(S.prices,b.prices),'Price'],[nmM(S.channels,b.platforms),'Platform Ads'],[nm(S.adPostTypes,b.postType),'Post Type'],[((S.people.find(p=>p.id===t.creative)||{}).name||''),'Creative'],[nm(S.adObjectives,b.objective),'Objective'],[nmM(S.kols,b.kols),'KOL/KOC'],[nm(S.adFunnels,b.funnel),'Funnel'],[nmM(S.doctors,b.doctors),'Doctor Name']];
+    return pairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_'); }
   blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'' }; }
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), tab:'detail' }); }
@@ -1395,25 +1407,47 @@ class Component extends DCLogic {
       return { name:c.name, color:c.color, total, cells };
     });
 
-    const adsMode=['bar','open','two'].indexOf(S.adsDateMode)>=0?S.adsDateMode:'bar';
+    const adsMode=['post','open','close'].indexOf(S.adsDateMode)>=0?S.adsDateMode:'post';
     const isAdsTask=t=>{ const b=t.brief||{}; const pf=(b.platforms||[]).some(x=>x&&x!=='__none__'); const stt=S.adStatuses.find(s=>s.id===b.adStatus); return pf && !this.isNoAds(stt); };
-    const adStartOf=t=>(t.brief&&t.brief.adStart)||t.date;
-    const adEndOf=t=>(t.brief&&t.brief.adEnd)||'';
-    const adsInCell=(t,iso)=>{ const s=adStartOf(t); const e=adEndOf(t)||s; if(adsMode==='open') return iso===s; if(adsMode==='two') return iso===s||iso===e; return iso>=s&&iso<=e; };
-    const adsMatrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
-      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>isAdsTask(t)&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&adsInCell(t,d.iso)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t)); total+=ct.length;
+    const adDateOf=t=>{ const b=t.brief||{}; if(adsMode==='open') return b.adStart||t.date; if(adsMode==='close') return b.adEnd||''; return t.date; };
+    const adfIn=(arr,v)=>v==='all'||(Array.isArray(arr)&&arr.indexOf(v)>=0);
+    const adsMatch=t=>{ const b=t.brief||{};
+      return (S.fAdStatus==='all'||b.adStatus===S.fAdStatus) && adfIn(b.kols,S.adfKol) && adfIn(b.doctors,S.adfDoctor) && adfIn(b.prices,S.adfPrice)
+        && (S.adfPost==='all'||b.postType===S.adfPost) && (S.adfFunnel==='all'||b.funnel===S.adfFunnel) && (S.adfCamp==='all'||b.campaign===S.adfCamp)
+        && (S.adfAud==='all'||b.audience===S.adfAud) && (S.adfObj==='all'||b.objective===S.adfObj)
+        && (S.adfProc==='all'||this.procIds(t).indexOf(S.adfProc)>=0) && (S.adfFormat==='all'||t.format===S.adfFormat); };
+    const adsQ=(S.adfSearch||'').trim().toLowerCase();
+    const adsSearchMatch=t=>!adsQ||(t.title||'').toLowerCase().indexOf(adsQ)>=0||this.buildAdName(t).toLowerCase().indexOf(adsQ)>=0;
+    const adsPass=t=>isAdsTask(t)&&adsMatch(t)&&adsSearchMatch(t);
+    const adsRowChannels=S.channels.filter(c=>c.platformAd&&(fChans.length===0||fcSet.has(c.id)));
+    const adsMatrixRows=adsRowChannels.map(c=>{ let total=0;
+      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>adsPass(t)&&((t.brief&&t.brief.platforms)||[]).indexOf(c.id)>=0&&adDateOf(t)===d.iso); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
-        const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const s0=adStartOf(t), e0=adEndOf(t)||s0; const tag=(d.iso===s0?'▶ เปิด':(d.iso===e0?'■ ปิด':''));
-          return { title:t.title, tip:t.title+' · แอด '+s0+(adEndOf(t)?(' → '+e0):''), color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), tag:tag, hasTag:!!tag, onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTaskBrief(t); } }; });
+        const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const b=t.brief||{};
+          return { title:t.title, tip:this.buildAdName(t), color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTaskBrief(t); } }; });
         const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''));
         const first=ct[0];
         return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown, more:(!compact&&ct.length>3)?ct.length-3:0, style,
-          onClick:()=> first ? this.openEditTaskBrief(first) : this.openModal('task','add',this.blankTask(isOther?{ ch:'other', jobType:'central', date:d.iso }:{ ch:c.id, date:d.iso })) };
+          onClick:()=> first ? this.openEditTaskBrief(first) : null };
       });
       return { name:c.name, color:c.color, total, cells };
     });
-    const adsDateModeTabs=[['bar','แถบเปิด→ปิด'],['open','ตามวันเปิด'],['two','แยกเปิด/ปิด']].map(x=>({ label:x[1], style:cvBtn(adsMode===x[0]), onClick:()=>this.setState({ adsDateMode:x[0] }) }));
-    const adsTaskCount=T.filter(t=>isAdsTask(t)&&daySet.has(adStartOf(t))&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t)).length;
+    const adsDateModeTabs=[['post','วันลงงาน'],['open','วันเปิดแอด'],['close','วันปิดแอด']].map(x=>({ label:x[1], style:cvBtn(adsMode===x[0]), onClick:()=>this.setState({ adsDateMode:x[0] }) }));
+    const adsTaskCount=T.filter(t=>adsPass(t)&&daySet.has(adDateOf(t))).length;
+    const adfSel=(val,items,setter)=>[{value:'all',label:'ทั้งหมด'}].concat(items.map(it=>({value:it.id,label:it.name||it.label})));
+    const adsFilters=[
+      { label:'สถานะ ADS', value:S.fAdStatus, opts:adfSel(S.fAdStatus,S.adStatuses), on:e=>this.setState({fAdStatus:e.target.value}) },
+      { label:'KOL / KOC', value:S.adfKol, opts:adfSel(S.adfKol,S.kols), on:e=>this.setState({adfKol:e.target.value}) },
+      { label:'Doctor Name', value:S.adfDoctor, opts:adfSel(S.adfDoctor,S.doctors), on:e=>this.setState({adfDoctor:e.target.value}) },
+      { label:'Price', value:S.adfPrice, opts:adfSel(S.adfPrice,S.prices), on:e=>this.setState({adfPrice:e.target.value}) },
+      { label:'Post Type', value:S.adfPost, opts:adfSel(S.adfPost,S.adPostTypes), on:e=>this.setState({adfPost:e.target.value}) },
+      { label:'Funnel', value:S.adfFunnel, opts:adfSel(S.adfFunnel,S.adFunnels), on:e=>this.setState({adfFunnel:e.target.value}) },
+      { label:'Campaign', value:S.adfCamp, opts:adfSel(S.adfCamp,S.adCampaigns), on:e=>this.setState({adfCamp:e.target.value}) },
+      { label:'Type of Audience', value:S.adfAud, opts:adfSel(S.adfAud,S.adAudiences), on:e=>this.setState({adfAud:e.target.value}) },
+      { label:'Objective', value:S.adfObj, opts:adfSel(S.adfObj,S.adObjectives), on:e=>this.setState({adfObj:e.target.value}) },
+      { label:'หัตถการ', value:S.adfProc, opts:adfSel(S.adfProc,S.procedures), on:e=>this.setState({adfProc:e.target.value}) },
+      { label:'รูปแบบงาน', value:S.adfFormat, opts:adfSel(S.adfFormat,S.formats), on:e=>this.setState({adfFormat:e.target.value}) }
+    ];
 
     const scoped=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
     const cntBy=id=>scoped.filter(t=>t.status===id).length;
@@ -1646,7 +1680,7 @@ class Component extends DCLogic {
     const briefDate=f.date||'';
     const chipSel=on=>'display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#334155;');
     const briefMulti=(field,items)=>items.map(it=>({ label:it.name, color:it.color||'#94A3B8', style:chipSel((brf[field]||[]).indexOf(it.id)>=0), onClick:()=>this.toggleBrief(field,it.id) }));
-    const briefSingle=(field,items)=>[{ value:'', label:'— ไม่ระบุ —' }].concat(items.map(it=>({ value:it.id, label:it.name })));
+    const briefSingle=(field,items)=>[{ value:'', label:'' }].concat(items.map(it=>({ value:it.id, label:it.name })));
     const onlineChannels=S.channels.filter(c=>c.platformAd||(brf.platforms||[]).indexOf(c.id)>=0);
     const kolsAvail=S.kols.filter(k=>this.adActive(k,briefDate)||(brf.kols||[]).indexOf(k.id)>=0);
     const doctorsAvail=S.doctors.filter(k=>this.adActive(k,briefDate)||(brf.doctors||[]).indexOf(k.id)>=0);
@@ -1669,21 +1703,7 @@ class Component extends DCLogic {
     // --- Meta Ad Name (auto) ---
     const nm=(list,id)=>{ const x=(list||[]).find(o=>o.id===id); return x?x.name:''; };
     const nmMulti=(list,ids)=>(ids||[]).map(id=>nm(list,id)).filter(Boolean).join(',');
-    const adNamePairs=[
-      [nm(S.formats,f.format),'Post Format'],
-      [nm(S.adCampaigns,brf.campaign),'Campaign'],
-      [(f.title||'').trim(),'ชื่องาน'],
-      [nmMulti(S.procedures,f.procs),'Product'],
-      [nmMulti(S.prices,brf.prices),'Price'],
-      [nmMulti(S.channels,brf.platforms),'Platform Ads'],
-      [nm(S.adPostTypes,brf.postType),'Post Type'],
-      [((S.people.find(p=>p.id===f.creative)||{}).name||''),'Creative'],
-      [nm(S.adObjectives,brf.objective),'Objective'],
-      [nmMulti(S.kols,brf.kols),'KOL/KOC'],
-      [nm(S.adFunnels,brf.funnel),'Funnel'],
-      [nmMulti(S.doctors,brf.doctors),'Doctor Name']
-    ];
-    const metaAdName=adNamePairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_');
+    const metaAdName=this.buildAdName({ title:f.title, format:f.format, procs:f.procs, creative:f.creative, brief:brf });
     const mkAtt=field=>(f[field]||[]).map((im,i)=>{ const isImg=(im.data||'').startsWith('data:image');
       const thumb=isImg?React.createElement('img',{src:im.data,style:{width:'100%',height:'88px',objectFit:'cover',display:'block'}}):null;
       const awThumb=isImg?React.createElement('img',{src:im.data,style:{width:'40px',height:'40px',objectFit:'cover',borderRadius:'7px',flexShrink:0}}):React.createElement('span',{style:{width:'40px',height:'40px',borderRadius:'7px',background:'#F1F5F9',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}},'📄');
@@ -1728,7 +1748,7 @@ class Component extends DCLogic {
       statCards, channelChips, statusChips, adStatusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
-      isAdsPlan:viewAllowed&&S.view==='adsplan', adsMatrixRows, adsDateModeTabs, adsTaskCount,
+      isAdsPlan:viewAllowed&&S.view==='adsplan', adsMatrixRows, adsDateModeTabs, adsTaskCount, adsFilters, adfSearch:S.adfSearch||'', onAdfSearch:e=>this.setState({adfSearch:e.target.value}), onClearAdsFilters:()=>this.setState({fAdStatus:'all',adfKol:'all',adfDoctor:'all',adfPrice:'all',adfPost:'all',adfFunnel:'all',adfCamp:'all',adfAud:'all',adfObj:'all',adfProc:'all',adfFormat:'all',adfSearch:''}),
       wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'),
       onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}),
       reportSections, reportTotal:rep.length,
