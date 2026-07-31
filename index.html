@@ -771,9 +771,16 @@
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">สถานะ ADS</span>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefAdStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
               <div style="font-size:11px; color:#94A3B8; line-height:1.6;">รายการ KOL/KOC, Doctor, Price แสดงเฉพาะที่ใช้ได้ตามวันลงงาน ({{ form.date }}) · จัดการที่เมนู DATA / ADS</div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Platform Ads <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Platform Ads <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน · แยกตามช่องทาง</span></span>
                 <sc-if value="{{ briefPlatformEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มีช่องทางที่ติ๊ก Platform Ads · ไปติ๊กที่เมนู DATA › ช่องทาง</div></sc-if>
-                <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefPlatformChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <sc-for list="{{ briefPlatformGroups }}" as="g" hint-placeholder-count="3">
+                    <div style="border:1px solid #EEF2F6; background:#FBFCFE; border-radius:11px; padding:9px 11px;">
+                      <div style="font-size:10px; font-weight:700; letter-spacing:.05em; color:#4F46E5; text-transform:uppercase; margin-bottom:7px;">{{ g.label }}</div>
+                      <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ g.chips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div>
+                    </div>
+                  </sc-for>
+                </div></div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">KOL / KOC <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
                 <sc-if value="{{ briefKolEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มี KOL/KOC ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › KOL / KOC</div></sc-if>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefKolChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
@@ -1547,6 +1554,7 @@ class Component extends DCLogic {
     const doctorsAvail=S.doctors.filter(k=>this.adActive(k,briefDate)||(brf.doctors||[]).indexOf(k.id)>=0);
     const pricesAvail=S.prices.filter(k=>this.adActive(k,briefDate)||(brf.prices||[]).indexOf(k.id)>=0);
     const briefPlatformChips=briefMulti('platforms',onlineChannels);
+    const briefPlatformGroups=CH_CAT.map((cat,i)=>({ label:cat[2], chips:briefMulti('platforms', onlineChannels.filter(c=>chCatIdx(c)===i)) })).filter(g=>g.chips.length);
     const briefKolChips=briefMulti('kols',kolsAvail);
     const briefDoctorChips=briefMulti('doctors',doctorsAvail);
     const briefPriceChips=briefMulti('prices',pricesAvail);
@@ -1590,7 +1598,7 @@ class Component extends DCLogic {
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabAW:formTab==='aw', tabBrief:formTab==='brief',
-      briefPlatformChips, briefKolChips, briefDoctorChips, briefPriceChips, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
+      briefPlatformChips, briefPlatformGroups, briefKolChips, briefDoctorChips, briefPriceChips, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
       briefPostType:brf.postType||'', briefFunnel:brf.funnel||'', briefCampaign:brf.campaign||'', briefAudience:brf.audience||'', briefObjective:brf.objective||'', briefAdStatus:brf.adStatus||'',
       metaAdName, procChips, procEmpty:procChips.length===0,
       briefKolEmpty:briefKolChips.length===0, briefDoctorEmpty:briefDoctorChips.length===0, briefPlatformEmpty:briefPlatformChips.length===0, briefPriceEmpty:briefPriceChips.length===0,
