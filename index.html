@@ -1164,8 +1164,7 @@ class Component extends DCLogic {
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
   toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
   setBrief(field,val){ this.setState(s=>({ form:{ ...s.form, brief:Object.assign({}, s.form.brief, { [field]:val }) } })); }
-  toggleBrief(field,id){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); let arr=Array.isArray(b[field])?b[field].slice():[]; arr=arr.filter(x=>x!=='__none__'); const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); b[field]=arr; return { form:{ ...s.form, brief:b } }; }); }
-  briefSetNone(field){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); const cur=Array.isArray(b[field])?b[field]:[]; b[field]=(cur.indexOf('__none__')>=0)?[]:['__none__']; return { form:{ ...s.form, brief:b } }; }); }
+  toggleBrief(field,id){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); const arr=Array.isArray(b[field])?b[field].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); b[field]=arr; return { form:{ ...s.form, brief:b } }; }); }
   openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
   openEditPerson(p){ this.openModal('person','edit',{ id:p.id, name:p.name, position:p.position, color:p.color, pass:p.pass||'1234' }); }
   openAddChannel(){ this.openModal('channel','add',{ name:'', group:'อื่นๆ', kind:'online', jobcat:'online', color:this.PAL[Math.floor(Math.random()*this.PAL.length)] }); }
@@ -1647,7 +1646,6 @@ class Component extends DCLogic {
     const briefDate=f.date||'';
     const chipSel=on=>'display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#334155;');
     const briefMulti=(field,items)=>items.map(it=>({ label:it.name, color:it.color||'#94A3B8', style:chipSel((brf[field]||[]).indexOf(it.id)>=0), onClick:()=>this.toggleBrief(field,it.id) }));
-    const briefMultiNone=(field,items)=>[{ label:'ไม่มี', color:'#CBD5E1', style:chipSel((brf[field]||[]).indexOf('__none__')>=0), onClick:()=>this.briefSetNone(field) }].concat(briefMulti(field,items));
     const briefSingle=(field,items)=>[{ value:'', label:'— ไม่ระบุ —' }].concat(items.map(it=>({ value:it.id, label:it.name })));
     const onlineChannels=S.channels.filter(c=>c.platformAd||(brf.platforms||[]).indexOf(c.id)>=0);
     const kolsAvail=S.kols.filter(k=>this.adActive(k,briefDate)||(brf.kols||[]).indexOf(k.id)>=0);
@@ -1655,8 +1653,8 @@ class Component extends DCLogic {
     const pricesAvail=S.prices.filter(k=>this.adActive(k,briefDate)||(brf.prices||[]).indexOf(k.id)>=0);
     const briefPlatformChips=briefMulti('platforms',onlineChannels);
     const briefPlatformGroups=CH_CAT.map((cat,i)=>({ label:cat[2], chips:briefMulti('platforms', onlineChannels.filter(c=>chCatIdx(c)===i)) })).filter(g=>g.chips.length);
-    const briefKolChips=briefMultiNone('kols',kolsAvail);
-    const briefDoctorChips=briefMultiNone('doctors',doctorsAvail);
+    const briefKolChips=briefMulti('kols',kolsAvail);
+    const briefDoctorChips=briefMulti('doctors',doctorsAvail);
     const briefPriceChips=briefMulti('prices',pricesAvail);
     const briefPostTypeOpts=briefSingle('postType',S.adPostTypes);
     const briefFunnelOpts=briefSingle('funnel',S.adFunnels);
