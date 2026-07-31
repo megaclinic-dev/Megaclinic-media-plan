@@ -294,7 +294,14 @@
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; padding:14px 16px; display:flex; flex-wrap:wrap; gap:12px 14px; align-items:flex-end;">
             <div style="flex:2 1 220px;"><div style="font-size:11px; font-weight:600; color:#64748B; margin-bottom:5px;">ค้นหา (ชื่องาน / Meta Ad Name)</div><input value="{{ adfSearch }}" onChange="{{ onAdfSearch }}" placeholder="พิมพ์ชื่องาน หรือ ชื่อ Ad" style="width:100%; font-size:13px; padding:8px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
             <sc-for list="{{ adsFilters }}" as="fl" hint-placeholder-count="11">
-              <div style="flex:1 1 150px; min-width:130px;"><div style="font-size:11px; font-weight:600; color:#64748B; margin-bottom:5px; white-space:nowrap;">{{ fl.label }}</div><select value="{{ fl.value }}" onChange="{{ fl.on }}" style="width:100%; font-size:13px; padding:8px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;"><sc-for list="{{ fl.opts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
+              <div style="position:relative;">
+                <button onClick="{{ fl.onToggle }}" style="{{ fl.btnStyle }}">{{ fl.label }}<sc-if value="{{ fl.hasSel }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px; font-weight:700; background:#4F46E5; color:#fff; border-radius:99px; padding:1px 6px;">{{ fl.count }}</span></sc-if><span style="font-size:9px; color:#94A3B8;">▼</span></button>
+                <sc-if value="{{ fl.open }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute; top:100%; left:0; margin-top:4px; z-index:20; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 8px 24px rgba(15,23,42,.14); padding:6px; min-width:180px; max-height:240px; overflow-y:auto;">
+                    <sc-for list="{{ fl.items }}" as="it" hint-placeholder-count="3"><button onClick="{{ it.onClick }}" style="display:flex; align-items:center; gap:8px; width:100%; text-align:left; font-size:13px; color:#334155; background:none; border:none; padding:7px 9px; border-radius:7px; cursor:pointer;"><span style="{{ it.boxStyle }}"></span>{{ it.label }}</button></sc-for>
+                  </div>
+                </sc-if>
+              </div>
             </sc-for>
             <button onClick="{{ onClearAdsFilters }}" style="font-size:12px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 13px; border-radius:9px; cursor:pointer; white-space:nowrap;">ล้างตัวกรอง</button>
           </div>
@@ -855,15 +862,14 @@
                     </div>
                   </sc-for>
                 </div></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">KOL / KOC<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
-                <sc-if value="{{ briefKolEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มี KOL/KOC ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › KOL / KOC</div></sc-if>
-                <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefKolChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Doctor Name<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
-                <sc-if value="{{ briefDoctorEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มีรายชื่อแพทย์ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › Doctor Name</div></sc-if>
-                <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefDoctorChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Price<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
-                <sc-if value="{{ briefPriceEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มี Price ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › Price</div></sc-if>
-                <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefPriceChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">KOL / KOC<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span><select value="" onChange="{{ onBriefKolAdd }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefKolOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"><sc-for list="{{ briefKolTags }}" as="t" hint-placeholder-count="1"><span style="display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:4px 5px 4px 10px; border-radius:99px; background:#EEF2FF; color:#4F46E5; border:1px solid #C7D2FE;">{{ t.label }}<button onClick="{{ t.onRemove }}" style="width:16px; height:16px; border:none; border-radius:50%; background:#C7D2FE; color:#4F46E5; font-size:11px; line-height:1; cursor:pointer;">×</button></span></sc-for></div></label>
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Doctor Name<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span><select value="" onChange="{{ onBriefDoctorAdd }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefDoctorOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                  <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"><sc-for list="{{ briefDoctorTags }}" as="t" hint-placeholder-count="1"><span style="display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:4px 5px 4px 10px; border-radius:99px; background:#EEF2FF; color:#4F46E5; border:1px solid #C7D2FE;">{{ t.label }}<button onClick="{{ t.onRemove }}" style="width:16px; height:16px; border:none; border-radius:50%; background:#C7D2FE; color:#4F46E5; font-size:11px; line-height:1; cursor:pointer;">×</button></span></sc-for></div></label>
+              </div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Price<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span><select value="" onChange="{{ onBriefPriceAdd }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefPriceOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;"><sc-for list="{{ briefPriceTags }}" as="t" hint-placeholder-count="1"><span style="display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:4px 5px 4px 10px; border-radius:99px; background:#EEF2FF; color:#4F46E5; border:1px solid #C7D2FE;">{{ t.label }}<button onClick="{{ t.onRemove }}" style="width:16px; height:16px; border:none; border-radius:50%; background:#C7D2FE; color:#4F46E5; font-size:11px; line-height:1; cursor:pointer;">×</button></span></sc-for></div></div>
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Post Type<span style="color:#EF4444; font-weight:700;"> *</span></span><select value="{{ briefPostType }}" onChange="{{ onBriefPostType }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefPostTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Funnel<span style="color:#EF4444; font-weight:700;"> *</span></span><select value="{{ briefFunnel }}" onChange="{{ onBriefFunnel }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
@@ -880,6 +886,10 @@
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Objective</span><select value="{{ briefObjective }}" onChange="{{ onBriefObjective }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">สถานะ ADS</span><select value="{{ briefAdStatus }}" onChange="{{ onBriefAdStatus }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefAdStatusOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
               </div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Note</span>
+                <textarea value="{{ briefNote }}" onChange="{{ onBriefNote }}" rows="3" placeholder="โน้ตภายในทีม..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Remark</span>
+                <textarea value="{{ briefRemark }}" onChange="{{ onBriefRemark }}" rows="3" placeholder="หมายเหตุเพิ่มเติม..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
               </sc-if>
             </div>
           </sc-if>
@@ -978,7 +988,7 @@ class Component extends DCLogic {
       fMedium:'all',
       dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
       fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:'2026-07-08', adsDateMode:'post',
-      adfKol:'all', adfDoctor:'all', adfPrice:'all', adfPost:'all', adfFunnel:'all', adfCamp:'all', adfAud:'all', adfObj:'all', adfProc:'all', adfFormat:'all', adfSearch:'',
+      adfStatus:[], adfKol:[], adfDoctor:[], adfPrice:[], adfPost:[], adfFunnel:[], adfCamp:[], adfAud:[], adfObj:[], adfProc:[], adfFormat:[], adfSearch:'', adfOpen:'',
       modal:null, form:{}
     };
   }
@@ -1170,10 +1180,11 @@ class Component extends DCLogic {
     const nmM=(list,ids)=>(ids||[]).map(id=>nm(list,id)).filter(Boolean).join(',');
     const pairs=[[nm(S.formats,t.format),'Post Format'],[nm(S.adCampaigns,b.campaign),'Campaign'],[(t.title||'').trim(),'ชื่องาน'],[nmM(S.procedures,this.procIds(t)),'Product'],[nmM(S.prices,b.prices),'Price'],[nmM(S.channels,b.platforms),'Platform Ads'],[nm(S.adPostTypes,b.postType),'Post Type'],[((S.people.find(p=>p.id===t.creative)||{}).name||''),'Creative'],[nm(S.adObjectives,b.objective),'Objective'],[nmM(S.kols,b.kols),'KOL/KOC'],[nm(S.adFunnels,b.funnel),'Funnel'],[nmM(S.doctors,b.doctors),'Doctor Name']];
     return pairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_'); }
-  blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'' }; }
+  blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'' }; }
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), tab:'detail' }); }
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
+  toggleAdf(key,id){ this.setState(s=>{ const arr=Array.isArray(s[key])?s[key].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { [key]:arr }; }); }
   toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
   setBrief(field,val){ this.setState(s=>({ form:{ ...s.form, brief:Object.assign({}, s.form.brief, { [field]:val }) } })); }
   toggleBrief(field,id){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); const arr=Array.isArray(b[field])?b[field].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); b[field]=arr; return { form:{ ...s.form, brief:b } }; }); }
@@ -1410,12 +1421,13 @@ class Component extends DCLogic {
     const adsMode=['post','open','close'].indexOf(S.adsDateMode)>=0?S.adsDateMode:'post';
     const isAdsTask=t=>{ const b=t.brief||{}; const pf=(b.platforms||[]).some(x=>x&&x!=='__none__'); const stt=S.adStatuses.find(s=>s.id===b.adStatus); return pf && !this.isNoAds(stt); };
     const adDateOf=t=>{ const b=t.brief||{}; if(adsMode==='open') return b.adStart||t.date; if(adsMode==='close') return b.adEnd||''; return t.date; };
-    const adfIn=(arr,v)=>v==='all'||(Array.isArray(arr)&&arr.indexOf(v)>=0);
+    const inA=(F,v)=>!F||!F.length||F.indexOf(v)>=0;
+    const interA=(F,arr)=>!F||!F.length||(arr||[]).some(x=>F.indexOf(x)>=0);
     const adsMatch=t=>{ const b=t.brief||{};
-      return (S.fAdStatus==='all'||b.adStatus===S.fAdStatus) && adfIn(b.kols,S.adfKol) && adfIn(b.doctors,S.adfDoctor) && adfIn(b.prices,S.adfPrice)
-        && (S.adfPost==='all'||b.postType===S.adfPost) && (S.adfFunnel==='all'||b.funnel===S.adfFunnel) && (S.adfCamp==='all'||b.campaign===S.adfCamp)
-        && (S.adfAud==='all'||b.audience===S.adfAud) && (S.adfObj==='all'||b.objective===S.adfObj)
-        && (S.adfProc==='all'||this.procIds(t).indexOf(S.adfProc)>=0) && (S.adfFormat==='all'||t.format===S.adfFormat); };
+      return inA(S.adfStatus,b.adStatus) && interA(S.adfKol,b.kols) && interA(S.adfDoctor,b.doctors) && interA(S.adfPrice,b.prices)
+        && inA(S.adfPost,b.postType) && inA(S.adfFunnel,b.funnel) && inA(S.adfCamp,b.campaign)
+        && inA(S.adfAud,b.audience) && inA(S.adfObj,b.objective)
+        && interA(S.adfProc,this.procIds(t)) && inA(S.adfFormat,t.format); };
     const adsQ=(S.adfSearch||'').trim().toLowerCase();
     const adsSearchMatch=t=>!adsQ||(t.title||'').toLowerCase().indexOf(adsQ)>=0||this.buildAdName(t).toLowerCase().indexOf(adsQ)>=0;
     const adsPass=t=>isAdsTask(t)&&adsMatch(t)&&adsSearchMatch(t);
@@ -1434,20 +1446,13 @@ class Component extends DCLogic {
     });
     const adsDateModeTabs=[['post','วันลงงาน'],['open','วันเปิดแอด'],['close','วันปิดแอด']].map(x=>({ label:x[1], style:cvBtn(adsMode===x[0]), onClick:()=>this.setState({ adsDateMode:x[0] }) }));
     const adsTaskCount=T.filter(t=>adsPass(t)&&daySet.has(adDateOf(t))).length;
-    const adfSel=(val,items,setter)=>[{value:'all',label:'ทั้งหมด'}].concat(items.map(it=>({value:it.id,label:it.name||it.label})));
-    const adsFilters=[
-      { label:'สถานะ ADS', value:S.fAdStatus, opts:adfSel(S.fAdStatus,S.adStatuses), on:e=>this.setState({fAdStatus:e.target.value}) },
-      { label:'KOL / KOC', value:S.adfKol, opts:adfSel(S.adfKol,S.kols), on:e=>this.setState({adfKol:e.target.value}) },
-      { label:'Doctor Name', value:S.adfDoctor, opts:adfSel(S.adfDoctor,S.doctors), on:e=>this.setState({adfDoctor:e.target.value}) },
-      { label:'Price', value:S.adfPrice, opts:adfSel(S.adfPrice,S.prices), on:e=>this.setState({adfPrice:e.target.value}) },
-      { label:'Post Type', value:S.adfPost, opts:adfSel(S.adfPost,S.adPostTypes), on:e=>this.setState({adfPost:e.target.value}) },
-      { label:'Funnel', value:S.adfFunnel, opts:adfSel(S.adfFunnel,S.adFunnels), on:e=>this.setState({adfFunnel:e.target.value}) },
-      { label:'Campaign', value:S.adfCamp, opts:adfSel(S.adfCamp,S.adCampaigns), on:e=>this.setState({adfCamp:e.target.value}) },
-      { label:'Type of Audience', value:S.adfAud, opts:adfSel(S.adfAud,S.adAudiences), on:e=>this.setState({adfAud:e.target.value}) },
-      { label:'Objective', value:S.adfObj, opts:adfSel(S.adfObj,S.adObjectives), on:e=>this.setState({adfObj:e.target.value}) },
-      { label:'หัตถการ', value:S.adfProc, opts:adfSel(S.adfProc,S.procedures), on:e=>this.setState({adfProc:e.target.value}) },
-      { label:'รูปแบบงาน', value:S.adfFormat, opts:adfSel(S.adfFormat,S.formats), on:e=>this.setState({adfFormat:e.target.value}) }
-    ];
+    const adfDef=[['adfStatus','สถานะ ADS',S.adStatuses],['adfKol','KOL / KOC',S.kols],['adfDoctor','Doctor Name',S.doctors],['adfPrice','Price',S.prices],['adfPost','Post Type',S.adPostTypes],['adfFunnel','Funnel',S.adFunnels],['adfCamp','Campaign',S.adCampaigns],['adfAud','Type of Audience',S.adAudiences],['adfObj','Objective',S.adObjectives],['adfProc','หัตถการ',S.procedures],['adfFormat','รูปแบบงาน',S.formats]];
+    const adsFilters=adfDef.map(function(d){ const key=d[0]; const sel=S[key]||[]; const open=S.adfOpen===key;
+      return { key, label:d[1], count:sel.length, hasSel:sel.length>0, open,
+        btnStyle:'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:8px 11px;border-radius:9px;cursor:pointer;white-space:nowrap;border:1px solid '+(sel.length?'#4F46E5;background:#EEF2FF;color:#4F46E5;':'#E2E8F0;background:#fff;color:#475569;'),
+        onToggle:()=>this.setState({ adfOpen:(this.state.adfOpen===key?'':key) }),
+        items:(d[2]||[]).map(it=>({ label:it.name||it.label, checked:sel.indexOf(it.id)>=0, boxStyle:'width:15px;height:15px;border-radius:4px;flex-shrink:0;border:1px solid '+(sel.indexOf(it.id)>=0?'#4F46E5;background:#4F46E5;':'#CBD5E1;background:#fff;'), onClick:()=>this.toggleAdf(key,it.id) })) };
+    }.bind(this));
 
     const scoped=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
     const cntBy=id=>scoped.filter(t=>t.status===id).length;
@@ -1687,9 +1692,11 @@ class Component extends DCLogic {
     const pricesAvail=S.prices.filter(k=>this.adActive(k,briefDate)||(brf.prices||[]).indexOf(k.id)>=0);
     const briefPlatformChips=briefMulti('platforms',onlineChannels);
     const briefPlatformGroups=CH_CAT.map((cat,i)=>({ label:cat[2], chips:briefMulti('platforms', onlineChannels.filter(c=>chCatIdx(c)===i)) })).filter(g=>g.chips.length);
-    const briefKolChips=briefMulti('kols',kolsAvail);
-    const briefDoctorChips=briefMulti('doctors',doctorsAvail);
-    const briefPriceChips=briefMulti('prices',pricesAvail);
+    const selToAdd=(field,avail,all)=>{ const sel=(brf[field]||[]).filter(x=>x!=='__none__');
+      const tags=sel.map(id=>{ const it=(all||[]).find(x=>x.id===id)||{ name:id, color:'#94A3B8' }; return { label:it.name, color:it.color||'#94A3B8', onRemove:()=>this.toggleBrief(field,id) }; });
+      const opts=[{ value:'', label:'— เลือกเพิ่ม —' }].concat((avail||[]).filter(it=>sel.indexOf(it.id)<0).map(it=>({ value:it.id, label:it.name })));
+      return { tags, opts, onAdd:e=>{ const v=e.target.value; if(v) this.toggleBrief(field,v); } }; };
+    const kolS=selToAdd('kols',kolsAvail,S.kols), docS=selToAdd('doctors',doctorsAvail,S.doctors), priceS=selToAdd('prices',pricesAvail,S.prices);
     const briefPostTypeOpts=briefSingle('postType',S.adPostTypes);
     const briefFunnelOpts=briefSingle('funnel',S.adFunnels);
     const briefCampaignOpts=briefSingle('campaign',S.adCampaigns);
@@ -1718,10 +1725,11 @@ class Component extends DCLogic {
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabAW:formTab==='aw', tabBrief:formTab==='brief',
-      briefPlatformChips, briefPlatformGroups, briefKolChips, briefDoctorChips, briefPriceChips, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
+      briefPlatformChips, briefPlatformGroups, briefKolTags:kolS.tags, briefKolOpts:kolS.opts, onBriefKolAdd:kolS.onAdd, briefDoctorTags:docS.tags, briefDoctorOpts:docS.opts, onBriefDoctorAdd:docS.onAdd, briefPriceTags:priceS.tags, briefPriceOpts:priceS.opts, onBriefPriceAdd:priceS.onAdd, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
       briefPostType:brf.postType||'', briefFunnel:brf.funnel||'', briefCampaign:brf.campaign||'', briefAudience:brf.audience||'', briefObjective:brf.objective||'', briefAdStatus:brf.adStatus||'',
+      briefNote:brf.note||'', briefRemark:brf.remark||'', onBriefNote:e=>this.setBrief('note',e.target.value), onBriefRemark:e=>this.setBrief('remark',e.target.value),
       metaAdName, procChips, procEmpty:procChips.length===0, adsReq:adsFieldsReq, adsNoAds:!adsFieldsReq,
-      briefKolEmpty:kolsAvail.length===0, briefDoctorEmpty:doctorsAvail.length===0, briefPlatformEmpty:briefPlatformChips.length===0, briefPriceEmpty:briefPriceChips.length===0,
+      briefKolEmpty:kolsAvail.length===0, briefDoctorEmpty:doctorsAvail.length===0, briefPlatformEmpty:briefPlatformChips.length===0, briefPriceEmpty:pricesAvail.length===0,
       onBriefPostType:e=>this.setBrief('postType',e.target.value), onBriefFunnel:e=>this.setBrief('funnel',e.target.value), onBriefCampaign:e=>this.setBrief('campaign',e.target.value), onBriefAudience:e=>this.setBrief('audience',e.target.value), onBriefObjective:e=>this.setBrief('objective',e.target.value), onBriefAdStatus:e=>this.setBrief('adStatus',e.target.value),
       onBriefAdStart:e=>this.setBrief('adStart',e.target.value), onBriefAdEnd:e=>this.setBrief('adEnd',e.target.value),
       taskErr:(m&&m.kind==='task')?(f._err||''):'',
@@ -1748,7 +1756,7 @@ class Component extends DCLogic {
       statCards, channelChips, statusChips, adStatusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
-      isAdsPlan:viewAllowed&&S.view==='adsplan', adsMatrixRows, adsDateModeTabs, adsTaskCount, adsFilters, adfSearch:S.adfSearch||'', onAdfSearch:e=>this.setState({adfSearch:e.target.value}), onClearAdsFilters:()=>this.setState({fAdStatus:'all',adfKol:'all',adfDoctor:'all',adfPrice:'all',adfPost:'all',adfFunnel:'all',adfCamp:'all',adfAud:'all',adfObj:'all',adfProc:'all',adfFormat:'all',adfSearch:''}),
+      isAdsPlan:viewAllowed&&S.view==='adsplan', adsMatrixRows, adsDateModeTabs, adsTaskCount, adsFilters, adfSearch:S.adfSearch||'', onAdfSearch:e=>this.setState({adfSearch:e.target.value}), onClearAdsFilters:()=>this.setState({adfStatus:[],adfKol:[],adfDoctor:[],adfPrice:[],adfPost:[],adfFunnel:[],adfCamp:[],adfAud:[],adfObj:[],adfProc:[],adfFormat:[],adfSearch:'',adfOpen:''}),
       wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'),
       onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}),
       reportSections, reportTotal:rep.length,
