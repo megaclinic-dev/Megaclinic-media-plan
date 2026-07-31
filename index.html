@@ -469,6 +469,7 @@
                     <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid #F1F5F9;">
                       <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                       <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                      <sc-if value="{{ canChEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onTogglePA }}" title="ติ๊กเพื่อให้ช่องนี้ขึ้นใน Platform Ads (Brief Ads)" style="{{ c.paStyle }}">{{ c.paLabel }}</button></sc-if>
                       <sc-if value="{{ canChEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                       <sc-if value="{{ canChDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
                     </div>
@@ -771,7 +772,7 @@
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefAdStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
               <div style="font-size:11px; color:#94A3B8; line-height:1.6;">รายการ KOL/KOC, Doctor, Price แสดงเฉพาะที่ใช้ได้ตามวันลงงาน ({{ form.date }}) · จัดการที่เมนู DATA / ADS</div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">Platform Ads <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
-                <sc-if value="{{ briefPlatformEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มีช่องทาง Online · เพิ่มได้ที่เมนู ช่องทาง</div></sc-if>
+                <sc-if value="{{ briefPlatformEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มีช่องทางที่ติ๊ก Platform Ads · ไปติ๊กที่เมนู DATA › ช่องทาง</div></sc-if>
                 <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ briefPlatformChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">KOL / KOC <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน</span></span>
                 <sc-if value="{{ briefKolEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:6px 0;">ยังไม่มี KOL/KOC ที่ใช้ได้ในวันนี้ · เพิ่มที่เมนู ADS › KOL / KOC</div></sc-if>
@@ -1082,6 +1083,7 @@ class Component extends DCLogic {
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), tab:'detail' }); }
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
+  toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
   setBrief(field,val){ this.setState(s=>({ form:{ ...s.form, brief:Object.assign({}, s.form.brief, { [field]:val }) } })); }
   toggleBrief(field,id){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); const arr=Array.isArray(b[field])?b[field].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); b[field]=arr; return { form:{ ...s.form, brief:b } }; }); }
   openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
@@ -1423,7 +1425,8 @@ class Component extends DCLogic {
     const chJobLbl={online:'ช่องทางต่างๆ',central:'งานกลาง',kol:'KOL'};
     const chOrder=[['online','online'],['online','central'],['online','kol'],['offline','central']];
     const gmap={}; chOrder.forEach(([k,j])=>{ gmap[k+'|'+j]={ name:chKindLbl2[k]+' · '+chJobLbl[j], channels:[] }; });
-    S.channels.forEach(c=>{ const k=(c.kind==='offline')?'offline':'online'; let j=c.jobcat||'online'; if(k==='offline') j='central'; const key=k+'|'+j; if(!gmap[key]) gmap[key]={ name:chKindLbl2[k]+' · '+(chJobLbl[j]||j), channels:[] }; gmap[key].channels.push({ name:c.name, color:c.color, onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c) }); });
+    const paChip=on=>'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;white-space:nowrap;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#94A3B8;');
+    S.channels.forEach(c=>{ const k=(c.kind==='offline')?'offline':'online'; let j=c.jobcat||'online'; if(k==='offline') j='central'; const key=k+'|'+j; if(!gmap[key]) gmap[key]={ name:chKindLbl2[k]+' · '+(chJobLbl[j]||j), channels:[] }; gmap[key].channels.push({ name:c.name, color:c.color, paOn:!!c.platformAd, paLabel:(c.platformAd?'☑':'☐')+' Platform Ads', paStyle:paChip(!!c.platformAd), onTogglePA:()=>this.toggleChannelPA(c), onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c) }); });
     const groups=chOrder.map(([k,j])=>gmap[k+'|'+j]).filter(g=>g&&g.channels.length);
 
     const contentRows=S.contentTypes.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.ctype===c.id).length, onEdit:()=>this.openEditTag('contentType',c), onDelete:()=>this.askDeleteTag('contentType',c) }));
@@ -1539,7 +1542,7 @@ class Component extends DCLogic {
     const chipSel=on=>'display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#334155;');
     const briefMulti=(field,items)=>items.map(it=>({ label:it.name, color:it.color||'#94A3B8', style:chipSel((brf[field]||[]).indexOf(it.id)>=0), onClick:()=>this.toggleBrief(field,it.id) }));
     const briefSingle=(field,items)=>[{ value:'', label:'— ไม่ระบุ —' }].concat(items.map(it=>({ value:it.id, label:it.name })));
-    const onlineChannels=S.channels.filter(c=>(c.kind||'online')==='online');
+    const onlineChannels=S.channels.filter(c=>c.platformAd||(brf.platforms||[]).indexOf(c.id)>=0);
     const kolsAvail=S.kols.filter(k=>this.adActive(k,briefDate)||(brf.kols||[]).indexOf(k.id)>=0);
     const doctorsAvail=S.doctors.filter(k=>this.adActive(k,briefDate)||(brf.doctors||[]).indexOf(k.id)>=0);
     const pricesAvail=S.prices.filter(k=>this.adActive(k,briefDate)||(brf.prices||[]).indexOf(k.id)>=0);
