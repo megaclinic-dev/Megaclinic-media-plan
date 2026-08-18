@@ -1061,25 +1061,34 @@ class Component extends DCLogic {
   _pushRemote(){ if(!window.sb) return; clearTimeout(this._pushT); this._syncSet('saving'); this._pushT=setTimeout(()=>{
     let chunks=null;
     if(this._mediaReady){ chunks=this._buildMediaChunks(); this._mediaPartsCount=chunks.length; }
-    else { this._mediaPartsCount=this._mediaParts||0; } // media not loaded yet — preserve existing pointer, don't touch chunks
+    else { this._mediaPartsCount=this._mediaParts||0; this._dirtyDuringLoad=true; } // media not loaded yet — preserve pointer, flush after load
+    // Decide up-front whether a media-chunk push is required, so the "saved" badge waits for the media to actually land.
+    let mediaPush=false, prevParts=0, cjson=null;
+    if(chunks){ cjson=JSON.stringify(chunks); if(cjson!==this._lastChunksJson){ mediaPush=true; prevParts=Math.max(this._lastPushedParts||0, (this._maxChunkId||1)-1, this._mediaParts||0); } }
+    const hasLocalMedia = !this._mediaReady && (this.state.tasks||[]).some(t=>(t.images||[]).some(x=>x&&x.data)||(t.aw||[]).some(x=>x&&x.data));
+    this._mediaPushPending = mediaPush || hasLocalMedia; // true => keep showing "saving" until media is confirmed on the server
     const core=this._coreBlob(); this._lastJson=JSON.stringify(core); this._lastPushAt=Date.now();
     window.sb.from('app_state').update({ data:core, updated_at:new Date().toISOString() }).eq('id',1).then(({error})=>{
       if(error){ console.error('[sync] push', error.message); this._syncSet('error'); clearTimeout(this._retryT); this._retryT=setTimeout(()=>this._pushRemote(), 4000); }
-      else { this._syncSet('saved'); } });
-    if(chunks){ const prevParts=Math.max(this._lastPushedParts||0, (this._maxChunkId||1)-1, this._mediaParts||0); const cjson=JSON.stringify(chunks);
-      if(cjson!==this._lastChunksJson){ this._lastChunksJson=cjson; clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, 0), 400); } }
+      else if(!this._mediaPushPending){ this._syncSet('saved'); } }); // media rows (if any) flip the badge to "saved" when they finish
+    if(mediaPush){ this._lastChunksJson=cjson; clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, 0), 400); }
   }, 600); }
-  _pushMediaChunks(chunks, prevParts, i){ i=i||0; if(!window.sb) return; const total=Math.max(chunks.length, prevParts||0); if(i>=total){ this._lastPushAt=Date.now(); this._lastPushedParts=chunks.length; this._maxChunkId=1+chunks.length; return; }
+  _pushMediaChunks(chunks, prevParts, i){ i=i||0; if(!window.sb) return; const total=Math.max(chunks.length, prevParts||0); if(i>=total){ this._lastPushAt=Date.now(); this._lastPushedParts=chunks.length; this._maxChunkId=1+chunks.length; this._mediaPushPending=false; this._syncSet('saved'); return; }
     const payload=(i<chunks.length)?{ m:chunks[i] }:{ m:{} }; this._lastPushAt=Date.now();
-    window.sb.from('app_state').upsert({ id:2+i, data:payload, updated_at:new Date().toISOString() }).then(({error})=>{ this._lastPushAt=Date.now(); if(error){ console.error('[sync] media chunk '+i, error.message); clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, i), 5000); } else { this._pushMediaChunks(chunks, prevParts, i+1); } }); }
+    window.sb.from('app_state').upsert({ id:2+i, data:payload, updated_at:new Date().toISOString() }).then(({error})=>{ this._lastPushAt=Date.now(); if(error){ console.error('[sync] media chunk '+i, error.message); this._syncSet('error'); clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, i), 5000); } else { this._pushMediaChunks(chunks, prevParts, i+1); } }); }
   _pullRemote(tries){ tries=tries||0; if(!window.sb) return Promise.resolve(); return window.sb.from('app_state').select('data').eq('id',1).maybeSingle().then(({data,error})=>{ if(error){ console.error('[sync] pull', error.message); if(tries<5){ clearTimeout(this._pullT); this._pullT=setTimeout(()=>this._pullRemote(tries+1), 1500*(tries+1)); } return; } const d=data&&data.data; if(d&&Array.isArray(d.channels)){ this._lastJson=JSON.stringify(d); this._applyRemote(d); this._pullMedia(); clearTimeout(this._shrinkT); this._shrinkT=setTimeout(()=>this._compressStateImages(), 2500); } else { this._pushRemote(); } }); }
+  _mediaLoaded(){ this._mediaReady=true;
+    // Auto-heal: if this browser holds media (from its localStorage) that never reached the server, push it now.
+    const cache=this._mediaCache||{};
+    const orphan=(this.state.tasks||[]).some(t=>((t.images||[]).some(x=>x&&x.data)||(t.aw||[]).some(x=>x&&x.data)) && !cache[t.id]);
+    if(this._dirtyDuringLoad || orphan){ this._dirtyDuringLoad=false; this._pushRemote(); } }
   _pullMedia(){ if(!window.sb) return; const gen=(this._mediaGen=(this._mediaGen||0)+1); const acc=Object.assign({}, this._mediaCache||{}); this._probeErr=0; this._probeMedia(2,gen,acc,0); }
-  _probeMedia(id,gen,acc,misses){ if(!window.sb||gen!==this._mediaGen) return; if(id>60){ this._mediaReady=true; return; }
+  _probeMedia(id,gen,acc,misses){ if(!window.sb||gen!==this._mediaGen) return; if(id>60){ this._mediaLoaded(); return; }
     window.sb.from('app_state').select('data').eq('id',id).maybeSingle().then(({data,error})=>{ if(gen!==this._mediaGen) return;
-      if(error){ if((this._probeErr=(this._probeErr||0)+1)<60){ setTimeout(()=>this._probeMedia(id,gen,acc,misses), 2000); } else { this._mediaReady=true; } return; }
+      if(error){ if((this._probeErr=(this._probeErr||0)+1)<60){ setTimeout(()=>this._probeMedia(id,gen,acc,misses), 2000); } else { this._mediaLoaded(); } return; }
       const dd=data&&data.data; let m=null; if(dd&&dd.m) m=dd.m; else if(id===2 && dd && typeof dd==='object' && !dd.m && !dd.channels) m=dd;
       if(m && Object.keys(m).length){ Object.assign(acc,m); this._mediaCache=acc; this._maxChunkId=id; if(this._coreTasks) this.setState({ tasks:this._mergeMedia(this._coreTasks,acc) }); this._probeMedia(id+1,gen,acc,0); }
-      else { if(misses>=2){ this._mediaReady=true; return; } this._probeMedia(id+1,gen,acc,misses+1); } }); }
+      else { if(misses>=2){ this._mediaLoaded(); return; } this._probeMedia(id+1,gen,acc,misses+1); } }); }
   _initSync(){ if(!window.sb || this._syncInit) return; this._syncInit=true; this._pullRemote();
     try { window.sb.channel('app_state_rt').on('postgres_changes', { event:'UPDATE', schema:'public', table:'app_state' }, ()=>{ if(this._lastPushAt && (Date.now()-this._lastPushAt)<5000) return; clearTimeout(this._rtT); this._rtT=setTimeout(()=>this._pullRemote(), 500); }).subscribe(); }
     catch(e){ console.error('[sync] realtime', e); } }
@@ -1164,8 +1173,10 @@ class Component extends DCLogic {
       for(var i=0;i<items.length;i++){ if(items[i].type&&items[i].type.indexOf('image')===0){ var f=items[i].getAsFile(); if(f) files.push(f); } }
       if(files.length){ e.preventDefault(); this.addFiles('images', files); } };
     window.addEventListener('paste', this._onPaste);
+    this._onBeforeUnload=(e)=>{ if(this._mediaPushPending || this.state.syncStatus==='saving' || this.state.syncStatus==='error'){ e.preventDefault(); e.returnValue='ยังบันทึกไม่เสร็จ ถ้าปิดตอนนี้งานล่าสุดอาจหาย'; return e.returnValue; } };
+    window.addEventListener('beforeunload', this._onBeforeUnload);
     this._initSync(); }
-  componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); if(this._onPaste) window.removeEventListener('paste',this._onPaste); }
+  componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); if(this._onPaste) window.removeEventListener('paste',this._onPaste); if(this._onBeforeUnload) window.removeEventListener('beforeunload',this._onBeforeUnload); }
 
   commit(patch, action, detail, changes, meta){
     this.setState(s=>{
