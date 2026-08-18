@@ -1039,11 +1039,11 @@ class Component extends DCLogic {
     s.perms=this.ensureTeamAccess(s.perms, s.positions, s.people);
     this.migrateFormats(s);
     return s; } catch(e){ return null; } }
-  _dataBlob(){ const S=this.state; return { channels:S.channels, people:S.people, tasks:S.tasks, log:S.log, contentTypes:S.contentTypes, procedures:S.procedures, statuses:S.statuses, perms:S.perms, positions:S.positions, formats:S.formats, sizes:S.sizes, branches:S.branches, adPostTypes:S.adPostTypes, adFunnels:S.adFunnels, adCampaigns:S.adCampaigns, adAudiences:S.adAudiences, adObjectives:S.adObjectives, adStatuses:S.adStatuses, kols:S.kols, doctors:S.doctors, prices:S.prices }; }
+  _dataBlob(){ const S=this.state; return { channels:S.channels, people:S.people, tasks:S.tasks, log:S.log, contentTypes:S.contentTypes, procedures:S.procedures, statuses:S.statuses, perms:S.perms, positions:S.positions, formats:S.formats, sizes:S.sizes, branches:S.branches, adPostTypes:S.adPostTypes, adFunnels:S.adFunnels, adCampaigns:S.adCampaigns, adAudiences:S.adAudiences, adObjectives:S.adObjectives, adStatuses:S.adStatuses, kols:S.kols, doctors:S.doctors, prices:S.prices, delTasks:S.delTasks||{} }; }
   persist(){ try { localStorage.setItem('mediaPlan.v3', JSON.stringify(this._dataBlob())); } catch(e){} this._pushRemote(); }
   _stripTask(t){ return Object.assign({}, t, { images:(t.images||[]).map(x=>({ name:x&&x.name })), aw:(t.aw||[]).map(x=>({ name:x&&x.name, vid:((x&&x.data)||'').indexOf('data:video')===0 })) }); }
   _coreBlob(){ const b=this._dataBlob(); b.tasks=(b.tasks||[]).map(t=>this._stripTask(t)); b._split=1; b._mediaParts=this._mediaPartsCount||0; return b; }
-  _buildMediaChunks(){ const entries=[]; (this.state.tasks||[]).forEach(t=>{ const im=(t.images||[]).filter(x=>x&&x.data); const aw=(t.aw||[]).filter(x=>x&&x.data); if(im.length||aw.length) entries.push([t.id,{ images:t.images||[], aw:t.aw||[] }]); });
+  _buildMediaChunks(){ const entries=[]; const cache=this._mediaCache||{}; (this.state.tasks||[]).forEach(t=>{ let im=(t.images||[]).filter(x=>x&&x.data); let aw=(t.aw||[]).filter(x=>x&&x.data); if(!im.length && !aw.length && cache[t.id]){ im=(cache[t.id].images||[]).filter(x=>x&&x.data); aw=(cache[t.id].aw||[]).filter(x=>x&&x.data); } if(im.length||aw.length) entries.push([t.id,{ images:im, aw:aw }]); });
     entries.sort((a,b)=> (a[0]+'')<(b[0]+'')?-1:1);
     const LIMIT=1800000; const chunks=[]; let cur={}, curN=0, curLen=2;
     entries.forEach(function(e){ const s=JSON.stringify(e[1]).length+(e[0]+'').length+8; if(curN>0 && curLen+s>LIMIT){ chunks.push(cur); cur={}; curN=0; curLen=2; } cur[e[0]]=e[1]; curN++; curLen+=s; });
@@ -1056,9 +1056,34 @@ class Component extends DCLogic {
       return t; }); }
   _syncSet(s){ if(this.state.syncStatus!==s) this.setState({ syncStatus:s }); if(s==='saved'){ clearTimeout(this._savedT); this._savedT=setTimeout(()=>{ if(this.state.syncStatus==='saved') this.setState({ syncStatus:'idle' }); }, 2500); } }
   _applyRemote(d){ if(!d || typeof d!=='object' || !Array.isArray(d.channels)) return; const S=this.state;
-    this._coreTasks=d.tasks||[]; this._mediaParts=(typeof d._mediaParts==='number')?d._mediaParts:(this._mediaParts||0);
-    this.setState({ channels:d.channels||S.channels, people:d.people||S.people, tasks:this._mergeMedia(d.tasks||[], this._mediaCache), log:d.log||[], contentTypes:d.contentTypes||S.contentTypes, procedures:d.procedures||S.procedures, statuses:d.statuses||S.statuses, perms:d.perms||S.perms, positions:d.positions||S.positions, formats:d.formats||S.formats, sizes:d.sizes||S.sizes, branches:d.branches||S.branches, adPostTypes:d.adPostTypes||S.adPostTypes, adFunnels:d.adFunnels||S.adFunnels, adCampaigns:d.adCampaigns||S.adCampaigns, adAudiences:d.adAudiences||S.adAudiences, adObjectives:d.adObjectives||S.adObjectives, adStatuses:this.ensureAdStatuses(d.adStatuses||S.adStatuses), kols:d.kols||S.kols, doctors:d.doctors||S.doctors, prices:d.prices||S.prices }); }
+    const del=Object.assign({}, S.delTasks||{}, d.delTasks||{});
+    const remoteTasks=(d.tasks||[]).filter(t=>t&&!del[t.id]);
+    const rid={}; remoteTasks.forEach(t=>{ if(t&&t.id!=null) rid[t.id]=1; });
+    const localOnly=(S.tasks||[]).filter(t=>t&&t.id!=null&&!rid[t.id]&&!del[t.id]); // keep local tasks not yet on the server
+    this._coreTasks=remoteTasks.concat(localOnly); this._mediaParts=(typeof d._mediaParts==='number')?d._mediaParts:(this._mediaParts||0);
+    this.setState({ channels:d.channels||S.channels, people:d.people||S.people, tasks:this._mergeMedia(this._coreTasks, this._mediaCache), log:this._mergeLog(d.log, S.log), delTasks:del, contentTypes:d.contentTypes||S.contentTypes, procedures:d.procedures||S.procedures, statuses:d.statuses||S.statuses, perms:d.perms||S.perms, positions:d.positions||S.positions, formats:d.formats||S.formats, sizes:d.sizes||S.sizes, branches:d.branches||S.branches, adPostTypes:d.adPostTypes||S.adPostTypes, adFunnels:d.adFunnels||S.adFunnels, adCampaigns:d.adCampaigns||S.adCampaigns, adAudiences:d.adAudiences||S.adAudiences, adObjectives:d.adObjectives||S.adObjectives, adStatuses:this.ensureAdStatuses(d.adStatuses||S.adStatuses), kols:d.kols||S.kols, doctors:d.doctors||S.doctors, prices:d.prices||S.prices }); }
+  _unionById(local, remote){ local=Array.isArray(local)?local:[]; remote=Array.isArray(remote)?remote:[]; const ids={}; local.forEach(x=>{ if(x&&x.id!=null) ids[x.id]=1; }); const out=local.slice(); remote.forEach(x=>{ if(x&&x.id!=null&&!ids[x.id]) out.push(x); }); return out; }
+  _mergeLog(a, b){ const out=(Array.isArray(a)?a:[]).slice(); const ids={}; out.forEach(l=>{ if(l&&l.id) ids[l.id]=1; }); (Array.isArray(b)?b:[]).forEach(l=>{ if(l&&l.id&&!ids[l.id]) out.push(l); }); out.sort((x,y)=>{ const A=(x&&x.iso)||'',B=(y&&y.iso)||''; return A<B?1:(A>B?-1:0); }); return out; }
+  // Merge the freshly-read server state INTO local state so a stale tab never clobbers others' work.
+  _reconcileState(s, r){
+    const del=Object.assign({}, s.delTasks||{}, r.delTasks||{});
+    const cache=this._mediaCache||{};
+    const lid={}; (s.tasks||[]).forEach(t=>{ if(t&&t.id!=null) lid[t.id]=1; });
+    let tasks=(s.tasks||[]).filter(t=>t&&!del[t.id]); // drop tasks deleted anywhere
+    (r.tasks||[]).forEach(rt=>{ if(rt&&rt.id!=null&&!lid[rt.id]&&!del[rt.id]){ const md=cache[rt.id]; tasks.push(md?Object.assign({},rt,{ images:md.images||[], aw:md.aw||[] }):rt); } });
+    const patch={ tasks, log:this._mergeLog(s.log, r.log), delTasks:del };
+    ['people','channels','contentTypes','procedures','statuses','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices'].forEach(k=>{ patch[k]=this._unionById(s[k], r[k]); });
+    return patch;
+  }
   _pushRemote(){ if(!window.sb) return; clearTimeout(this._pushT); this._syncSet('saving'); this._pushT=setTimeout(()=>{
+    // Re-read the latest server core and merge before writing, so concurrent/stale tabs can't overwrite each other.
+    window.sb.from('app_state').select('data').eq('id',1).maybeSingle().then(({data,error})=>{
+      const remote=(!error && data && data.data && Array.isArray(data.data.tasks))?data.data:null;
+      if(remote){ this.setState(s=>this._reconcileState(s, remote), ()=>this._writeCore()); }
+      else { this._writeCore(); }
+    });
+  }, 600); }
+  _writeCore(){ if(!window.sb) return;
     let chunks=null;
     if(this._mediaReady){ chunks=this._buildMediaChunks(); this._mediaPartsCount=chunks.length; }
     else { this._mediaPartsCount=this._mediaParts||0; this._dirtyDuringLoad=true; } // media not loaded yet — preserve pointer, flush after load
@@ -1067,12 +1092,12 @@ class Component extends DCLogic {
     if(chunks){ cjson=JSON.stringify(chunks); if(cjson!==this._lastChunksJson){ mediaPush=true; prevParts=Math.max(this._lastPushedParts||0, (this._maxChunkId||1)-1, this._mediaParts||0); } }
     const hasLocalMedia = !this._mediaReady && (this.state.tasks||[]).some(t=>(t.images||[]).some(x=>x&&x.data)||(t.aw||[]).some(x=>x&&x.data));
     this._mediaPushPending = mediaPush || hasLocalMedia; // true => keep showing "saving" until media is confirmed on the server
-    const core=this._coreBlob(); this._lastJson=JSON.stringify(core); this._lastPushAt=Date.now();
+    const core=this._coreBlob(); this._coreTasks=core.tasks; this._lastJson=JSON.stringify(core); this._lastPushAt=Date.now();
     window.sb.from('app_state').update({ data:core, updated_at:new Date().toISOString() }).eq('id',1).then(({error})=>{
       if(error){ console.error('[sync] push', error.message); this._syncSet('error'); clearTimeout(this._retryT); this._retryT=setTimeout(()=>this._pushRemote(), 4000); }
       else if(!this._mediaPushPending){ this._syncSet('saved'); } }); // media rows (if any) flip the badge to "saved" when they finish
     if(mediaPush){ this._lastChunksJson=cjson; clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, 0), 400); }
-  }, 600); }
+  }
   _pushMediaChunks(chunks, prevParts, i){ i=i||0; if(!window.sb) return; const total=Math.max(chunks.length, prevParts||0); if(i>=total){ this._lastPushAt=Date.now(); this._lastPushedParts=chunks.length; this._maxChunkId=1+chunks.length; this._mediaPushPending=false; this._syncSet('saved'); return; }
     const payload=(i<chunks.length)?{ m:chunks[i] }:{ m:{} }; this._lastPushAt=Date.now();
     window.sb.from('app_state').upsert({ id:2+i, data:payload, updated_at:new Date().toISOString() }).then(({error})=>{ this._lastPushAt=Date.now(); if(error){ console.error('[sync] media chunk '+i, error.message); this._syncSet('error'); clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, i), 5000); } else { this._pushMediaChunks(chunks, prevParts, i+1); } }); }
@@ -1181,7 +1206,9 @@ class Component extends DCLogic {
   commit(patch, action, detail, changes, meta){
     this.setState(s=>{
       const log = action ? [{ id:'l'+Date.now()+Math.floor(Math.random()*999), ts:this.nowStamp(), iso:new Date().toISOString(), actorId:this.state.actor, action, detail, changes:changes||[], meta:meta||null }, ...s.log] : s.log;
-      return { ...patch, log };
+      let delTasks = s.delTasks||{};
+      if(patch.tasks){ const nid={}; patch.tasks.forEach(t=>{ if(t&&t.id!=null) nid[t.id]=1; }); const removed=(s.tasks||[]).filter(t=>t&&t.id!=null&&!nid[t.id]); if(removed.length){ delTasks=Object.assign({}, delTasks); removed.forEach(t=>{ delTasks[t.id]=Date.now(); }); } }
+      return { ...patch, log, delTasks };
     }, ()=>this.persist());
   }
 
