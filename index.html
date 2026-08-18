@@ -57,6 +57,17 @@
 </style>
 </helmet>
 
+<sc-if value="{{ loading }}" hint-placeholder-val="{{ false }}">
+  <div style="font-family:'IBM Plex Sans Thai','IBM Plex Sans',system-ui,sans-serif; position:fixed; inset:0; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:#0F172A; color:#E2E8F0;">
+    <div style="font-size:34px;">⟳</div>
+    <div style="font-size:15px; font-weight:600;">กำลังโหลดข้อมูลจาก Supabase…</div>
+    <sc-if value="{{ loadErr }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; color:#FCA5A5; font-weight:600;">⚠ เชื่อมต่อไม่ได้ กำลังลองใหม่…</div></sc-if>
+  </div>
+</sc-if>
+<sc-if value="{{ loadErr }}" hint-placeholder-val="{{ false }}">
+  <div style="font-family:'IBM Plex Sans Thai',system-ui,sans-serif; position:fixed; top:0; left:0; right:0; z-index:10000; background:#FEF2F2; color:#B91C1C; font-size:13px; font-weight:700; text-align:center; padding:8px;">⚠ เชื่อมต่อ Supabase ไม่ได้ กำลังลองใหม่… (ต้องมีอินเทอร์เน็ต)</div>
+</sc-if>
+
 <sc-if value="{{ notAuthed }}" hint-placeholder-val="{{ false }}">
   <div style="font-family:'IBM Plex Sans Thai','IBM Plex Sans',system-ui,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; background:#0F172A; padding:20px; -webkit-font-smoothing:antialiased;">
     <div style="width:100%; max-width:380px; background:#fff; border-radius:22px; padding:36px 32px; box-shadow:0 24px 60px rgba(0,0,0,.4);">
@@ -990,6 +1001,7 @@ class Component extends DCLogic {
       dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
       fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:'2026-07-08', adsDateMode:'post',
       adfStatus:[], adfKol:[], adfDoctor:[], adfPrice:[], adfPost:[], adfFunnel:[], adfCamp:[], adfAud:[], adfObj:[], adfProc:[], adfFormat:[], adfSearch:'', adfOpen:'',
+      loading:true, loadErr:false,
       modal:null, form:{}
     };
   }
@@ -1040,83 +1052,37 @@ class Component extends DCLogic {
     this.migrateFormats(s);
     return s; } catch(e){ return null; } }
   _dataBlob(){ const S=this.state; return { channels:S.channels, people:S.people, tasks:S.tasks, log:S.log, contentTypes:S.contentTypes, procedures:S.procedures, statuses:S.statuses, perms:S.perms, positions:S.positions, formats:S.formats, sizes:S.sizes, branches:S.branches, adPostTypes:S.adPostTypes, adFunnels:S.adFunnels, adCampaigns:S.adCampaigns, adAudiences:S.adAudiences, adObjectives:S.adObjectives, adStatuses:S.adStatuses, kols:S.kols, doctors:S.doctors, prices:S.prices, delTasks:S.delTasks||{} }; }
-  persist(){ try { localStorage.setItem('mediaPlan.v3', JSON.stringify(this._dataBlob())); } catch(e){} this._pushRemote(); }
-  _stripTask(t){ return Object.assign({}, t, { images:(t.images||[]).map(x=>({ name:x&&x.name })), aw:(t.aw||[]).map(x=>({ name:x&&x.name, vid:((x&&x.data)||'').indexOf('data:video')===0 })) }); }
-  _coreBlob(){ const b=this._dataBlob(); b.tasks=(b.tasks||[]).map(t=>this._stripTask(t)); b._split=1; b._mediaParts=this._mediaPartsCount||0; return b; }
-  _buildMediaChunks(){ const entries=[]; const cache=this._mediaCache||{}; (this.state.tasks||[]).forEach(t=>{ let im=(t.images||[]).filter(x=>x&&x.data); let aw=(t.aw||[]).filter(x=>x&&x.data); if(!im.length && !aw.length && cache[t.id]){ im=(cache[t.id].images||[]).filter(x=>x&&x.data); aw=(cache[t.id].aw||[]).filter(x=>x&&x.data); } if(im.length||aw.length) entries.push([t.id,{ images:im, aw:aw }]); });
-    entries.sort((a,b)=> (a[0]+'')<(b[0]+'')?-1:1);
-    const LIMIT=1800000; const chunks=[]; let cur={}, curN=0, curLen=2;
-    entries.forEach(function(e){ const s=JSON.stringify(e[1]).length+(e[0]+'').length+8; if(curN>0 && curLen+s>LIMIT){ chunks.push(cur); cur={}; curN=0; curLen=2; } cur[e[0]]=e[1]; curN++; curLen+=s; });
-    if(curN>0) chunks.push(cur); return chunks; }
-  _mergeMedia(coreTasks, media){ const cur=this.state.tasks||[]; const curMap={}; cur.forEach(t=>{ curMap[t.id]=t; });
-    return (coreTasks||[]).map(t=>{ const md=media&&media[t.id];
-      if(md) return Object.assign({}, t, { images:md.images||[], aw:md.aw||[] });
-      if((t.images||[]).some(x=>x&&x.data)||(t.aw||[]).some(x=>x&&x.data)) return t;
-      const c=curMap[t.id]; if(c && ((c.images||[]).some(x=>x&&x.data)||(c.aw||[]).some(x=>x&&x.data))) return Object.assign({}, t, { images:c.images||[], aw:c.aw||[] });
-      return t; }); }
+  persist(){ if(!window.sb) return; const S=this.state;
+    // TASKS: upsert changed/new via field-level merge RPC (คนละช่อง=เก็บครบ), delete removed rows
+    const cur=S.tasks||[]; const curIds={}; const srv=this._srvTasks||(this._srvTasks={});
+    cur.forEach(t=>{ if(!t||t.id==null) return; curIds[t.id]=1; const now=JSON.stringify(t); if(srv[t.id]===now) return; const patch=(srv[t.id]===undefined)?t:this._minDiff(JSON.parse(srv[t.id]), t); srv[t.id]=now; if(patch===t){ this._saveTask(t.id, t); } else if(patch && typeof patch==='object' && Object.keys(patch).length){ this._saveTask(t.id, patch); } });
+    Object.keys(srv).forEach(id=>{ if(!curIds[id]){ delete srv[id]; this._delTask(id); } });
+    // MASTER DATA: one row per kind
+    const st=this._srvState||(this._srvState={}); this._KINDS().forEach(k=>{ const v=(S[k]===undefined)?null:S[k]; const now=JSON.stringify(v); if(st[k]!==now){ st[k]=now; this._saveState(k, v); } });
+    // LOG: append new entries
+    const seen=this._srvLogIds||(this._srvLogIds={}); (S.log||[]).forEach(l=>{ if(l&&l.id&&!seen[l.id]){ seen[l.id]=1; this._saveLog(l); } });
+  }
+  _pStart(){ this._pend=(this._pend||0)+1; if(this.state.syncStatus!=='error') this._syncSet('saving'); }
+  _pEnd(){ this._pend=Math.max(0,(this._pend||1)-1); if(this._pend===0) this._syncSet('saved'); }
+  _isObj(v){ return !!v && typeof v==='object' && !Array.isArray(v); }
+  _eq(a,b){ return JSON.stringify(a)===JSON.stringify(b); }
+  _minDiff(o,c){ if(this._eq(o,c)) return undefined; if(this._isObj(o)&&this._isObj(c)){ const out={}; Object.keys(c).forEach(k=>{ const d=this._minDiff(o[k],c[k]); if(d!==undefined) out[k]=(this._isObj(o[k])&&this._isObj(c[k]))?d:c[k]; }); return Object.keys(out).length?out:undefined; } return c; }
+  _saveTask(id, patch){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.rpc('mp_save_task',{ p_id:id, p_patch:patch }).then(({error})=>{ if(error){ console.error('[save task]',error.message); this._syncSet('error'); clearTimeout(this['_rt_'+id]); this['_rt_'+id]=setTimeout(go,4000); } else this._pEnd(); }); go(); }
+  _delTask(id){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_tasks').delete().eq('id',id).then(({error})=>{ if(error){ console.error('[del task]',error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }); go(); }
+  _saveState(kind, val){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_state').upsert({ id:kind, data:val, updated_at:new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save state]',kind,error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }); go(); }
+  _saveLog(entry){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_log').upsert({ id:entry.id, data:entry, created_at:entry.iso||new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save log]',error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }); go(); }
+  _KINDS(){ return ['channels','people','contentTypes','procedures','statuses','perms','positions','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices','delTasks']; }
+  _pubUrl(path){ return 'https://ldokxrqxaunwfdcccvcg.supabase.co/storage/v1/object/public/media/'+path; }
+  _ensureFormId(){ let id=this.state.form&&this.state.form.id; if(!id){ id='t'+Date.now(); this.setState(s=>({ form:{ ...s.form, id:id } })); } return id; }
+  _uploadMedia(tid, field, idx, dataUrl, file){ const m=/^data:([^;]+);base64,/.exec(dataUrl||''); const mime=m?m[1]:'application/octet-stream'; const ext=(mime.split('/')[1]||'bin').split('+')[0]; const isImg=mime.indexOf('image')===0; const nm=(file&&file.name)?(isImg?file.name.replace(/\.(png|webp|bmp|gif)$/i,'.jpg'):file.name):(field+'.'+ext); const path=tid+'/'+field+'_'+Date.now()+'_'+idx+'.'+ext; return fetch(dataUrl).then(r=>r.blob()).then(blob=>window.sb.storage.from('media').upload(path, blob, { contentType:mime, upsert:true }).then(({error})=>{ if(error){ console.error('[upload]',error.message); return { name:nm, data:dataUrl, vid:mime.indexOf('video')===0 }; } return { name:nm, data:this._pubUrl(path), vid:mime.indexOf('video')===0 }; })); }
+  _loadAll(){ if(!window.sb) return Promise.reject(new Error('no supabase')); return Promise.all([ window.sb.from('mp_tasks').select('data'), window.sb.from('mp_state').select('id,data'), window.sb.from('mp_log').select('data') ]).then(res=>{ const tr=res[0],sr=res[1],lr=res[2]; const err=tr.error||sr.error||lr.error; if(err) throw err; const tasks=(tr.data||[]).map(r=>r.data).filter(Boolean); const sm={}; (sr.data||[]).forEach(r=>{ sm[r.id]=r.data; }); const log=(lr.data||[]).map(r=>r.data).filter(Boolean).sort((a,b)=>{ const A=(a&&a.iso)||'',B=(b&&b.iso)||''; return A<B?1:(A>B?-1:0); }); this._srvTasks={}; tasks.forEach(t=>{ if(t&&t.id!=null) this._srvTasks[t.id]=JSON.stringify(t); }); this._srvLogIds={}; log.forEach(l=>{ if(l&&l.id) this._srvLogIds[l.id]=1; }); this._srvState={}; const patch={ tasks:tasks, log:log, loading:false, loadErr:false }; this._KINDS().forEach(k=>{ const has=sm[k]!==undefined; const v=has?sm[k]:this.state[k]; patch[k]=v; this._srvState[k]=JSON.stringify(v===undefined?null:v); }); if(patch.adStatuses) patch.adStatuses=this.ensureAdStatuses(patch.adStatuses); if(patch.people&&patch.people.length){ const ids=patch.people.map(p=>p.id); if(ids.indexOf(this.state.loginId)<0) patch.loginId=patch.people[0].id; } this.setState(patch); }); }
+  _retryLoad(){ clearTimeout(this._loadT); this._loadT=setTimeout(()=>{ this._loadAll().then(()=>{ this.setState({ loadErr:false }); this._initSync(); }).catch(e=>{ console.error('[load retry]',e&&e.message); this.setState({ loadErr:true }); this._retryLoad(); }); }, 4000); }
+  _initSync(){ if(!window.sb || this._rtOn) return; this._rtOn=true; try { window.sb.channel('mp_rt').on('postgres_changes',{ event:'*', schema:'public', table:'mp_tasks' }, p=>this._rtTask(p)).on('postgres_changes',{ event:'*', schema:'public', table:'mp_state' }, p=>this._rtState(p)).on('postgres_changes',{ event:'*', schema:'public', table:'mp_log' }, p=>this._rtLog(p)).subscribe(); } catch(e){ console.error('[realtime]',e); } }
+  _rtTask(p){ const id=(p.new&&p.new.id)||(p.old&&p.old.id); if(id==null) return; this.setState(s=>{ let tasks=(s.tasks||[]).slice(); const i=tasks.findIndex(t=>t&&t.id===id); if(p.eventType==='DELETE'){ if(i>=0) tasks.splice(i,1); if(this._srvTasks) delete this._srvTasks[id]; return { tasks:tasks }; } const d=p.new&&p.new.data; if(!d) return {}; if(i>=0) tasks[i]=d; else tasks.push(d); if(this._srvTasks) this._srvTasks[id]=JSON.stringify(d); return { tasks:tasks }; }); }
+  _rtState(p){ if(p.eventType==='DELETE') return; const row=p.new; const k=row&&row.id; if(!k) return; const d=row.data; if(d===undefined) return; if(this._srvState) this._srvState[k]=JSON.stringify(d===undefined?null:d); const patch={}; patch[k]=(k==='adStatuses')?this.ensureAdStatuses(d):d; this.setState(patch); }
+  _rtLog(p){ if(p.eventType!=='INSERT') return; const d=p.new&&p.new.data; if(!d||!d.id) return; if(this._srvLogIds&&this._srvLogIds[d.id]) return; this.setState(s=>{ if((s.log||[]).some(l=>l&&l.id===d.id)) return {}; if(this._srvLogIds) this._srvLogIds[d.id]=1; const log=[d,...(s.log||[])]; log.sort((a,b)=>{ const A=(a&&a.iso)||'',B=(b&&b.iso)||''; return A<B?1:(A>B?-1:0); }); return { log:log }; }); }
   _syncSet(s){ if(this.state.syncStatus!==s) this.setState({ syncStatus:s }); if(s==='saved'){ clearTimeout(this._savedT); this._savedT=setTimeout(()=>{ if(this.state.syncStatus==='saved') this.setState({ syncStatus:'idle' }); }, 2500); } }
-  _applyRemote(d){ if(!d || typeof d!=='object' || !Array.isArray(d.channels)) return; const S=this.state;
-    const del=Object.assign({}, S.delTasks||{}, d.delTasks||{});
-    const remoteTasks=(d.tasks||[]).filter(t=>t&&!del[t.id]);
-    const rid={}; remoteTasks.forEach(t=>{ if(t&&t.id!=null) rid[t.id]=1; });
-    const localOnly=(S.tasks||[]).filter(t=>t&&t.id!=null&&!rid[t.id]&&!del[t.id]); // keep local tasks not yet on the server
-    this._coreTasks=remoteTasks.concat(localOnly); this._mediaParts=(typeof d._mediaParts==='number')?d._mediaParts:(this._mediaParts||0);
-    this.setState({ channels:d.channels||S.channels, people:d.people||S.people, tasks:this._mergeMedia(this._coreTasks, this._mediaCache), log:this._mergeLog(d.log, S.log), delTasks:del, contentTypes:d.contentTypes||S.contentTypes, procedures:d.procedures||S.procedures, statuses:d.statuses||S.statuses, perms:d.perms||S.perms, positions:d.positions||S.positions, formats:d.formats||S.formats, sizes:d.sizes||S.sizes, branches:d.branches||S.branches, adPostTypes:d.adPostTypes||S.adPostTypes, adFunnels:d.adFunnels||S.adFunnels, adCampaigns:d.adCampaigns||S.adCampaigns, adAudiences:d.adAudiences||S.adAudiences, adObjectives:d.adObjectives||S.adObjectives, adStatuses:this.ensureAdStatuses(d.adStatuses||S.adStatuses), kols:d.kols||S.kols, doctors:d.doctors||S.doctors, prices:d.prices||S.prices }); }
-  _unionById(local, remote){ local=Array.isArray(local)?local:[]; remote=Array.isArray(remote)?remote:[]; const ids={}; local.forEach(x=>{ if(x&&x.id!=null) ids[x.id]=1; }); const out=local.slice(); remote.forEach(x=>{ if(x&&x.id!=null&&!ids[x.id]) out.push(x); }); return out; }
-  _mergeLog(a, b){ const out=(Array.isArray(a)?a:[]).slice(); const ids={}; out.forEach(l=>{ if(l&&l.id) ids[l.id]=1; }); (Array.isArray(b)?b:[]).forEach(l=>{ if(l&&l.id&&!ids[l.id]) out.push(l); }); out.sort((x,y)=>{ const A=(x&&x.iso)||'',B=(y&&y.iso)||''; return A<B?1:(A>B?-1:0); }); return out; }
-  // Merge the freshly-read server state INTO local state so a stale tab never clobbers others' work.
-  _reconcileState(s, r){
-    const del=Object.assign({}, s.delTasks||{}, r.delTasks||{});
-    const cache=this._mediaCache||{};
-    const lid={}; (s.tasks||[]).forEach(t=>{ if(t&&t.id!=null) lid[t.id]=1; });
-    let tasks=(s.tasks||[]).filter(t=>t&&!del[t.id]); // drop tasks deleted anywhere
-    (r.tasks||[]).forEach(rt=>{ if(rt&&rt.id!=null&&!lid[rt.id]&&!del[rt.id]){ const md=cache[rt.id]; tasks.push(md?Object.assign({},rt,{ images:md.images||[], aw:md.aw||[] }):rt); } });
-    const patch={ tasks, log:this._mergeLog(s.log, r.log), delTasks:del };
-    ['people','channels','contentTypes','procedures','statuses','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices'].forEach(k=>{ patch[k]=this._unionById(s[k], r[k]); });
-    return patch;
-  }
-  _pushRemote(){ if(!window.sb) return; clearTimeout(this._pushT); this._syncSet('saving'); this._pushT=setTimeout(()=>{
-    // Re-read the latest server core and merge before writing, so concurrent/stale tabs can't overwrite each other.
-    window.sb.from('app_state').select('data').eq('id',1).maybeSingle().then(({data,error})=>{
-      const remote=(!error && data && data.data && Array.isArray(data.data.tasks))?data.data:null;
-      if(remote){ this.setState(s=>this._reconcileState(s, remote), ()=>this._writeCore()); }
-      else { this._writeCore(); }
-    });
-  }, 600); }
-  _writeCore(){ if(!window.sb) return;
-    let chunks=null;
-    if(this._mediaReady){ chunks=this._buildMediaChunks(); this._mediaPartsCount=chunks.length; }
-    else { this._mediaPartsCount=this._mediaParts||0; this._dirtyDuringLoad=true; } // media not loaded yet — preserve pointer, flush after load
-    // Decide up-front whether a media-chunk push is required, so the "saved" badge waits for the media to actually land.
-    let mediaPush=false, prevParts=0, cjson=null;
-    if(chunks){ cjson=JSON.stringify(chunks); if(cjson!==this._lastChunksJson){ mediaPush=true; prevParts=Math.max(this._lastPushedParts||0, (this._maxChunkId||1)-1, this._mediaParts||0); } }
-    const hasLocalMedia = !this._mediaReady && (this.state.tasks||[]).some(t=>(t.images||[]).some(x=>x&&x.data)||(t.aw||[]).some(x=>x&&x.data));
-    this._mediaPushPending = mediaPush || hasLocalMedia; // true => keep showing "saving" until media is confirmed on the server
-    const core=this._coreBlob(); this._coreTasks=core.tasks; this._lastJson=JSON.stringify(core); this._lastPushAt=Date.now();
-    window.sb.from('app_state').update({ data:core, updated_at:new Date().toISOString() }).eq('id',1).then(({error})=>{
-      if(error){ console.error('[sync] push', error.message); this._syncSet('error'); clearTimeout(this._retryT); this._retryT=setTimeout(()=>this._pushRemote(), 4000); }
-      else if(!this._mediaPushPending){ this._syncSet('saved'); } }); // media rows (if any) flip the badge to "saved" when they finish
-    if(mediaPush){ this._lastChunksJson=cjson; clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, 0), 400); }
-  }
-  _pushMediaChunks(chunks, prevParts, i){ i=i||0; if(!window.sb) return; const total=Math.max(chunks.length, prevParts||0); if(i>=total){ this._lastPushAt=Date.now(); this._lastPushedParts=chunks.length; this._maxChunkId=1+chunks.length; this._mediaPushPending=false; this._syncSet('saved'); return; }
-    const payload=(i<chunks.length)?{ m:chunks[i] }:{ m:{} }; this._lastPushAt=Date.now();
-    window.sb.from('app_state').upsert({ id:2+i, data:payload, updated_at:new Date().toISOString() }).then(({error})=>{ this._lastPushAt=Date.now(); if(error){ console.error('[sync] media chunk '+i, error.message); this._syncSet('error'); clearTimeout(this._mediaT); this._mediaT=setTimeout(()=>this._pushMediaChunks(chunks, prevParts, i), 5000); } else { this._pushMediaChunks(chunks, prevParts, i+1); } }); }
-  _pullRemote(tries){ tries=tries||0; if(!window.sb) return Promise.resolve(); return window.sb.from('app_state').select('data').eq('id',1).maybeSingle().then(({data,error})=>{ if(error){ console.error('[sync] pull', error.message); if(tries<5){ clearTimeout(this._pullT); this._pullT=setTimeout(()=>this._pullRemote(tries+1), 1500*(tries+1)); } return; } const d=data&&data.data; if(d&&Array.isArray(d.channels)){ this._lastJson=JSON.stringify(d); this._applyRemote(d); this._pullMedia(); clearTimeout(this._shrinkT); this._shrinkT=setTimeout(()=>this._compressStateImages(), 2500); } else { this._pushRemote(); } }); }
-  _mediaLoaded(){ this._mediaReady=true;
-    // Auto-heal: if this browser holds media (from its localStorage) that never reached the server, push it now.
-    const cache=this._mediaCache||{};
-    const orphan=(this.state.tasks||[]).some(t=>((t.images||[]).some(x=>x&&x.data)||(t.aw||[]).some(x=>x&&x.data)) && !cache[t.id]);
-    if(this._dirtyDuringLoad || orphan){ this._dirtyDuringLoad=false; this._pushRemote(); } }
-  _pullMedia(){ if(!window.sb) return; const gen=(this._mediaGen=(this._mediaGen||0)+1); const acc=Object.assign({}, this._mediaCache||{}); this._probeErr=0; this._probeMedia(2,gen,acc,0); }
-  _probeMedia(id,gen,acc,misses){ if(!window.sb||gen!==this._mediaGen) return; if(id>60){ this._mediaLoaded(); return; }
-    window.sb.from('app_state').select('data').eq('id',id).maybeSingle().then(({data,error})=>{ if(gen!==this._mediaGen) return;
-      if(error){ if((this._probeErr=(this._probeErr||0)+1)<60){ setTimeout(()=>this._probeMedia(id,gen,acc,misses), 2000); } else { this._mediaLoaded(); } return; }
-      const dd=data&&data.data; let m=null; if(dd&&dd.m) m=dd.m; else if(id===2 && dd && typeof dd==='object' && !dd.m && !dd.channels) m=dd;
-      if(m && Object.keys(m).length){ Object.assign(acc,m); this._mediaCache=acc; this._maxChunkId=id; if(this._coreTasks) this.setState({ tasks:this._mergeMedia(this._coreTasks,acc) }); this._probeMedia(id+1,gen,acc,0); }
-      else { if(misses>=2){ this._mediaLoaded(); return; } this._probeMedia(id+1,gen,acc,misses+1); } }); }
-  _initSync(){ if(!window.sb || this._syncInit) return; this._syncInit=true; this._pullRemote();
-    try { window.sb.channel('app_state_rt').on('postgres_changes', { event:'UPDATE', schema:'public', table:'app_state' }, ()=>{ if(this._lastPushAt && (Date.now()-this._lastPushAt)<5000) return; clearTimeout(this._rtT); this._rtT=setTimeout(()=>this._pullRemote(), 500); }).subscribe(); }
-    catch(e){ console.error('[sync] realtime', e); } }
+  // (legacy blob/chunk sync replaced by per-record persist/_loadAll/_initSync above)
 
   addPosition(){ const n=(this.state.newPos||'').trim(); if(!n) return; if(this.state.positions.includes(n)){ this.setState({ newPos:'' }); return; }
     const perms=JSON.parse(JSON.stringify(this.state.perms||{})); const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del:a==='tasks' }; }); perms[n]=o;
@@ -1198,9 +1164,9 @@ class Component extends DCLogic {
       for(var i=0;i<items.length;i++){ if(items[i].type&&items[i].type.indexOf('image')===0){ var f=items[i].getAsFile(); if(f) files.push(f); } }
       if(files.length){ e.preventDefault(); this.addFiles('images', files); } };
     window.addEventListener('paste', this._onPaste);
-    this._onBeforeUnload=(e)=>{ if(this._mediaPushPending || this.state.syncStatus==='saving' || this.state.syncStatus==='error'){ e.preventDefault(); e.returnValue='ยังบันทึกไม่เสร็จ ถ้าปิดตอนนี้งานล่าสุดอาจหาย'; return e.returnValue; } };
+    this._onBeforeUnload=(e)=>{ if((this._pend||0)>0 || this.state.syncStatus==='saving' || this.state.syncStatus==='error'){ e.preventDefault(); e.returnValue='ยังบันทึกไม่เสร็จ ถ้าปิดตอนนี้งานล่าสุดอาจหาย'; return e.returnValue; } };
     window.addEventListener('beforeunload', this._onBeforeUnload);
-    this._initSync(); }
+    this._loadAll().then(()=>this._initSync()).catch(err=>{ console.error('[load]',err&&err.message); this.setState({ loading:false, loadErr:true }); this._retryLoad(); }); }
   componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); if(this._onPaste) window.removeEventListener('paste',this._onPaste); if(this._onBeforeUnload) window.removeEventListener('beforeunload',this._onBeforeUnload); }
 
   commit(patch, action, detail, changes, meta){
@@ -1240,7 +1206,10 @@ class Component extends DCLogic {
   async _compressStateImages(){ if(this._shrinkDone) return; this._shrinkDone=true; const S=this.state; let changed=false; const tasks=(S.tasks||[]).map(t=>({ ...t }));
     for(const t of tasks){ for(const fld of ['images','aw']){ const arr=t[fld]; if(!Array.isArray(arr)) continue; const na=arr.slice(); for(let i=0;i<na.length;i++){ const it=na[i]; if(it&&typeof it.data==='string'&&it.data.indexOf('data:image')===0&&it.data.length>500000){ const d=await this._compressDataUrl(it.data); if(d&&d.length<it.data.length){ na[i]={ ...it, data:d }; changed=true; } } } t[fld]=na; } }
     if(changed){ this.setState({ tasks:tasks }, ()=>this.persist()); } }
-  addFiles(field, files){ const arr=[...files]; if(!arr.length) return; Promise.all(arr.map(f=>{ if((f.type||'').indexOf('image')===0) return this._compressImage(f).then(data=>({ name:(f.name||'image').replace(/\.(png|webp|bmp|gif)$/i,'.jpg'), data:data })); return new Promise(res=>{ const r=new FileReader(); r.onload=()=>res({ name:f.name, data:r.result }); r.readAsDataURL(f); }); })).then(items=>this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } }))); }
+  addFiles(field, files){ const arr=[...files]; if(!arr.length) return; const tid=this._ensureFormId(); this._syncSet('saving');
+    Promise.all(arr.map((f,idx)=>{ const isImg=(f.type||'').indexOf('image')===0; const prep=isImg?this._compressImage(f):new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); }); return prep.then(dataUrl=>this._uploadMedia(tid, field, idx, dataUrl, f)); }))
+      .then(items=>{ this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } })); this._syncSet('saved'); })
+      .catch(e=>{ console.error('[addFiles]',e); this._syncSet('error'); }); }
   removeAttach(field, idx){ this.setState(s=>({ form:{ ...s.form, [field]:(s.form[field]||[]).filter((_,i)=>i!==idx) } })); }
 
   setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; const k=(form.medium==='offline')?'offline':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k&&(c.jobcat||'online')===v)){ const fc=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===v); form.ch=fc?fc.id:''; } return { form }; }); }
@@ -1308,7 +1277,7 @@ class Component extends DCLogic {
         if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'สถานะ "'+(selAdStatus.name||'')+'" ต้องกรอก Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
       const procs=Array.isArray(f.procs)?f.procs:[];
       const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief };
-      if (m.mode==='add'){ const t={ id:'t'+Date.now(), ...rec };
+      if (m.mode==='add'){ const t={ id:f.id||('t'+Date.now()), ...rec };
         this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec), { medium:rec.medium, ch:rec.ch }); }
       else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
         this.commit({ tasks, modal:null, form:{} }, 'แก้ไข', 'งาน "'+rec.title+'"', diffs, { medium:rec.medium, ch:rec.ch }); }
@@ -1812,7 +1781,7 @@ class Component extends DCLogic {
     const actorP=pMap[S.actor]||{};
 
     return {
-      authed:S.authed, notAuthed:!S.authed,
+      authed:S.authed, notAuthed:!S.authed && !S.loading, loading:!!S.loading, loadErr:!!S.loadErr,
       loginPeopleOpts:S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position })), loginId:S.loginId, loginPw:S.loginPw, loginErr:S.loginErr,
       onLoginId:e=>this.setState({ loginId:e.target.value, loginErr:'' }), onLoginPw:e=>this.setState({ loginPw:e.target.value, loginErr:'' }), onLoginKey:e=>{ if(e.key==='Enter') this.doLogin(); }, doLogin:()=>this.doLogin(), logout:()=>this.logout(),
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
