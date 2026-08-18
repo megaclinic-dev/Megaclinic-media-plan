@@ -761,7 +761,7 @@
         <sc-if value="{{ isConfirm }}" hint-placeholder-val="{{ false }}">
           <div style="padding:22px;">
             <p style="font-size:14px; line-height:1.6; color:#334155; margin:0 0 20px;">{{ confirmMsg }}</p>
-            <div style="display:flex; gap:10px; justify-content:flex-end;"><button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button><button onClick="{{ confirmYes }}" style="font-size:13px; font-weight:700; color:#fff; background:#EF4444; border:none; padding:9px 16px; border-radius:9px; cursor:pointer;">ยืนยันลบ</button></div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;"><button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button><button onClick="{{ confirmYes }}" style="font-size:13px; font-weight:700; color:#fff; background:{{ confirmYesBg }}; border:none; padding:9px 16px; border-radius:9px; cursor:pointer;">{{ confirmYesLabel }}</button></div>
           </div>
         </sc-if>
 
@@ -974,7 +974,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-18b';
+    this.APP_VERSION='2026-08-18c';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1084,7 +1084,7 @@ class Component extends DCLogic {
   _retryLoad(){ clearTimeout(this._loadT); this._loadT=setTimeout(()=>{ this._loadAll().then(()=>{ this.setState({ loadErr:false }); this._initSync(); }).catch(e=>{ console.error('[load retry]',e&&e.message); this.setState({ loadErr:true }); this._retryLoad(); }); }, 4000); }
   _checkVer(d){ const v=d&&d.v; if(!v||v===this.APP_VERSION) return; try{ const key='mpVer_'+v; if(sessionStorage.getItem(key)){ this.setState({ newVer:true }); return; } sessionStorage.setItem(key,'1'); }catch(e){} location.reload(); }
   forceReloadAll(v){ if(!window.sb) return; return window.sb.from('mp_state').upsert({ id:'appVersion', data:{ v:v||this.APP_VERSION }, updated_at:new Date().toISOString() }); }
-  doForceReload(){ this.setState({ modal:{ kind:'confirm', msg:'บังคับให้ทุกคนที่เปิดแอปอยู่ โหลดใหม่และเข้าสู่ระบบอีกครั้งทันที? (รวมตัวคุณเองด้วย)', onYes:()=>{ if(window.sb) window.sb.from('mp_state').upsert({ id:'reloadSignal', data:{ t:new Date().toISOString() }, updated_at:new Date().toISOString() }); this.setState({ modal:null }); } } }); }
+  doForceReload(){ this.setState({ modal:{ kind:'confirm', title:'บังคับโหลดใหม่', yesLabel:'โหลดใหม่ทันที', yesBg:'#4F46E5', msg:'บังคับให้ทุกคนที่เปิดแอปอยู่ โหลดหน้าใหม่และเข้าสู่ระบบอีกครั้งทันที? (รวมตัวคุณเองด้วย)', onYes:()=>{ if(window.sb) window.sb.from('mp_state').upsert({ id:'reloadSignal', data:{ t:new Date().toISOString() }, updated_at:new Date().toISOString() }); this.setState({ modal:null }); } } }); }
   _initSync(){ if(!window.sb || this._rtOn) return; this._rtOn=true; try { window.sb.channel('mp_rt').on('postgres_changes',{ event:'*', schema:'public', table:'mp_tasks' }, p=>this._rtTask(p)).on('postgres_changes',{ event:'*', schema:'public', table:'mp_state' }, p=>this._rtState(p)).on('postgres_changes',{ event:'*', schema:'public', table:'mp_log' }, p=>this._rtLog(p)).subscribe(); } catch(e){ console.error('[realtime]',e); } }
   _rtTask(p){ const id=(p.new&&p.new.id)||(p.old&&p.old.id); if(id==null) return; this.setState(s=>{ let tasks=(s.tasks||[]).slice(); const i=tasks.findIndex(t=>t&&t.id===id); if(p.eventType==='DELETE'){ if(i>=0) tasks.splice(i,1); if(this._srvTasks) delete this._srvTasks[id]; return { tasks:tasks }; } const d=p.new&&p.new.data; if(!d) return {}; if(i>=0) tasks[i]=d; else tasks.push(d); if(this._srvTasks) this._srvTasks[id]=JSON.stringify(d); return { tasks:tasks }; }); }
   _rtState(p){ if(p.eventType==='DELETE') return; const row=p.new; const k=row&&row.id; if(!k) return; const d=row.data; if(d===undefined) return; if(k==='appVersion'){ this._checkVer(d); return; } if(k==='reloadSignal'){ const t=d&&d.t; if(t && t!==this._sig){ try{ const key='mpSig_'+t; if(!sessionStorage.getItem(key)){ sessionStorage.setItem(key,'1'); location.reload(); } }catch(e){ location.reload(); } } return; } if(this._srvState) this._srvState[k]=JSON.stringify(d===undefined?null:d); const patch={}; patch[k]=(k==='adStatuses')?this.ensureAdStatuses(d):d; this.setState(patch); }
@@ -1705,7 +1705,7 @@ class Component extends DCLogic {
 
     const m=S.modal, f=S.form||{};
     let modalTitle='';
-    if (m){ if(m.kind==='confirm') modalTitle='ยืนยันการลบ';
+    if (m){ if(m.kind==='confirm') modalTitle=m.title||'ยืนยันการลบ';
       else if(m.kind==='tag') modalTitle=(m.mode==='edit'?'แก้ไข ':'เพิ่ม ')+({ contentType:'ประเภทคอนเทนต์', status:'สถานะ', procedure:'หัตถการ', format:'รูปแบบงาน', size:'Size งาน', branch:'สาขา' }[m.entity]||((this.adsMeta()[m.entity]||{}).label)||'');
       else { const t={ task:['เพิ่มงานใหม่','แก้ไขงาน'], person:['เพิ่มพนักงาน','แก้ไขพนักงาน'], channel:['เพิ่มช่องทาง','แก้ไขช่องทาง'] }[m.kind]; modalTitle=t[m.mode==='edit'?1:0]; } }
     const chKind=(fMed==='offline')?'offline':'online';
@@ -1844,7 +1844,7 @@ class Component extends DCLogic {
       onHChannel:e=>this.setState({hChannel:e.target.value}), onHSearch:e=>this.setState({hSearch:e.target.value}),
       clearHistFilter:()=>this.setState({hArea:'all',hAction:'all',hFrom:'',hTo:'',hPerson:'all',hMedium:'all',hChannel:'all',hSearch:''}),
       modalOpen:!!m, modalTitle, closeModal:()=>this.closeModal(), stop:e=>e.stopPropagation(),
-      isConfirm:!!m&&m.kind==='confirm', confirmMsg:m&&m.msg, confirmYes:()=>{ if(m&&m.onYes)m.onYes(); },
+      isConfirm:!!m&&m.kind==='confirm', confirmMsg:m&&m.msg, confirmYes:()=>{ if(m&&m.onYes)m.onYes(); }, confirmYesLabel:(m&&m.yesLabel)||'ยืนยันลบ', confirmYesBg:(m&&m.yesBg)||'#EF4444',
       isTaskForm:!!m&&m.kind==='task', isPersonForm:!!m&&m.kind==='person', isChannelForm:!!m&&m.kind==='channel', isTagForm:!!m&&m.kind==='tag',
       tagFieldLabel:(m&&m.kind==='tag')?({ contentType:'ชื่อประเภทคอนเทนต์', status:'ชื่อสถานะ', procedure:'ชื่อหัตถการ', format:'ชื่อรูปแบบงาน', size:'ชื่อ Size งาน', branch:'ชื่อสาขา' }[m.entity]||('ชื่อ '+((this.adsMeta()[m.entity]||{}).label||''))):'ชื่อ',
       showTagDates, onFTagStart:e=>this.setF('start',e.target.value), onFTagExpiry:e=>this.setF('expiry',e.target.value),
