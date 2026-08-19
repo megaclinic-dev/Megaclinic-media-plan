@@ -76,18 +76,10 @@
     <div style="width:100%; max-width:380px; background:#fff; border-radius:22px; padding:36px 32px; box-shadow:0 24px 60px rgba(0,0,0,.4);">
       <div style="font-size:22px; font-weight:700; letter-spacing:-.01em;">Media Plan</div>
       <div style="font-size:13px; color:#64748B; margin-top:4px; margin-bottom:26px;">เข้าสู่ระบบเพื่อจัดการแผนงานครีเอทีฟ</div>
-      <label style="display:block; margin-bottom:14px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ผู้ใช้งาน (พิมพ์ค้นหา หรือกด ▼ เลือก)</span>
-        <div style="position:relative;">
-          <input value="{{ loginName }}" onInput="{{ onLoginName }}" onKeyDown="{{ onLoginKey }}" onFocus="{{ onLoginFocus }}" placeholder="🔍 พิมพ์ชื่อ หรือกด ▼ เลือก" autocomplete="off" style="width:100%; font-size:14px; padding:11px 38px 11px 12px; border:1px solid #E2E8F0; border-radius:11px; background:#fff;">
-          <button onClick="{{ onLoginToggle }}" style="position:absolute; right:4px; top:50%; transform:translateY(-50%); width:30px; height:30px; border:none; background:transparent; cursor:pointer; font-size:11px; color:#64748B;">▼</button>
-          <sc-if value="{{ loginOpen }}" hint-placeholder-val="{{ false }}">
-            <div style="position:absolute; top:calc(100% + 4px); left:0; right:0; max-height:220px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:11px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:30;">
-              <sc-for list="{{ loginUserList }}" as="op" hint-placeholder-count="5">
-                <button onClick="{{ op.onPick }}" style="display:flex; align-items:center; gap:8px; width:100%; text-align:left; padding:10px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;"><span style="font-weight:600;">{{ op.name }}</span><span style="font-size:11px; color:#94A3B8; margin-left:auto;">{{ op.position }}</span></button>
-              </sc-for>
-            </div>
-          </sc-if>
-        </div></label>
+      <label style="display:block; margin-bottom:14px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ผู้ใช้งาน</span>
+        <select value="{{ loginId }}" onChange="{{ onLoginId }}" style="width:100%; font-size:14px; padding:11px 12px; border:1px solid #E2E8F0; border-radius:11px; background:#fff; cursor:pointer;">
+          <sc-for list="{{ loginPeopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+        </select></label>
       <label style="display:block; margin-bottom:6px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">รหัสผ่าน</span>
         <input type="password" value="{{ loginPw }}" onChange="{{ onLoginPw }}" onKeyDown="{{ onLoginKey }}" placeholder="รหัสผ่าน" style="width:100%; font-size:14px; padding:11px 12px; border:1px solid #E2E8F0; border-radius:11px;"></label>
       <sc-if value="{{ loginErr }}" hint-placeholder-val=""><div style="font-size:12px; color:#EF4444; font-weight:600; margin-bottom:6px;">{{ loginErr }}</div></sc-if>
@@ -182,37 +174,20 @@
             </sc-if>
           </div>
 
-          <div style="display:flex; flex-wrap:wrap; gap:12px;">
-            <div style="flex:3; min-width:300px; border:1px solid #E2E8F0; border-radius:14px; padding:10px 13px; background:#FCFDFE;">
-              <div style="font-size:11px; font-weight:800; letter-spacing:.05em; color:#64748B; margin-bottom:8px;">📋 งานปกติ</div>
-              <div style="display:flex; flex-wrap:wrap; gap:9px;">
-                <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
-                  <div style="flex:1; min-width:88px; background:#fff; border:1px solid #E2E8F0; border-radius:11px; padding:8px 12px; display:flex; align-items:center; gap:9px;">
-                    <span style="width:8px; height:8px; border-radius:3px; background:{{ s.color }}; flex-shrink:0;"></span>
-                    <span style="font-size:11px; color:#64748B; font-weight:600; white-space:nowrap;">{{ s.label }}</span>
-                    <span style="font-size:18px; font-weight:700; letter-spacing:-.02em; margin-left:auto;">{{ s.value }}</span>
-                  </div>
-                </sc-for>
+          <div style="display:flex; flex-wrap:wrap; gap:9px;">
+            <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
+              <div style="flex:1; min-width:92px; background:#fff; border:1px solid #E2E8F0; border-radius:11px; padding:8px 12px; display:flex; align-items:center; gap:9px;">
+                <span style="width:8px; height:8px; border-radius:3px; background:{{ s.color }}; flex-shrink:0;"></span>
+                <span style="font-size:11px; color:#64748B; font-weight:600; white-space:nowrap;">{{ s.label }}</span>
+                <span style="font-size:18px; font-weight:700; letter-spacing:-.02em; margin-left:auto;">{{ s.value }}</span>
               </div>
-            </div>
-            <div style="flex:3; min-width:300px; border:1px solid #DDD6FE; border-radius:14px; padding:10px 13px; background:#FAF8FF;">
-              <div style="font-size:11px; font-weight:800; letter-spacing:.05em; color:#7C3AED; margin-bottom:8px;">🟪 งาน Resize</div>
-              <div style="display:flex; flex-wrap:wrap; gap:9px;">
-                <sc-for list="{{ resizeStatCards }}" as="s" hint-placeholder-count="4">
-                  <div style="flex:1; min-width:88px; background:#fff; border:1px solid #E9E2FB; border-radius:11px; padding:8px 12px; display:flex; align-items:center; gap:9px;">
-                    <span style="width:8px; height:8px; border-radius:3px; background:{{ s.color }}; flex-shrink:0;"></span>
-                    <span style="font-size:11px; color:#64748B; font-weight:600; white-space:nowrap;">{{ s.label }}</span>
-                    <span style="font-size:18px; font-weight:700; letter-spacing:-.02em; margin-left:auto;">{{ s.value }}</span>
-                  </div>
-                </sc-for>
-              </div>
-            </div>
+            </sc-for>
           </div>
 
           <div class="mp-frow">
             <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox"><div class="mp-flabel">คน</div>
-              <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="{{ personSelStyle }}">
+              <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; cursor:pointer;">
                 <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
               </select></div>
             <div class="mp-fbox"><div class="mp-flabel">งาน Online / Offline</div><div class="mp-fchips"><sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
@@ -257,7 +232,7 @@
                       <span style="margin-left:auto; font-size:11px; color:#94A3B8; font-weight:600;">{{ row.total }}</span>
                     </div>
                     <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
-                      <div onClick="{{ cell.onAdd }}" style="{{ cell.style }}">
+                      <div onClick="{{ cell.onClick }}" style="{{ cell.style }}">
                         <sc-if value="{{ cell.compact }}" hint-placeholder-val="{{ false }}">
                           <sc-if value="{{ cell.count }}" hint-placeholder-val="">
                             <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
@@ -268,14 +243,13 @@
                         </sc-if>
                         <sc-if value="{{ cell.wide }}" hint-placeholder-val="{{ true }}">
                           <sc-for list="{{ cell.tasks }}" as="t" hint-placeholder-count="1">
-                            <div onClick="{{ t.onOpen }}" title="{{ t.tip }}" style="background:{{ t.tint }}; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer;"><sc-if value="{{ t.isResize }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block; font-size:8px; font-weight:800; color:#fff; background:#7C3AED; border-radius:3px; padding:1px 4px; margin-bottom:2px; letter-spacing:.03em;">RESIZE</span></sc-if>
+                            <div title="{{ t.tip }}" style="background:{{ t.tint }}; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px;">
                               <sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" controls="controls" preload="metadata" onClick="{{ t.onVid }}" style="width:100%; height:auto; max-height:150px; border-radius:4px; display:block; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:auto; border-radius:4px; display:block;"></sc-if></sc-if>
                               <sc-if value="{{ t.imgFooter }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:4px; margin-top:3px;"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }};"></span><span style="font-size:9px; font-weight:700; color:#fff; background:{{ t.avatarBg }}; border-radius:4px; padding:1px 4px;">{{ t.initials }}</span></div></sc-if>
                               <sc-if value="{{ t.useName }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:5px; margin-top:{{ t.nameMt }};"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.title }}</span><span style="margin-left:auto; font-size:9px; font-weight:700; color:#fff; background:{{ t.avatarBg }}; border-radius:4px; padding:1px 4px; flex-shrink:0;">{{ t.initials }}</span></div></sc-if>
                             </div>
                           </sc-for>
-                          <sc-if value="{{ cell.more }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cell.onMore }}" style="font-size:10px; font-weight:700; color:#4F46E5; background:#EEF2FF; border:none; border-radius:5px; padding:2px 7px; cursor:pointer; align-self:flex-start;">+{{ cell.more }} ดูเพิ่มเติม</button></sc-if>
-                          <sc-if value="{{ cell.expanded }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cell.onMore }}" style="font-size:10px; font-weight:700; color:#94A3B8; background:transparent; border:none; padding:2px 7px; cursor:pointer; align-self:flex-start;">▲ ย่อ</button></sc-if>
+                          <sc-if value="{{ cell.more }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px; color:#94A3B8; padding-left:3px;">+{{ cell.more }} เพิ่มเติม</div></sc-if>
                         </sc-if>
                       </div>
                     </sc-for>
@@ -287,7 +261,7 @@
               <div style="font-size:13px; font-weight:700; margin-bottom:8px;">Workload / คน</div>
               <div style="display:inline-flex; background:#E9EDF3; border-radius:9px; padding:3px; margin-bottom:12px;">
                 <button onClick="{{ onWlCreative }}" style="{{ wlTabCreativeStyle }}">Creative</button>
-                <button onClick="{{ onWlGraphic }}" style="{{ wlTabGraphicStyle }}">Graphic</button><button onClick="{{ onWlOther }}" style="{{ wlTabOtherStyle }}">อื่นๆ</button>
+                <button onClick="{{ onWlGraphic }}" style="{{ wlTabGraphicStyle }}">Graphic</button>
               </div>
               <div style="display:flex; flex-direction:column; gap:10px; max-height:420px; overflow-y:auto;">
                 <sc-for list="{{ workload }}" as="w" hint-placeholder-count="8">
@@ -300,7 +274,6 @@
                       </div>
                       <div style="font-size:10px; color:#94A3B8; margin-bottom:3px;">{{ w.position }}</div>
                       <div style="height:6px; background:#EEF2F6; border-radius:99px; overflow:hidden;"><div style="height:100%; width:{{ w.pct }}%; background:{{ w.barColor }}; border-radius:99px;"></div></div>
-                    <sc-if value="{{ w.showResize }}" hint-placeholder-val="{{ false }}"><div style="font-size:9px; color:#7C3AED; font-weight:700; margin-top:2px;">🟪 Resize {{ w.resizeN }}</div></sc-if>
                     </div>
                   </button>
                 </sc-for>
@@ -365,7 +338,7 @@
                       <span style="margin-left:auto; font-size:11px; color:#94A3B8; font-weight:600;">{{ row.total }}</span>
                     </div>
                     <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
-                      <div onClick="{{ cell.onAdd }}" style="{{ cell.style }}">
+                      <div onClick="{{ cell.onClick }}" style="{{ cell.style }}">
                         <sc-if value="{{ cell.compact }}" hint-placeholder-val="{{ false }}">
                           <sc-if value="{{ cell.count }}" hint-placeholder-val="">
                             <div style="display:flex; flex-direction:column; align-items:center; gap:3px;"><span style="font-size:14px; font-weight:700;">{{ cell.count }}</span><div style="display:flex; gap:2px;"><sc-for list="{{ cell.dots }}" as="ds" hint-placeholder-count="1"><span style="width:5px; height:5px; border-radius:50%; background:{{ ds }};"></span></sc-for></div></div>
@@ -377,8 +350,7 @@
                               <div style="display:flex; align-items:center; gap:5px;"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.title }}</span><span style="margin-left:auto; font-size:9px; font-weight:700; color:#fff; background:{{ t.avatarBg }}; border-radius:4px; padding:1px 4px; flex-shrink:0;">{{ t.initials }}</span></div>
                             </button>
                           </sc-for>
-                          <sc-if value="{{ cell.more }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cell.onMore }}" style="font-size:10px; font-weight:700; color:#4F46E5; background:#EEF2FF; border:none; border-radius:5px; padding:2px 7px; cursor:pointer; align-self:flex-start;">+{{ cell.more }} ดูเพิ่มเติม</button></sc-if>
-                          <sc-if value="{{ cell.expanded }}" hint-placeholder-val="{{ false }}"><button onClick="{{ cell.onMore }}" style="font-size:10px; font-weight:700; color:#94A3B8; background:transparent; border:none; padding:2px 7px; cursor:pointer; align-self:flex-start;">▲ ย่อ</button></sc-if>
+                          <sc-if value="{{ cell.more }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px; color:#94A3B8; padding-left:3px;">+{{ cell.more }} เพิ่มเติม</div></sc-if>
                         </sc-if>
                       </div>
                     </sc-for>
@@ -413,42 +385,8 @@
               </div>
             </sc-if>
           </div>
-          <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
-            <div style="flex:3; min-width:300px; border:1px solid #E2E8F0; border-radius:14px; padding:10px 13px; background:#FCFDFE;">
-              <div style="font-size:11px; font-weight:800; letter-spacing:.05em; color:#64748B; margin-bottom:8px;">📋 งานปกติ</div>
-              <div style="display:flex; flex-wrap:wrap; gap:9px;">
-                <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
-                  <div style="flex:1; min-width:88px; background:#fff; border:1px solid #E2E8F0; border-radius:11px; padding:8px 12px; display:flex; align-items:center; gap:9px;">
-                    <span style="width:8px; height:8px; border-radius:3px; background:{{ s.color }}; flex-shrink:0;"></span>
-                    <span style="font-size:11px; color:#64748B; font-weight:600; white-space:nowrap;">{{ s.label }}</span>
-                    <span style="font-size:18px; font-weight:700; letter-spacing:-.02em; margin-left:auto;">{{ s.value }}</span>
-                  </div>
-                </sc-for>
-              </div>
-            </div>
-            <div style="flex:3; min-width:300px; border:1px solid #DDD6FE; border-radius:14px; padding:10px 13px; background:#FAF8FF;">
-              <div style="font-size:11px; font-weight:800; letter-spacing:.05em; color:#7C3AED; margin-bottom:8px;">🟪 งาน Resize</div>
-              <div style="display:flex; flex-wrap:wrap; gap:9px;">
-                <sc-for list="{{ resizeStatCards }}" as="s" hint-placeholder-count="4">
-                  <div style="flex:1; min-width:88px; background:#fff; border:1px solid #E9E2FB; border-radius:11px; padding:8px 12px; display:flex; align-items:center; gap:9px;">
-                    <span style="width:8px; height:8px; border-radius:3px; background:{{ s.color }}; flex-shrink:0;"></span>
-                    <span style="font-size:11px; color:#64748B; font-weight:600; white-space:nowrap;">{{ s.label }}</span>
-                    <span style="font-size:18px; font-weight:700; letter-spacing:-.02em; margin-left:auto;">{{ s.value }}</span>
-                  </div>
-                </sc-for>
-              </div>
-            </div>
-          </div>
           <div class="mp-frow">
             <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
-            <div class="mp-fbox"><div class="mp-flabel">คน</div>
-              <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="{{ personSelStyle }}">
-                <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
-              </select></div>
-            <div class="mp-fbox"><div class="mp-flabel">งาน Online / Offline</div><div class="mp-fchips"><sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
-            <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
-            <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
-            <div class="mp-fbox"><div class="mp-flabel">สถานะ ADS</div><div class="mp-fchips"><sc-for list="{{ adStatusChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง</div>
               <button onClick="{{ onToggleChanFilter }}" style="{{ chanToggleStyle }}"><span>📡</span><span style="flex:1; text-align:left;">{{ chanSummary }}</span><span style="font-size:10px;">{{ chanCaret }}</span></button>
               <sc-if value="{{ chanFilterOpen }}" hint-placeholder-val="{{ false }}">
@@ -468,9 +406,16 @@
                 </div>
               </sc-if>
             </div>
+            <div class="mp-fbox"><div class="mp-flabel">คน</div>
+              <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+                <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
+              </select></div>
+            <div class="mp-fbox"><div class="mp-flabel">งาน Online / Offline</div><div class="mp-fchips"><sc-for list="{{ mediumChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">สถานะ ADS</div><div class="mp-fchips"><sc-for list="{{ adStatusChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
           </div>
-          <div style="display:flex; gap:14px; align-items:flex-start;">
-          <div style="flex:1; min-width:0; background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; overflow-x:auto;">
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; overflow-x:auto;">
             <div style="min-width:720px;">
               <div style="display:grid; grid-template-columns:repeat(7,1fr); background:#FAFBFC; border-bottom:1px solid #EEF2F6;">
                 <sc-for list="{{ calWeekHeads }}" as="h" hint-placeholder-count="7"><div style="padding:10px; text-align:center; font-size:11px; font-weight:700; color:#94A3B8;">{{ h }}</div></sc-for>
@@ -494,30 +439,6 @@
                 </sc-for>
               </div>
             </div>
-          </div>
-          <div class="mp-workload" style="width:240px; flex-shrink:0; border:1px solid #EEF2F6; border-radius:16px; padding:16px 18px; background:#FCFCFD;">
-            <div style="font-size:13px; font-weight:700; margin-bottom:8px;">Workload / คน</div>
-            <div style="display:inline-flex; background:#E9EDF3; border-radius:9px; padding:3px; margin-bottom:12px;">
-              <button onClick="{{ onWlCreative }}" style="{{ wlTabCreativeStyle }}">Creative</button>
-              <button onClick="{{ onWlGraphic }}" style="{{ wlTabGraphicStyle }}">Graphic</button><button onClick="{{ onWlOther }}" style="{{ wlTabOtherStyle }}">อื่นๆ</button>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:10px; max-height:560px; overflow-y:auto;">
-              <sc-for list="{{ workload }}" as="w" hint-placeholder-count="8">
-                <button onClick="{{ w.onClick }}" style="{{ w.rowStyle }}">
-                  <span style="width:26px; height:26px; border-radius:8px; background:{{ w.color }}; color:#fff; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ w.initials }}</span>
-                  <div style="flex:1; min-width:0; text-align:left;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1px;">
-                      <span style="font-size:12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ w.name }}</span>
-                      <span style="font-size:12px; font-weight:700; margin-left:6px;">{{ w.count }}</span>
-                    </div>
-                    <div style="font-size:10px; color:#94A3B8; margin-bottom:3px;">{{ w.position }}</div>
-                    <div style="height:6px; background:#EEF2F6; border-radius:99px; overflow:hidden;"><div style="height:100%; width:{{ w.pct }}%; background:{{ w.barColor }}; border-radius:99px;"></div></div>
-                    <sc-if value="{{ w.showResize }}" hint-placeholder-val="{{ false }}"><div style="font-size:9px; color:#7C3AED; font-weight:700; margin-top:2px;">🟪 Resize {{ w.resizeN }}</div></sc-if>
-                  </div>
-                </button>
-              </sc-for>
-            </div>
-          </div>
           </div>
         </div>
       </sc-if>
@@ -602,40 +523,29 @@
                 <button onClick="{{ addPosition }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 16px; border-radius:10px; cursor:pointer;">+ เพิ่มตำแหน่ง</button>
               </div>
             </sc-if>
-            <div style="display:flex; flex-direction:column; gap:12px;">
-              <sc-for list="{{ permTree }}" as="p" hint-placeholder-count="4">
-                <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; overflow:hidden;">
-                  <div onClick="{{ p.onToggle }}" style="display:flex; align-items:center; gap:11px; padding:13px 16px; background:#FAFBFC; cursor:pointer;">
-                    <span style="font-size:10px; color:#94A3B8; width:12px;">{{ p.caret }}</span>
-                    <span style="width:9px; height:9px; border-radius:3px; background:#4F46E5;"></span>
-                    <span style="font-size:14px; font-weight:700;">{{ p.pos }}</span>
-                    <div style="flex:1;"></div>
-                    <sc-if value="{{ p.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ p.onDelete }}" title="ลบตำแหน่งนี้" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบตำแหน่ง</button></sc-if>
-                  </div>
-                  <sc-if value="{{ p.open }}" hint-placeholder-val="{{ true }}">
-                    <div style="padding:6px 16px 16px;">
-                      <sc-for list="{{ p.groups }}" as="g" hint-placeholder-count="4">
-                        <div style="margin-top:14px;">
-                          <div style="display:flex; align-items:center; gap:9px; margin-bottom:7px;">
-                            <button onClick="{{ g.onGroup }}" title="เลือก/ยกเลิกทั้งกลุ่ม" style="{{ g.groupChkStyle }}">{{ g.groupChkLabel }}</button>
-                            <span style="font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#4F46E5;">{{ g.title }}</span>
-                          </div>
-                          <div style="display:flex; flex-direction:column; gap:6px; padding-left:29px;">
-                            <sc-for list="{{ g.pages }}" as="a" hint-placeholder-count="3">
-                              <div style="display:flex; align-items:center; gap:8px; padding:7px 11px; border:1px solid #F1F5F9; border-radius:10px; background:#FCFDFE;">
-                                <span style="flex:1; font-size:13px; font-weight:600; color:#334155;">{{ a.label }}</span>
-                                <button onClick="{{ a.onView }}" title="เข้าดู" style="{{ a.viewStyle }}">👁</button>
-                                <button onClick="{{ a.onEdit }}" title="เพิ่ม/แก้ไข" style="{{ a.editStyle }}">✎</button>
-                                <button onClick="{{ a.onDel }}" title="ลบ" style="{{ a.delStyle }}">🗑</button>
-                              </div>
-                            </sc-for>
-                          </div>
-                        </div>
-                      </sc-for>
-                    </div>
-                  </sc-if>
+            <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow-x:auto;">
+              <div style="min-width:1420px;">
+                <div style="display:grid; grid-template-columns:150px repeat(10,1fr) 60px; background:#FAFBFC; border-bottom:1px solid #EEF2F6;">
+                  <div style="padding:12px 14px; font-size:11px; font-weight:700; color:#94A3B8;">ตำแหน่ง</div>
+                  <sc-for list="{{ permAreas }}" as="a" hint-placeholder-count="9"><div style="padding:12px 8px; font-size:11px; font-weight:700; color:#94A3B8; text-align:center;">{{ a }}</div></sc-for>
+                  <div></div>
                 </div>
-              </sc-for>
+                <sc-for list="{{ permRows }}" as="row" hint-placeholder-count="4">
+                  <div style="display:grid; grid-template-columns:150px repeat(10,1fr) 60px; border-bottom:1px solid #F1F5F9; align-items:center;">
+                    <div style="padding:12px 14px; font-size:13px; font-weight:600;">{{ row.pos }}</div>
+                    <sc-for list="{{ row.cells }}" as="c" hint-placeholder-count="9">
+                      <div style="padding:10px 6px; display:flex; gap:5px; justify-content:center;">
+                        <button onClick="{{ c.onView }}" style="{{ c.viewStyle }}">👁</button>
+                        <button onClick="{{ c.onEdit }}" style="{{ c.editStyle }}">✎</button>
+                        <button onClick="{{ c.onDel }}" style="{{ c.delStyle }}">🗑</button>
+                      </div>
+                    </sc-for>
+                    <div style="display:flex; justify-content:center;">
+                      <sc-if value="{{ canPosDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ row.onDelete }}" title="ลบตำแหน่งนี้" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 9px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
             </div>
           </div>
         </div>
@@ -817,8 +727,7 @@
                   <span style="{{ h.actionStyle }}">{{ h.action }}</span>
                   <span style="font-size:11px; font-weight:700; color:#4F46E5;">{{ h.area }}</span>
                   <div style="min-width:0;">
-                    <div style="font-size:13px; font-weight:600; color:#0F172A; margin-bottom:4px; {{ h.detailStyle }}" onClick="{{ h.onDetail }}">{{ h.detail }}</div>
-                    <sc-if value="{{ h.canOpen }}" hint-placeholder-val="{{ false }}"><div style="display:flex; gap:8px; margin-bottom:6px;"><button onClick="{{ h.onDetail }}" style="font-size:11px; color:#475569; font-weight:700; background:#F1F5F9; border:none; border-radius:6px; padding:3px 9px; cursor:pointer;">👁 ดูรายละเอียด</button><button onClick="{{ h.onOpen }}" style="font-size:11px; color:#fff; font-weight:700; background:#4F46E5; border:none; border-radius:6px; padding:3px 9px; cursor:pointer;">↗ เปิดงานในแผนงาน</button></div></sc-if>
+                    <div style="font-size:13px; font-weight:600; color:#0F172A; margin-bottom:4px;">{{ h.detail }}</div>
                     <sc-for list="{{ h.changes }}" as="c" hint-placeholder-count="1">
                       <div style="display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; font-size:12px; line-height:1.5;">
                         <span style="color:#94A3B8; font-weight:600; min-width:90px;">{{ c.field }}</span>
@@ -868,7 +777,7 @@
               <div style="font-size:11px; color:#94A3B8; margin-top:6px;">รูปแบบงาน / Size / ประเภท / หัตถการ จะแสดงเฉพาะรายการของงานประเภทที่เลือก</div></div>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
               <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทงาน <span style="color:#EF4444;">*</span></span><select value="{{ form.jobType }}" onChange="{{ onFJob }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ jobTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
-              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ช่องทาง <span style="color:#EF4444;">*</span></span><div style="position:relative;"><input value="{{ cbChannel.value }}" onInput="{{ cbChannel.onInput }}" onFocus="{{ cbChannel.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbChannel.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbChannel.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbChannel.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ช่องทาง <span style="color:#EF4444;">*</span></span><select value="{{ form.ch }}" onChange="{{ onFChannel }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ channelOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
             </div>
             <sc-if value="{{ showBranches }}" hint-placeholder-val="{{ false }}">
               <div>
@@ -893,19 +802,18 @@
             </sc-if>
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันส่งมอบงาน</span><input type="date" value="{{ form.delivery }}" onChange="{{ onFDelivery }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันลงงาน <span style="color:#EF4444;">*</span></span><input type="date" value="{{ form.date }}" onChange="{{ onFDate }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
-            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทคอนเทนต์</span><div style="position:relative;"><input value="{{ cbCtype.value }}" onInput="{{ cbCtype.onInput }}" onFocus="{{ cbCtype.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbCtype.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbCtype.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbCtype.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทคอนเทนต์</span><select value="{{ form.ctype }}" onChange="{{ onFCtype }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ contentOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">หัตถการ <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน (ใช้เป็น Product ในชื่อ Ad)</span></span>
               <sc-if value="{{ procEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:4px 0;">ยังไม่มีหัตถการของงานประเภทนี้ · เพิ่มที่เมนู DATA › หัตถการ</div></sc-if>
               <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ procChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#4F46E5; display:block; margin-bottom:5px;">Creative <span style="color:#EF4444;">*</span></span><div style="position:relative;"><input value="{{ cbCreative.value }}" onInput="{{ cbCreative.onInput }}" onFocus="{{ cbCreative.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbCreative.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbCreative.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbCreative.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
-              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#EC4899; display:block; margin-bottom:5px;">Graphic <span style="color:#EF4444;">*</span></span><div style="position:relative;"><input value="{{ cbGraphic.value }}" onInput="{{ cbGraphic.onInput }}" onFocus="{{ cbGraphic.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbGraphic.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbGraphic.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbGraphic.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#4F46E5; display:block; margin-bottom:5px;">Creative <span style="color:#EF4444;">*</span></span><select value="{{ form.creative }}" onChange="{{ onFCreative }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ personPick }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#EC4899; display:block; margin-bottom:5px;">Graphic <span style="color:#EF4444;">*</span></span><select value="{{ form.graphic }}" onChange="{{ onFGraphic }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ personPick }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
             </div>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
-              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">รูปแบบงาน</span><div style="position:relative;"><input value="{{ cbFormat.value }}" onInput="{{ cbFormat.onInput }}" onFocus="{{ cbFormat.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbFormat.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbFormat.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbFormat.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
-              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Size งาน</span><div style="position:relative;"><input value="{{ cbSize.value }}" onInput="{{ cbSize.onInput }}" onFocus="{{ cbSize.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbSize.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbSize.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbSize.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">รูปแบบงาน</span><select value="{{ form.format }}" onChange="{{ onFFormat }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ formatOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Size งาน</span><select value="{{ form.size }}" onChange="{{ onFSize }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ sizeOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
             </div>
-            <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;"><button onClick="{{ onFResize }}" style="{{ resizeBtnStyle }}">{{ resizeBtnLabel }}</button><span style="font-size:11px; color:#94A3B8;">ติ๊กถ้าเป็นงาน Resize — จะแยกนับกับงานปกติ (การ์ดสรุป + Workload)</span></div>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะ <span style="color:#EF4444;">*</span></span><div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ statusPick }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
           </div>
           </sc-if>
@@ -1004,7 +912,6 @@
           <sc-if value="{{ taskErr }}" hint-placeholder-val=""><div style="padding:10px 22px 0; font-size:12px; font-weight:700; color:#EF4444;">{{ taskErr }}</div></sc-if>
           <div style="padding:16px 22px; border-top:1px solid #EEF2F6; display:flex; gap:10px; justify-content:space-between; align-items:center; flex-shrink:0;">
             <sc-if value="{{ canDeleteTask }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTaskFromForm }}" style="font-size:13px; font-weight:600; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:9px 14px; border-radius:9px; cursor:pointer;">ลบงานนี้</button></sc-if>
-            <sc-if value="{{ canCopyTask }}" hint-placeholder-val="{{ false }}"><button onClick="{{ copyFromForm }}" style="font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px solid #C7D2FE; padding:9px 14px; border-radius:9px; cursor:pointer;">📋 คัดลอกงาน</button></sc-if>
             <div style="flex:1;"></div>
             <button onClick="{{ closeModal }}" style="font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:9px 16px; border-radius:9px; cursor:pointer;">ยกเลิก</button>
             <sc-if value="{{ canSaveTask }}" hint-placeholder-val="{{ true }}"><button onClick="{{ saveModal }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 18px; border-radius:9px; cursor:pointer;">บันทึก</button></sc-if>
@@ -1081,12 +988,8 @@ class Component extends DCLogic {
     const seed = saved || this.defaultSeed();
     seed.people.forEach(p=>{ if(p.pass==null) p.pass='1234'; });
     const firstView = this.firstPermittedView((seed.people[0]||{}).position, seed.perms);
-    let _lu=null; try{ _lu=localStorage.getItem('mp.lastUserId'); }catch(e){}
-    const _luP=(_lu&&seed.people.find(p=>p.id===_lu))||null;
-    const _now=new Date(); const _p2=n=>String(n).padStart(2,'0'); const _isoOf=d=>d.getFullYear()+'-'+_p2(d.getMonth()+1)+'-'+_p2(d.getDate());
-    const _today=_isoOf(_now); const _wsD=new Date(_now); _wsD.setDate(_now.getDate()-((_now.getDay()+6)%7)); const _ws=_isoOf(_wsD); const _weD=new Date(_wsD); _weD.setDate(_wsD.getDate()+6); const _we=_isoOf(_weD);
     this.state = {
-      authed:false, loginId:_luP?_luP.id:'', loginName:_luP?_luP.name:'', loginPw:'', loginErr:'',
+      authed:false, loginId: seed.people[0].id, loginPw:'', loginErr:'',
       view:firstView, actor: seed.people[0].id, navOpen:false,
       channels: seed.channels, people: seed.people, tasks: seed.tasks, log: seed.log || [],
       contentTypes: seed.contentTypes, procedures: seed.procedures, statuses: seed.statuses || this.defaultStatuses(), perms: seed.perms || this.defaultPerms(),
@@ -1100,10 +1003,10 @@ class Component extends DCLogic {
       adStatuses: this.ensureAdStatuses(seed.adStatuses || this.defaultAdList(['ไม่ยิงแอด','ยังไม่ได้ยิง','ยิง ADS แล้ว'],'ast')),
       kols: seed.kols || [], doctors: seed.doctors || [], prices: seed.prices || [],
       fMedium:'all',
-      dateMode:'week', weekStart:_ws, calMonth:_today.slice(0,7), rangeStart:_ws, rangeEnd:_we, today:_today,
-      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:_today, adsDateMode:'post',
+      dateMode:'week', weekStart:'2026-07-06', calMonth:'2026-07', rangeStart:'2026-07-06', rangeEnd:'2026-07-19',
+      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:'2026-07-08', adsDateMode:'post',
       adfStatus:[], adfKol:[], adfDoctor:[], adfPrice:[], adfPost:[], adfFunnel:[], adfCamp:[], adfAud:[], adfObj:[], adfProc:[], adfFormat:[], adfSearch:'', adfOpen:'',
-      loading:true, loadErr:false, newVer:false, chipView:'name',
+      loading:true, loadErr:false, newVer:false, chipView:'both',
       modal:null, form:{}
     };
   }
@@ -1177,8 +1080,7 @@ class Component extends DCLogic {
   _pubUrl(path){ return 'https://ldokxrqxaunwfdcccvcg.supabase.co/storage/v1/object/public/media/'+path; }
   _ensureFormId(){ let id=this.state.form&&this.state.form.id; if(!id){ id='t'+Date.now(); this.setState(s=>({ form:{ ...s.form, id:id } })); } return id; }
   _uploadMedia(tid, field, idx, dataUrl, file){ const m=/^data:([^;]+);base64,/.exec(dataUrl||''); const mime=m?m[1]:'application/octet-stream'; const ext=(mime.split('/')[1]||'bin').split('+')[0]; const isImg=mime.indexOf('image')===0; const nm=(file&&file.name)?(isImg?file.name.replace(/\.(png|webp|bmp|gif)$/i,'.jpg'):file.name):(field+'.'+ext); const path=tid+'/'+field+'_'+Date.now()+'_'+idx+'.'+ext; return fetch(dataUrl).then(r=>r.blob()).then(blob=>window.sb.storage.from('media').upload(path, blob, { contentType:mime, upsert:true }).then(({error})=>{ if(error){ console.error('[upload]',error.message); return { name:nm, data:dataUrl, vid:mime.indexOf('video')===0 }; } return { name:nm, data:this._pubUrl(path), vid:mime.indexOf('video')===0 }; })); }
-  _loadAll(){ if(!window.sb) return Promise.reject(new Error('no supabase')); return Promise.all([ window.sb.from('mp_tasks').select('data'), window.sb.from('mp_state').select('id,data'), window.sb.from('mp_log').select('data') ]).then(res=>{ const tr=res[0],sr=res[1],lr=res[2]; const err=tr.error||sr.error||lr.error; if(err) throw err; const tasks=(tr.data||[]).map(r=>r.data).filter(Boolean); const sm={}; (sr.data||[]).forEach(r=>{ sm[r.id]=r.data; }); this._checkVer(sm['appVersion']); this._sig=(sm['reloadSignal']&&sm['reloadSignal'].t)||''; const log=(lr.data||[]).map(r=>r.data).filter(Boolean).sort((a,b)=>{ const A=(a&&a.iso)||'',B=(b&&b.iso)||''; return A<B?1:(A>B?-1:0); }); this._srvTasks={}; tasks.forEach(t=>{ if(t&&t.id!=null) this._srvTasks[t.id]=JSON.stringify(t); }); this._srvLogIds={}; log.forEach(l=>{ if(l&&l.id) this._srvLogIds[l.id]=1; }); this._srvState={}; const patch={ tasks:tasks, log:log, loading:false, loadErr:false }; this._KINDS().forEach(k=>{ const has=sm[k]!==undefined; const v=has?sm[k]:this.state[k]; patch[k]=v; this._srvState[k]=JSON.stringify(v===undefined?null:v); }); if(patch.adStatuses) patch.adStatuses=this.ensureAdStatuses(patch.adStatuses); if(patch.people&&patch.people.length){ let lu=null; try{ lu=localStorage.getItem('mp.lastUserId'); }catch(e){} const luP=(lu&&patch.people.find(p=>p.id===lu))||null; if(luP){ patch.loginId=luP.id; patch.loginName=luP.name; } else if(!patch.people.some(p=>p.id===this.state.loginId)){ patch.loginId=''; patch.loginName=this.state.loginName||''; }
-       if(!this.state.authed){ try{ const ss=JSON.parse(localStorage.getItem('mp.session')||'null'); if(ss&&ss.exp>Date.now()){ const sp=patch.people.find(p=>p.id===ss.id); if(sp){ patch.authed=true; patch.actor=sp.id; patch.loginId=sp.id; patch.loginName=sp.name; patch.view=this.firstPermittedView(sp.position, patch.perms); } } }catch(e){} } } this.setState(patch); }); }
+  _loadAll(){ if(!window.sb) return Promise.reject(new Error('no supabase')); return Promise.all([ window.sb.from('mp_tasks').select('data'), window.sb.from('mp_state').select('id,data'), window.sb.from('mp_log').select('data') ]).then(res=>{ const tr=res[0],sr=res[1],lr=res[2]; const err=tr.error||sr.error||lr.error; if(err) throw err; const tasks=(tr.data||[]).map(r=>r.data).filter(Boolean); const sm={}; (sr.data||[]).forEach(r=>{ sm[r.id]=r.data; }); this._checkVer(sm['appVersion']); this._sig=(sm['reloadSignal']&&sm['reloadSignal'].t)||''; const log=(lr.data||[]).map(r=>r.data).filter(Boolean).sort((a,b)=>{ const A=(a&&a.iso)||'',B=(b&&b.iso)||''; return A<B?1:(A>B?-1:0); }); this._srvTasks={}; tasks.forEach(t=>{ if(t&&t.id!=null) this._srvTasks[t.id]=JSON.stringify(t); }); this._srvLogIds={}; log.forEach(l=>{ if(l&&l.id) this._srvLogIds[l.id]=1; }); this._srvState={}; const patch={ tasks:tasks, log:log, loading:false, loadErr:false }; this._KINDS().forEach(k=>{ const has=sm[k]!==undefined; const v=has?sm[k]:this.state[k]; patch[k]=v; this._srvState[k]=JSON.stringify(v===undefined?null:v); }); if(patch.adStatuses) patch.adStatuses=this.ensureAdStatuses(patch.adStatuses); if(patch.people&&patch.people.length){ const ids=patch.people.map(p=>p.id); if(ids.indexOf(this.state.loginId)<0) patch.loginId=patch.people[0].id; } this.setState(patch); }); }
   _retryLoad(){ clearTimeout(this._loadT); this._loadT=setTimeout(()=>{ this._loadAll().then(()=>{ this.setState({ loadErr:false }); this._initSync(); }).catch(e=>{ console.error('[load retry]',e&&e.message); this.setState({ loadErr:true }); this._retryLoad(); }); }, 4000); }
   _checkVer(d){ const v=d&&d.v; if(!v||v<=this.APP_VERSION) return; try{ const key='mpVer_'+v; if(sessionStorage.getItem(key)){ this.setState({ newVer:true }); return; } sessionStorage.setItem(key,'1'); }catch(e){} this._safeReload(); }
   _safeReload(){ if(this.state.modal || (this._pend||0)>0){ this._reloadWhenIdle=true; this.setState({ newVer:true }); return; } location.reload(); } // don't yank someone mid-form/mid-save; reload when idle
@@ -1203,7 +1105,6 @@ class Component extends DCLogic {
 
   areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา'],['ads','ADS'],['history','ประวัติ']]; }
   defaultPerms(){ const p={}; this.positions.forEach(pos=>{ const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del: a==='tasks' }; }); p[pos]=o; }); return p; }
-  togglePermPos(pos){ this.setState(s=>{ const o=Object.assign({}, s.permOpen||{}); o[pos]=!o[pos]; return { permOpen:o }; }); }
   togglePerm(pos,area,act){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; if(!perms[pos][area]) perms[pos][area]={view:true,edit:true,del:true}; const cur=perms[pos][area][act]!==false; perms[pos][area][act]=!cur;
     if(area==='team'&&act==='view'&&cur){ const held=[...new Set(s.people.map(p=>p.position).filter(Boolean))]; const posList=held.length?held:[...new Set(s.positions||[])]; const anyLeft=posList.some(p=>{ const o=perms[p]; return !o||!o.team||o.team.view!==false; }); if(!anyLeft){ return {}; } }
     return { perms }; }, ()=>this.persist()); }
@@ -1214,10 +1115,7 @@ class Component extends DCLogic {
     if(!anyLeft && posList.length){ const first=posList[0]; if(!P[first]) P[first]={}; if(!P[first].team) P[first].team={view:true,edit:true,del:false}; P[first].team.view=true; P[first].team.edit=true; }
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return true; return p[area].view!==false; }
-  navArea(v){ return v; }
-  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', history:'🕘 ประวัติ' }[k]||k; }
-  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','history']]]; }
-  togglePermGroup(pos, keys){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; const allOn=keys.every(k=>{ const pk=perms[pos][k]; return pk?pk.view!==false:true; }); const nv=!allOn; keys.forEach(k=>{ perms[pos][k]={ view:nv, edit:nv, del:nv }; }); return { perms }; }, ()=>this.persist()); }
+  navArea(v){ return { plan:'tasks', adsplan:'tasks', table:'tasks', report:'tasks', team:'team', channels:'channels', content:'content', procedure:'procedure', status:'status', format:'format', size:'size', branch:'branch', history:'history', kol:'ads', doctor:'ads', price:'ads', adPostType:'ads', adFunnel:'ads', adCampaign:'ads', adAudience:'ads', adObjective:'ads', adStatus:'ads' }[v]; }
   firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
   defaultSeed(){
@@ -1293,10 +1191,7 @@ class Component extends DCLogic {
     }, ()=>this.persist());
   }
 
-  setView(v){ const patch={ view:v, navOpen:false }; const td=this.state.today;
-    if(v==='table'){ patch.dateMode='month'; if(td) patch.calMonth=td.slice(0,7); }
-    else if(v==='plan'||v==='adsplan'||v==='report'){ patch.dateMode='week'; if(td){ const d=this.parse(td); patch.weekStart=this.addDays(td,-((d.getDay()+6)%7)); } }
-    this.setState(patch); }
+  setView(v){ this.setState({ view:v, navOpen:false }); }
   toggleNav(){ this.setState(s=>({ navOpen:!s.navOpen })); }
   closeNav(){ this.setState({ navOpen:false }); }
   setMode(m){ this.setState({ dateMode:m }); }
@@ -1317,8 +1212,8 @@ class Component extends DCLogic {
   closeModal(){ this.setState({ modal:null, form:{} }); }
   setF(field, val){ this.setState(s=>({ form:{ ...s.form, [field]:val } })); }
   setTab(t){ this.setF('tab', t); }
-  doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId)||S.people.find(x=>x.name===(S.loginName||'').trim()); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้ — พิมพ์ชื่อให้ตรง' }); return; } if((p.pass||'1234')!==S.loginPw){ this.setState({ loginErr:'รหัสผ่านไม่ถูกต้อง' }); return; } try{ localStorage.setItem('mp.lastUserId', p.id); localStorage.setItem('mp.session', JSON.stringify({ id:p.id, exp:Date.now()+604800000 })); }catch(e){} this.setState({ authed:true, actor:p.id, loginId:p.id, loginName:p.name, loginPw:'', loginErr:'', loginOpen:false, view:this.firstPermittedView(p.position) }); }
-  logout(){ try{ localStorage.removeItem('mp.session'); }catch(e){} this.setState({ authed:false, loginPw:'', loginErr:'', navOpen:false }); }
+  doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้' }); return; } if((p.pass||'1234')!==S.loginPw){ this.setState({ loginErr:'รหัสผ่านไม่ถูกต้อง' }); return; } this.setState({ authed:true, actor:p.id, loginPw:'', loginErr:'', view:this.firstPermittedView(p.position) }); }
+  logout(){ this.setState({ authed:false, loginPw:'', loginErr:'', navOpen:false }); }
   _compressDataUrl(dataUrl){ return new Promise(res=>{ const img=new Image(); img.onload=()=>{ let w=img.width, h=img.height; const M=1400; if(w>M||h>M){ const s=Math.min(M/w,M/h); w=Math.round(w*s); h=Math.round(h*s); } try{ const cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); const out=cv.toDataURL('image/jpeg',0.82); res((out&&out.length<dataUrl.length)?out:dataUrl); }catch(e){ res(dataUrl); } }; img.onerror=()=>res(dataUrl); img.src=dataUrl; }); }
   _compressImage(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>{ this._compressDataUrl(r.result).then(res); }; r.readAsDataURL(file); }); }
   async _compressStateImages(){ if(this._shrinkDone) return; this._shrinkDone=true; const S=this.state; let changed=false; const tasks=(S.tasks||[]).map(t=>({ ...t }));
@@ -1332,16 +1227,13 @@ class Component extends DCLogic {
 
   setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; const k=(form.medium==='offline')?'offline':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k&&(c.jobcat||'online')===v)){ const fc=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===v); form.ch=fc?fc.id:''; } return { form }; }); }
   blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const firstCh=(S.channels.find(c=>(c.kind||'online')==='online'&&(c.jobcat||'online')===jt)||{}).id||'';
-    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', resize:false, ctype:'', proc:'', procs:[], imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), tab:'detail' };
+    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', ctype:'', proc:'', procs:[], imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), tab:'detail' };
     base.brief.adStatus=((S.adStatuses.find(s=>this.isNoAds(s))||S.adStatuses[0]||{}).id)||'';
     const o=Object.assign(base, over||{});
     const chObj=S.channels.find(c=>c.id===o.ch);
     if(chObj){ o.medium=(chObj.kind==='offline')?'offline':'online'; o.jobType=(o.medium==='offline')?'central':(chObj.jobcat||'online'); }
     else if(o.medium==='offline') o.jobType='central';
     return o; }
-  _mkCb(key, curId, opts, apply){ const S=this.state; const cur=(opts||[]).find(o=>o.value===curId); const curLabel=cur?cur.label:''; const open=S.cbOpen===key; const q=open?(S.cbq||''):''; const ql=q.toLowerCase();
-    const list=(opts||[]).filter(o=>!q||(o.label||'').toLowerCase().indexOf(ql)>=0).map(o=>({ label:o.label, onPick:()=>{ apply(o.value); this.setState({ cbOpen:null, cbq:'' }); } }));
-    return { value:(open?q:curLabel), open, list, onFocus:()=>this.setState({ cbOpen:key, cbq:'' }), onToggle:()=>this.setState(s=>({ cbOpen:(s.cbOpen===key?null:key), cbq:'' })), onInput:e=>this.setState({ cbOpen:key, cbq:e.target.value }) }; }
   openAddTask(){ this.openModal('task','add',this.blankTask()); }
   openEditTaskBrief(t){ this.openEditTask(t); this.setState(s=>({ form:{ ...s.form, tab:'brief' } })); }
   buildAdName(t){ const S=this.state; const b=t.brief||{};
@@ -1351,18 +1243,7 @@ class Component extends DCLogic {
     return pairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_'); }
   blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'' }; }
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
-  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), tab:'detail' }); }
-  copyTask(t){ const S=this.state; const todo=((S.statuses.find(s=>s.label==='ยังไม่เริ่ม')||S.statuses[0]||{}).id)||'todo';
-    this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:this.normalizeBrief(t.brief) })); }
-  importJSON(){ const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json'; inp.onchange=(e)=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=()=>{ let d=null; try{ d=JSON.parse(r.result); }catch(err){ d=null; } if(!d||typeof d!=='object'||!(Array.isArray(d.tasks)||Array.isArray(d.channels))){ this.setState({ modal:{ kind:'confirm', title:'Import ไม่สำเร็จ', yesLabel:'ตกลง', yesBg:'#EF4444', msg:'ไฟล์ไม่ถูกต้อง — ต้องเป็นไฟล์ JSON ที่ export จากระบบนี้', onYes:()=>this.setState({ modal:null }) } }); return; } const nT=(d.tasks||[]).length; this.setState({ modal:{ kind:'confirm', title:'ยืนยัน Import', yesLabel:'Import ('+nT+' งาน)', yesBg:'#4F46E5', msg:'จะเพิ่ม/อัปเดตงาน '+nT+' รายการ และข้อมูลตั้งค่าจากไฟล์ เข้าสู่ระบบ (ของเดิมที่ไม่ทับกันจะยังอยู่ครบ) — ยืนยันไหม?', onYes:()=>{ this.setState({ modal:null }); this._doImport(d); } } }); }; r.readAsText(f); }; inp.click(); }
-  _doImport(d){ const uni=(a,b)=>{ const m={}; (a||[]).forEach(x=>{ if(x&&x.id!=null) m[x.id]=x; }); (b||[]).forEach(x=>{ if(x&&x.id!=null) m[x.id]=x; }); return Object.keys(m).map(k=>m[k]); };
-    this.setState(s=>{ const patch={};
-      const tm={}; (s.tasks||[]).forEach(t=>{ if(t&&t.id!=null) tm[t.id]=t; }); (d.tasks||[]).forEach(t=>{ if(t&&t.id!=null) tm[t.id]=Object.assign({}, tm[t.id]||{}, t); }); patch.tasks=Object.keys(tm).map(k=>tm[k]);
-      ['channels','people','contentTypes','procedures','statuses','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices'].forEach(k=>{ if(Array.isArray(d[k])) patch[k]=uni(s[k], d[k]); });
-      if(Array.isArray(d.positions)) patch.positions=[...new Set([...(s.positions||[]), ...d.positions])];
-      if(d.perms&&typeof d.perms==='object') patch.perms=Object.assign({}, s.perms||{}, d.perms);
-      if(Array.isArray(d.log)) patch.log=uni(s.log, d.log).sort((x,y)=>{ const A=(x&&x.iso)||'',B=(y&&y.iso)||''; return A<B?1:(A>B?-1:0); });
-      return patch; }, ()=>{ this.persist(); this.setState({ modal:{ kind:'confirm', title:'Import สำเร็จ', yesLabel:'เยี่ยม', yesBg:'#16A34A', msg:'นำเข้าข้อมูลเรียบร้อย กำลังบันทึกขึ้นเซิร์ฟเวอร์ให้ทุกคนเห็น', onYes:()=>this.setState({ modal:null }) } }); }); }
+  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), tab:'detail' }); }
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
   toggleAdf(key,id){ this.setState(s=>{ const arr=Array.isArray(s[key])?s[key].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { [key]:arr }; }); }
   toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
@@ -1408,7 +1289,7 @@ class Component extends DCLogic {
         if(!brief.postType) adReq.push('Post Type'); if(!brief.funnel) adReq.push('Funnel'); if(!brief.campaign) adReq.push('Campaign'); if(!brief.adEnd) adReq.push('วันปิดแอด');
         if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'สถานะ "'+(selAdStatus.name||'')+'" ต้องกรอก Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
       const procs=Array.isArray(f.procs)?f.procs:[];
-      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', resize:!!f.resize, ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief };
+      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief };
       if (m.mode==='add'){ const t={ id:f.id||('t'+Date.now()), ...rec };
         this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec), { medium:rec.medium, ch:rec.ch }); }
       else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
@@ -1584,16 +1465,15 @@ class Component extends DCLogic {
     const fm=t=>S.fMedium==='all'||(t.medium||'online')===S.fMedium;
     const fSearchQ=(S.fSearch||'').trim().toLowerCase();
     const ftxt=t=>!fSearchQ||(t.title||'').toLowerCase().indexOf(fSearchQ)>=0;
-    const chipView=(S.chipView==='name'||S.chipView==='image')?S.chipView:'name';
+    const chipView=(S.chipView==='image'||S.chipView==='both'||S.chipView==='name')?S.chipView:'both';
     const cvBtn=on=>'font-size:12px;font-weight:700;padding:5px 12px;border-radius:7px;border:none;cursor:pointer;white-space:nowrap;'+(on?'background:#fff;color:#4F46E5;box-shadow:0 1px 2px rgba(15,23,42,.12);':'background:none;color:#64748B;');
-    const chipViewTabs=[['name','ชื่อ'],['image','รูป']].map(x=>({ label:x[1], style:cvBtn(chipView===x[0]), onClick:()=>this.setState({ chipView:x[0] }) }));
-    const isVidSrc=s=>{ s=s||''; return s.indexOf('data:video')===0 || /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(s); };
-    const taskMedia=t=>{ var imgs=[].concat((t.images||[]),(t.aw||[]).filter(function(a){return a&&!a.vid&&!isVidSrc(a.data);})).filter(function(a){return a&&a.data;}); if(imgs.length) return { src:imgs[0].data, isVid:false }; var vid=(t.aw||[]).find(function(a){return a&&a.data&&(a.vid||isVidSrc(a.data));}); return vid?{ src:vid.data, isVid:true }:null; };
+    const chipViewTabs=[['name','ชื่อ'],['image','รูป'],['both','ชื่อ+รูป']].map(x=>({ label:x[1], style:cvBtn(chipView===x[0]), onClick:()=>this.setState({ chipView:x[0] }) }));
+    const taskMedia=t=>{ var awi=(t.aw||[]).find(function(a){return (a.data||'').indexOf('data:image')===0;}); if(awi) return { src:awi.data, isVid:false }; var awv=(t.aw||[]).find(function(a){return (a.data||'').indexOf('data:video')===0;}); if(awv) return { src:awv.data, isVid:true }; var im=(t.images||[]).find(function(a){return (a.data||'').indexOf('data:image')===0;}); return im?{ src:im.data, isVid:false }:null; };
 
     const days=this.buildDays(); const daySet=new Set(days); const compact=days.length>10;
-    const dayObjs=days.map(iso=>{ const d=this.parse(iso), we=d.getDay()===0||d.getDay()===6, sel=iso===S.selDate, isToday=iso===S.today;
-      const headStyle='display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 3px;cursor:pointer;border:none;border-left:1px solid #F1F5F9;'+(sel?'background:#4F46E5;color:#fff;':(we?'background:#F8FAFC;color:#94A3B8;':'background:#fff;color:#334155;'))+(isToday?'box-shadow:inset 0 0 0 2px #EF4444;':'');
-      return { iso, dow:this.dow(iso), dnum:d.getDate(), isSel:sel, isWe:we, isToday, headStyle, onClick:()=>this.setDate(iso) }; });
+    const dayObjs=days.map(iso=>{ const d=this.parse(iso), we=d.getDay()===0||d.getDay()===6, sel=iso===S.selDate;
+      const headStyle='display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 3px;cursor:pointer;border:none;border-left:1px solid #F1F5F9;'+(sel?'background:#4F46E5;color:#fff;':(we?'background:#F8FAFC;color:#94A3B8;':'background:#fff;color:#334155;'));
+      return { iso, dow:this.dow(iso), dnum:d.getDate(), isSel:sel, isWe:we, headStyle, onClick:()=>this.setDate(iso) }; });
 
     const realIds=new Set(S.channels.map(c=>c.id));
     const otherCh={ id:'other', name:'อื่นๆ (งานกลาง/KOL/Offline)', color:'#94A3B8' };
@@ -1603,14 +1483,12 @@ class Component extends DCLogic {
     const matrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
       const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t)); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
-        const ckey=c.id+'|'+d.iso; const expanded=!!((S.expandedCells||{})[ckey]); const lim=compact?0:(expanded?ct.length:3);
-        const shown=ct.slice(0,lim).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true;
-          return { title:t.title, tip:t.title+' · '+(p.name||'')+' · '+s.label, color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', isResize:!!t.resize, onOpen:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.openEditTask(t); } }; });
-        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''))+(d.isToday?'border-left:2px solid #EF4444;border-right:2px solid #EF4444;':'');
-        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown,
-          more:(!compact&&!expanded&&ct.length>3)?(ct.length-3):0, expanded:(!compact&&expanded&&ct.length>3),
-          onAdd:()=>{ if(this._skipAdd){ this._skipAdd=false; return; } this.openModal('task','add',this.blankTask(isOther?{ ch:'other', jobType:'central', date:d.iso }:{ ch:c.id, date:d.iso })); },
-          onMore:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); if(ec[ckey])delete ec[ckey]; else ec[ckey]=true; return { expandedCells:ec }; }); }, style };
+        const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const md=(chipView==='image'||chipView==='both')?taskMedia(t):null; const img=md?md.src:null; const useName=(chipView!=='image')||!img;
+          return { title:t.title, tip:t.title+' · '+(p.name||'')+' · '+s.label, color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0' }; });
+        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''));
+        const first=ct[0];
+        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown, more:(!compact&&ct.length>3)?ct.length-3:0, style,
+          onClick:()=> first ? this.openEditTask(first) : this.openModal('task','add',this.blankTask(isOther?{ ch:'other', jobType:'central', date:d.iso }:{ ch:c.id, date:d.iso })) };
       });
       return { name:c.name, color:c.color, total, cells };
     });
@@ -1632,13 +1510,12 @@ class Component extends DCLogic {
     const adsMatrixRows=adsRowChannels.map(c=>{ let total=0;
       const cells=dayObjs.map(d=>{ const ct=T.filter(t=>adsPass(t)&&((t.brief&&t.brief.platforms)||[]).indexOf(c.id)>=0&&adDateOf(t)===d.iso); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
-        const ckey='ads|'+c.id+'|'+d.iso; const expanded=!!((S.expandedCells||{})[ckey]); const lim=compact?0:(expanded?ct.length:3);
-        const shown=ct.slice(0,lim).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status);
-          return { title:t.title, tip:this.buildAdName(t), color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), useName:true, isResize:!!t.resize, onOpen:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.openEditTaskBrief(t); } }; });
-        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''))+(d.isToday?'border-left:2px solid #EF4444;border-right:2px solid #EF4444;':'');
-        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown,
-          more:(!compact&&!expanded&&ct.length>3)?(ct.length-3):0, expanded:(!compact&&expanded&&ct.length>3), onAdd:null,
-          onMore:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); if(ec[ckey])delete ec[ckey]; else ec[ckey]=true; return { expandedCells:ec }; }); }, style };
+        const shown=ct.slice(0,compact?0:3).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const b=t.brief||{};
+          return { title:t.title, tip:this.buildAdName(t), color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTaskBrief(t); } }; });
+        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''));
+        const first=ct[0];
+        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown, more:(!compact&&ct.length>3)?ct.length-3:0, style,
+          onClick:()=> first ? this.openEditTaskBrief(first) : null };
       });
       return { name:c.name, color:c.color, total, cells };
     });
@@ -1652,32 +1529,23 @@ class Component extends DCLogic {
         items:(d[2]||[]).map(it=>({ label:it.name||it.label, checked:sel.indexOf(it.id)>=0, boxStyle:'width:15px;height:15px;border-radius:4px;flex-shrink:0;border:1px solid '+(sel.indexOf(it.id)>=0?'#4F46E5;background:#4F46E5;':'#CBD5E1;background:#fff;'), onClick:()=>this.toggleAdf(key,it.id) })) };
     }.bind(this));
 
-    const scopedAll=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
-    const scoped=scopedAll.filter(t=>!t.resize); const resized=scopedAll.filter(t=>t.resize); const resizeN=resized.length;
-    const cntBy=id=>scoped.filter(t=>t.status===id).length; const rCntBy=id=>resized.filter(t=>t.status===id).length;
+    const scoped=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
+    const cntBy=id=>scoped.filter(t=>t.status===id).length;
     const statCards=[
-      { label:'ทั้งหมด', value:scoped.length, color:'#4F46E5' },
+      { label:'งานทั้งหมด', value:scoped.length, color:'#4F46E5' },
       { label:'เสร็จ', value:cntBy('done'), color:'#22C55E' },
       { label:'กำลังทำ', value:cntBy('doing'), color:'#F97316' },
       { label:'ยังไม่เริ่ม', value:cntBy('todo'), color:'#94A3B8' },
     ];
-    const resizeStatCards=[
-      { label:'ทั้งหมด', value:resizeN, color:'#7C3AED' },
-      { label:'เสร็จ', value:rCntBy('done'), color:'#22C55E' },
-      { label:'กำลังทำ', value:rCntBy('doing'), color:'#F97316' },
-      { label:'ยังไม่เริ่ม', value:rCntBy('todo'), color:'#94A3B8' },
-    ];
 
-    const wlPoolAll=T.filter(t=>daySet.has(t.date)&&fc(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
-    const wlPool=wlPoolAll.filter(t=>!t.resize); const wlResizePool=wlPoolAll.filter(t=>t.resize);
-    const wlTab=(['creative','graphic','other'].indexOf(S.wlTab)>=0)?S.wlTab:'creative';
-    const wlKey=(wlTab==='creative')?'cN':((wlTab==='graphic')?'gN':'oN');
-    const wlColor=wlTab==='creative'?'#4F46E5':(wlTab==='graphic'?'#EC4899':'#0EA5E9');
-    const wlPeople=(wlTab==='other')?S.people.filter(p=>['Creative','Graphic'].indexOf(p.position||'')<0):S.people.filter(p=>(p.position||'')===(wlTab==='creative'?'Creative':'Graphic'));
-    const wlBase=wlPeople.map(p=>{ const cN=wlPool.filter(t=>t.creative===p.id).length; const gN=wlPool.filter(t=>t.graphic===p.id).length; const oN=wlPool.filter(t=>t.creative===p.id||t.graphic===p.id).length; const rN=wlResizePool.filter(t=>t.creative===p.id||t.graphic===p.id).length; return { ...p, cN, gN, oN, rN }; });
+    const wlPool=T.filter(t=>daySet.has(t.date)&&fc(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
+    const wlBase=S.people.map(p=>{ const cN=wlPool.filter(t=>t.creative===p.id).length; const gN=wlPool.filter(t=>t.graphic===p.id).length; const uniq=wlPool.filter(t=>t.creative===p.id||t.graphic===p.id).length; return { ...p, cN, gN, total:uniq }; });
+    const wlTab=S.wlTab==='graphic'?'graphic':'creative';
+    const wlKey=wlTab==='creative'?'cN':'gN';
+    const wlColor=wlTab==='creative'?'#4F46E5':'#EC4899';
     const maxWk=Math.max(1,...wlBase.map(w=>w[wlKey]));
     const workload=wlBase.slice().sort((a,b)=>b[wlKey]-a[wlKey]).map(w=>{ const active=S.fPerson===w.id; const count=w[wlKey];
-      return { name:w.name, position:w.position, color:w.color, initials:init(w.name), count:count, pct:Math.round(count/maxWk*100), barColor:wlColor, resizeN:w.rN, showResize:w.rN>0,
+      return { name:w.name, position:w.position, color:w.color, initials:init(w.name), count:count, pct:Math.round(count/maxWk*100), barColor:wlColor,
         rowStyle:'display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:10px;cursor:pointer;text-align:left;border:1px solid '+(active?'#C7D2FE;background:#EEF2FF;':'transparent;background:transparent;'),
         onClick:()=>this.setState({ fPerson:S.fPerson===w.id?'all':w.id }) }; });
     const wlTabBtn=(on,col)=>'font-size:12px;font-weight:700;padding:5px 16px;border-radius:7px;border:none;cursor:pointer;'+(on?'background:#fff;color:'+col+';box-shadow:0 1px 2px rgba(15,23,42,.12);':'background:none;color:#64748B;');
@@ -1735,11 +1603,11 @@ class Component extends DCLogic {
       const iso=this.addDays(gridStart,i);
       if(iso<calS || iso>calE){ calCells.push({ blank:true, day:false, items:[], style:'min-height:120px;background:#FAFBFC;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;' }); continue; }
       const dts=T.filter(t=>t.date===iso&&calFilter(t)).slice().sort((a,b)=> a.ch<b.ch?-1:(a.ch>b.ch?1:0));
-      const items=dts.slice(0,4).map(t=>{ const c=chMap[t.ch]||{},p=pMap[t.creative]||pMap[t.graphic]||{},s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true; return { title:t.title, color:c.color||'#CBD5E1', tint:(c.color||'#CBD5E1')+'1A', statusColor:s.color, initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTask(t); } }; });
-      const isToday=iso===S.today;
+      const items=dts.slice(0,4).map(t=>{ const c=chMap[t.ch]||{},p=pMap[t.creative]||pMap[t.graphic]||{},s=st(t.status); const md=(chipView==='image'||chipView==='both')?taskMedia(t):null; const img=md?md.src:null; const useName=(chipView!=='image')||!img; return { title:t.title, color:c.color||'#CBD5E1', tint:(c.color||'#CBD5E1')+'1A', statusColor:s.color, initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTask(t); } }; });
+      const isToday=iso==='2026-07-24';
       calCells.push({ blank:false, day:true, dnum:this.parse(iso).getDate(), items, more: dts.length>4?dts.length-4:0,
-        numStyle:'font-size:12px;font-weight:700;'+(isToday?'background:#EF4444;color:#fff;border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;':'color:#334155;'),
-        style:'min-height:120px;padding:6px;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;cursor:pointer;display:flex;flex-direction:column;gap:4px;'+(isToday?'box-shadow:inset 0 0 0 2px #EF4444;':''),
+        numStyle:'font-size:12px;font-weight:700;'+(isToday?'background:#4F46E5;color:#fff;border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;':'color:#334155;'),
+        style:'min-height:120px;padding:6px;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;cursor:pointer;display:flex;flex-direction:column;gap:4px;',
         onClick:()=>this.openModal('task','add',this.blankTask({ ch:(fChans.length===1?fChans[0]:(S.channels[0]||{}).id), date:iso, start:iso })) });
     }
     const calWeekHeads=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
@@ -1771,11 +1639,6 @@ class Component extends DCLogic {
     const permAreas=areaDefs.map(a=>a[1]);
     const pchip=(on,kind)=>{ const c=kind==='del'?'#EF4444':(kind==='view'?'#0EA5E9':'#4F46E5'); return 'font-size:12px;width:30px;height:28px;border-radius:8px;cursor:pointer;'+(on?'border:1px solid '+c+'55;background:'+c+'18;color:'+c+';':'border:1px solid #E2E8F0;background:#fff;color:#CBD5E1;'); };
     const permRows=positionsUsed.map(pos=>({ pos, onDelete:()=>this.askDeletePosition(pos), cells: areaDefs.map(([ak])=>{ const v=getP(pos,ak,'view'), e=getP(pos,ak,'edit'), d=getP(pos,ak,'del'); return { viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,ak,'view'), onEdit:()=>this.togglePerm(pos,ak,'edit'), onDel:()=>this.togglePerm(pos,ak,'del') }; }) }));
-    const permOpen=S.permOpen||{}; const NAV_G=this.navGroups();
-    const gchk=(on)=>'width:20px;height:20px;border-radius:6px;cursor:pointer;flex-shrink:0;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;'+(on?'background:#4F46E5;color:#fff;border:1px solid #4F46E5;':'background:#fff;color:#CBD5E1;border:1px solid #CBD5E1;');
-    const permTree=positionsUsed.map(pos=>({ pos, canDel:canPosDel, onDelete:()=>this.askDeletePosition(pos), open:!!permOpen[pos], caret:permOpen[pos]?'▼':'▶', onToggle:()=>this.togglePermPos(pos),
-      groups:NAV_G.map(g=>{ const keys=g[1]; const allOn=keys.every(k=>getP(pos,k,'view')); return { title:g[0], groupChkStyle:gchk(allOn), groupChkLabel:allOn?'✓':'', onGroup:()=>this.togglePermGroup(pos, keys),
-        pages:keys.map(k=>{ const v=getP(pos,k,'view'), e=getP(pos,k,'edit'), d=getP(pos,k,'del'); return { label:this.navPermLabel(k), viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,k,'view'), onEdit:()=>this.togglePerm(pos,k,'edit'), onDel:()=>this.togglePerm(pos,k,'del') }; }) }; }) }));
 
     const chKindLbl2={online:'Online',offline:'Offline'};
     const chJobLbl={online:'ช่องทางต่างๆ',central:'งานกลาง',kol:'KOL'};
@@ -1816,14 +1679,9 @@ class Component extends DCLogic {
     const histPersonOpts=[{value:'all',label:'ทุกคน'}, ...S.people.map(p=>({value:p.id,label:p.name}))];
     const histMediumOpts=[{value:'all',label:'ทั้งหมด'},{value:'online',label:'Online'},{value:'offline',label:'Offline'}];
     const histChannelOpts=[{value:'all',label:'ทุกช่องทาง'}, ...S.channels.map(c=>({value:c.id,label:c.name}))];
-    const taskTitleOf=d=>{ const m=/^งาน "([^"]+)"/.exec(d||''); return m?m[1]:null; };
     const historyRows=logFiltered.map(l=>{ const a=pMap[l.actorId]||{name:'—',color:'#94A3B8'};
       const ch=(l.changes||[]).map(c=>({ field:c.f, from:clip(c.from), to:clip(c.to) }));
-      const tt=taskTitleOf(l.detail); const rel=tt?S.tasks.find(x=>(x.title||'')===tt):null;
       return { ts:l.ts, area:areaOf(l.detail), actor:a.name, color:a.color, initials:init(a.name), action:l.action, detail:l.detail,
-        canOpen:!!rel, detailStyle:rel?'cursor:pointer;':'',
-        onDetail:rel?(()=>this.openEditTask(rel)):null,
-        onOpen:rel?(()=>{ const d=this.parse(rel.date); const wd=(d.getDay()+6)%7; const ws=this.addDays(rel.date,-wd); this.setState({ view:'plan', dateMode:'week', selDate:rel.date, weekStart:ws, navOpen:false }); this.openEditTask(rel); }):null,
         changes:ch, noChanges:ch.length===0,
         actionStyle:'font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap;color:'+(actClr[l.action]||'#64748B')+';background:'+(actClr[l.action]||'#64748B')+'18;' }; });
 
@@ -1835,8 +1693,8 @@ class Component extends DCLogic {
     const navOpen=S.navOpen||{};
     const navSections=[
       { title:null, keys:['plan','adsplan','table','report'] },
-      { title:'DATA', keys:['channels','content','procedure','format','size','branch','status','kol','doctor','price'] },
-      { title:'ADS', keys:['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective'] },
+      { title:'DATA', keys:['channels','content','procedure','format','size','branch','status','kol','doctor'] },
+      { title:'ADS', keys:['price','adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective'] },
       { title:'SETTING', keys:['team','history'] }
     ].map(sec=>{
       const items=sec.keys.filter(k=>{ const a=this.navArea(k); return a==null||can(a,'view'); }).map(mkNav);
@@ -1939,9 +1797,6 @@ class Component extends DCLogic {
       authed:S.authed, notAuthed:!S.authed && !S.loading, loading:!!S.loading, loadErr:!!S.loadErr, newVer:!!S.newVer, reloadNow:()=>location.reload(),
       loginPeopleOpts:S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position })), loginId:S.loginId, loginPw:S.loginPw, loginErr:S.loginErr,
       onLoginId:e=>this.setState({ loginId:e.target.value, loginErr:'' }), onLoginPw:e=>this.setState({ loginPw:e.target.value, loginErr:'' }), onLoginKey:e=>{ if(e.key==='Enter') this.doLogin(); }, doLogin:()=>this.doLogin(), logout:()=>this.logout(),
-      loginName:S.loginName||'', loginOpen:!!S.loginOpen, onLoginFocus:()=>this.setState({ loginOpen:true }), onLoginToggle:()=>this.setState(s=>({ loginOpen:!s.loginOpen })),
-      onLoginName:e=>{ const v=e.target.value; const p=S.people.find(x=>x.name===v); this.setState({ loginName:v, loginId:p?p.id:'', loginErr:'', loginOpen:true }); },
-      loginUserList:S.people.filter(p=>{ const q=(S.loginName||'').toLowerCase(); return !q||(p.name||'').toLowerCase().indexOf(q)>=0; }).map(p=>({ name:p.name, position:p.position||'', onPick:()=>this.setState({ loginName:p.name, loginId:p.id, loginErr:'', loginOpen:false }) })),
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(), recoverLocal:()=>this.recoverLocal(),
@@ -1957,7 +1812,7 @@ class Component extends DCLogic {
       onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
       onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFStart:e=>this.setF('start',e.target.value), durationLabel,
       onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setJobType(e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
-      calWeekHeads, calCells, permRows, permAreas, permTree, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
+      calWeekHeads, calCells, permRows, permAreas, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
       newPos:S.newPos, onNewPos:e=>this.setState({ newPos:e.target.value }), onNewPosKey:e=>{ if(e.key==='Enter') this.addPosition(); }, addPosition:()=>this.addPosition(),
       canTeamEdit:can('team','edit'), canTeamDel:can('team','del'), canChEdit:can('channels','edit'), canChDel:can('channels','del'), canCtEdit:can('content','edit'), canCtDel:can('content','del'), canPrEdit:can('procedure','edit'), canPrDel:can('procedure','del'), canStEdit:can('status','edit'), canStDel:can('status','del'), canSaveTask:can('tasks','edit'),
       navSections, chipViewTabs, actor:S.actor, people:S.people,
@@ -1975,13 +1830,12 @@ class Component extends DCLogic {
       modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
       rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
-      statCards, resizeStatCards, channelChips, statusChips, adStatusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
-      personSelStyle:'font-size:13px;padding:7px 11px;border-radius:9px;cursor:pointer;'+((S.fPerson&&S.fPerson!=='all')?'border:2px solid #4F46E5;background:#EEF2FF;color:#4F46E5;font-weight:700;':'border:1px solid #E2E8F0;background:#fff;'),
+      statCards, channelChips, statusChips, adStatusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
       isAdsPlan:viewAllowed&&S.view==='adsplan', adsMatrixRows, adsDateModeTabs, adsTaskCount, adsFilters, adfSearch:S.adfSearch||'', onAdfSearch:e=>this.setState({adfSearch:e.target.value}), onClearAdsFilters:()=>this.setState({adfStatus:[],adfKol:[],adfDoctor:[],adfPrice:[],adfPost:[],adfFunnel:[],adfCamp:[],adfAud:[],adfObj:[],adfProc:[],adfFormat:[],adfSearch:'',adfOpen:''}),
-      wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'), wlTabOtherStyle:wlTabBtn(wlTab==='other','#0EA5E9'),
-      onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}), onWlOther:()=>this.setState({wlTab:'other'}),
+      wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'),
+      onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}),
       reportSections, reportTotal:rep.length,
       teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, openAddChannel:()=>this.openAddChannel(),
       contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
@@ -2001,12 +1855,9 @@ class Component extends DCLogic {
       showTagDates, onFTagStart:e=>this.setF('start',e.target.value), onFTagExpiry:e=>this.setF('expiry',e.target.value),
       form:f, saveModal:()=>this.saveModal(),
       canDeleteTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can('tasks','del'), deleteTaskFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.askDeleteTask(t); },
-      canCopyTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can('tasks','edit'), copyFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.copyTask(t); },
       channelOpts, formatOpts, contentOpts, statusPick, palette, positionOpts:positionsUsed, groupOpts,
-      cbChannel:this._mkCb('form.ch', f.ch, channelOpts, v=>this.setF('ch',v)), cbCtype:this._mkCb('form.ctype', f.ctype, contentOpts, v=>this.setF('ctype',v)), cbCreative:this._mkCb('form.creative', f.creative, personPick, v=>this.setF('creative',v)), cbGraphic:this._mkCb('form.graphic', f.graphic, personPick, v=>this.setF('graphic',v)), cbFormat:this._mkCb('form.format', f.format, formatOpts, v=>this.setF('format',v)), cbSize:this._mkCb('form.size', f.size, sizeOpts, v=>this.setF('size',v)),
       onFTitle:e=>this.setF('title',e.target.value), onFChannel:e=>this.setF('ch',e.target.value), onFDate:e=>this.setF('date',e.target.value),
       onFFormat:e=>this.setF('format',e.target.value), onFCtype:e=>this.setF('ctype',e.target.value), onFProc:e=>this.setF('proc',e.target.value),
-      onFResize:()=>this.setF('resize',!f.resize), resizeBtnLabel:(f.resize?'✓ ':'')+'🟪 งาน Resize', resizeBtnStyle:'font-size:13px;font-weight:700;padding:9px 15px;border-radius:9px;cursor:pointer;'+(f.resize?'background:#7C3AED;color:#fff;border:1px solid #7C3AED;':'background:#fff;color:#7C3AED;border:1px solid #DDD6FE;'),
       onFName:e=>this.setF('name',e.target.value), onFPosition:e=>this.setF('position',e.target.value), onFGroup:e=>this.setF('group',e.target.value),
       onFKind:e=>this.setState(s=>{ const k=e.target.value; const form={ ...s.form, kind:k }; if(k==='offline') form.jobcat='central'; else if(['online','central','kol'].indexOf(form.jobcat)<0) form.jobcat='online'; return { form }; }),
       onFJobcat:e=>this.setF('jobcat',e.target.value),
