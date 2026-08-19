@@ -1072,7 +1072,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19c';
+    this.APP_VERSION='2026-08-19d';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1581,7 +1581,7 @@ class Component extends DCLogic {
     const cvBtn=on=>'font-size:12px;font-weight:700;padding:5px 12px;border-radius:7px;border:none;cursor:pointer;white-space:nowrap;'+(on?'background:#fff;color:#4F46E5;box-shadow:0 1px 2px rgba(15,23,42,.12);':'background:none;color:#64748B;');
     const chipViewTabs=[['name','ชื่อ'],['image','รูป']].map(x=>({ label:x[1], style:cvBtn(chipView===x[0]), onClick:()=>this.setState({ chipView:x[0] }) }));
     const isVidSrc=s=>{ s=s||''; return s.indexOf('data:video')===0 || /\.(mp4|webm|mov|m4v|ogg)(\?|$)/i.test(s); };
-    const taskMedia=t=>{ var imgs=[].concat((t.images||[]),(t.aw||[]).filter(function(a){return a&&!a.vid&&!isVidSrc(a.data);})).filter(function(a){return a&&a.data;}); if(imgs.length) return { src:imgs[0].data, isVid:false }; var vid=(t.aw||[]).find(function(a){return a&&a.data&&(a.vid||isVidSrc(a.data));}); return vid?{ src:vid.data, isVid:true }:null; };
+    const taskMedia=t=>{ var isImg=function(a){return a&&a.data&&!a.vid&&!isVidSrc(a.data);}; var awImg=(t.aw||[]).filter(isImg); if(awImg.length) return { src:awImg[0].data, isVid:false }; var draftImg=(t.images||[]).filter(isImg); if(draftImg.length) return { src:draftImg[0].data, isVid:false }; var vid=(t.aw||[]).find(function(a){return a&&a.data&&(a.vid||isVidSrc(a.data));}); return vid?{ src:vid.data, isVid:true }:null; };
 
     const days=this.buildDays(); const daySet=new Set(days); const compact=days.length>10;
     const dayObjs=days.map(iso=>{ const d=this.parse(iso), we=d.getDay()===0||d.getDay()===6, sel=iso===S.selDate, isToday=iso===S.today;
