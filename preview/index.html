@@ -1786,7 +1786,7 @@ class Component extends DCLogic {
     const statusRows=S.statuses.map(s=>({ name:s.label, color:s.color, taskCount:T.filter(t=>t.status===s.id).length, onEdit:()=>this.openEditTag('status',{id:s.id,name:s.label,color:s.color}), onDelete:()=>this.askDeleteTag('status',s) }));
     const adsView=this.adsMeta()[S.view];
     const adsRows=adsView?(S[adsView.key]||[]).map(it=>{ const dt=adsView.dated?((it.start||it.expiry)?((it.start||'เริ่มได้เลย')+' → '+(it.expiry||'ไม่มีหมดอายุ')):'ใช้ได้ตลอด'):''; return { name:it.name, color:it.color||'#94A3B8', dateText:dt, hasDate:!!dt, onEdit:()=>this.openEditTag(S.view,it), onDelete:()=>this.askDeleteTag(S.view,it) }; }):[];
-    const adsCanEdit=can('ads','edit'), adsCanDel=can('ads','del');
+    const adsCanEdit=can(S.view,'edit'), adsCanDel=can(S.view,'del');
     const adsAddLabel='+ เพิ่ม '+(adsView?adsView.label:'');
     const adsEmpty=!!adsView&&adsRows.length===0;
 
@@ -1952,7 +1952,7 @@ class Component extends DCLogic {
       onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setJobType(e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
       calWeekHeads, calCells, permRows, permAreas, permTree, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
       newPos:S.newPos, onNewPos:e=>this.setState({ newPos:e.target.value }), onNewPosKey:e=>{ if(e.key==='Enter') this.addPosition(); }, addPosition:()=>this.addPosition(),
-      canTeamEdit:can('team','edit'), canTeamDel:can('team','del'), canChEdit:can('channels','edit'), canChDel:can('channels','del'), canCtEdit:can('content','edit'), canCtDel:can('content','del'), canPrEdit:can('procedure','edit'), canPrDel:can('procedure','del'), canStEdit:can('status','edit'), canStDel:can('status','del'), canSaveTask:can('tasks','edit'),
+      canTeamEdit:can('team','edit'), canTeamDel:can('team','del'), canChEdit:can('channels','edit'), canChDel:can('channels','del'), canCtEdit:can('content','edit'), canCtDel:can('content','del'), canPrEdit:can('procedure','edit'), canPrDel:can('procedure','del'), canStEdit:can('status','edit'), canStDel:can('status','del'), canSaveTask:can(curArea,'edit'),
       navSections, chipViewTabs, actor:S.actor, people:S.people,
       viewTitle:titles[S.view][0], viewSubtitle:titles[S.view][1],
       syncText:({saving:'⟳ กำลังบันทึก…',saved:'✓ บันทึกแล้ว',error:'⚠ บันทึกไม่สำเร็จ กำลังลองใหม่'}[S.syncStatus||'idle'])||'', syncShow:!!({saving:1,saved:1,error:1}[S.syncStatus]), syncColor:({saving:'#B45309',saved:'#15803D',error:'#B91C1C'}[S.syncStatus])||'#64748B', syncBg:({saving:'#FEF3C7',saved:'#F0FDF4',error:'#FEF2F2'}[S.syncStatus])||'#fff',
@@ -1963,7 +1963,7 @@ class Component extends DCLogic {
       onFDelivery:e=>this.setF('delivery',e.target.value),
       canFmEdit:can('format','edit'), canFmDel:can('format','del'), canSzEdit:can('size','edit'), canSzDel:can('size','del'),
       openAddFormat:()=>this.openAddTag('format'), openAddSize:()=>this.openAddTag('size'), onFSize:e=>this.setF('size',e.target.value),
-      showAddTask:(S.view==='plan'||S.view==='table')&&can('tasks','edit'),
+      showAddTask:(S.view==='plan'||S.view==='table')&&can(curArea,'edit'),
       exportCSV:()=>this.exportCSV(), exportJSON:()=>this.exportJSON(), exportExcel:()=>this.exportExcel(),
       modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
@@ -1993,8 +1993,8 @@ class Component extends DCLogic {
       tagFieldLabel:(m&&m.kind==='tag')?({ contentType:'ชื่อประเภทคอนเทนต์', status:'ชื่อสถานะ', procedure:'ชื่อหัตถการ', format:'ชื่อรูปแบบงาน', size:'ชื่อ Size งาน', branch:'ชื่อสาขา' }[m.entity]||('ชื่อ '+((this.adsMeta()[m.entity]||{}).label||''))):'ชื่อ',
       showTagDates, onFTagStart:e=>this.setF('start',e.target.value), onFTagExpiry:e=>this.setF('expiry',e.target.value),
       form:f, saveModal:()=>this.saveModal(),
-      canDeleteTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can('tasks','del'), deleteTaskFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.askDeleteTask(t); },
-      canCopyTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can('tasks','edit'), copyFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.copyTask(t); },
+      canDeleteTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can(curArea,'del'), deleteTaskFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.askDeleteTask(t); },
+      canCopyTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can(curArea,'edit'), copyFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.copyTask(t); },
       channelOpts, formatOpts, contentOpts, statusPick, palette, positionOpts:positionsUsed, groupOpts,
       cbChannel:this._mkCb('form.ch', f.ch, channelOpts, v=>this.setF('ch',v)), cbCtype:this._mkCb('form.ctype', f.ctype, contentOpts, v=>this.setF('ctype',v)), cbCreative:this._mkCb('form.creative', f.creative, personPick, v=>this.setF('creative',v)), cbGraphic:this._mkCb('form.graphic', f.graphic, personPick, v=>this.setF('graphic',v)), cbFormat:this._mkCb('form.format', f.format, formatOpts, v=>this.setF('format',v)), cbSize:this._mkCb('form.size', f.size, sizeOpts, v=>this.setF('size',v)),
       onFTitle:e=>this.setF('title',e.target.value), onFChannel:e=>this.setF('ch',e.target.value), onFDate:e=>this.setF('date',e.target.value),
