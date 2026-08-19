@@ -132,7 +132,7 @@
         </div>
       </div>
       <button onClick="{{ logout }}" style="width:100%; font-size:12px; font-weight:600; color:#94A3B8; background:#1E293B; border:1px solid #334155; border-radius:9px; padding:8px; cursor:pointer;">ออกจากระบบ</button>
-      <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ recoverLocal }}" style="width:100%; margin-top:7px; font-size:11px; font-weight:600; color:#86EFAC; background:transparent; border:1px solid #166534; border-radius:9px; padding:7px; cursor:pointer;">🛟 กู้งานจากเครื่องนี้</button><button onClick="{{ forceReload }}" style="width:100%; margin-top:7px; font-size:11px; font-weight:600; color:#FCA5A5; background:transparent; border:1px solid #7F1D1D; border-radius:9px; padding:7px; cursor:pointer;">🔄 บังคับทุกคนโหลดใหม่</button></sc-if>
+      <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}"><button onClick="{{ forceReload }}" style="width:100%; margin-top:7px; font-size:11px; font-weight:600; color:#FCA5A5; background:transparent; border:1px solid #7F1D1D; border-radius:9px; padding:7px; cursor:pointer;">🔄 บังคับทุกคนโหลดใหม่</button></sc-if>
     </div>
   </aside>
 
@@ -1949,7 +1949,7 @@ class Component extends DCLogic {
       loginUserList:S.people.filter(p=>{ const q=(S.loginName||'').toLowerCase(); return !q||(p.name||'').toLowerCase().indexOf(q)>=0; }).map(p=>({ name:p.name, position:p.position||'', onPick:()=>this.setState({ loginName:p.name, loginId:p.id, loginErr:'', loginOpen:false }) })),
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
-      isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(), recoverLocal:()=>this.recoverLocal(),
+      isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(),
       taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabAW:formTab==='aw', tabBrief:formTab==='brief',
       briefPlatformChips, briefPlatformGroups, briefKolTags:kolS.tags, briefKolOpts:kolS.opts, onBriefKolAdd:kolS.onAdd, briefDoctorTags:docS.tags, briefDoctorOpts:docS.opts, onBriefDoctorAdd:docS.onAdd, briefPriceTags:priceS.tags, briefPriceOpts:priceS.opts, onBriefPriceAdd:priceS.onAdd, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
       briefPostType:brf.postType||'', briefFunnel:brf.funnel||'', briefCampaign:brf.campaign||'', briefAudience:brf.audience||'', briefObjective:brf.objective||'', briefAdStatus:brf.adStatus||'',
