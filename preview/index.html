@@ -150,7 +150,6 @@
         <button onClick="{{ exportExcel }}" style="display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font-size:13px; font-weight:700; color:#15803D; background:#F0FDF4; border:1px solid #BBF7D0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ Excel</button>
         <button onClick="{{ exportCSV }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ CSV</button>
         <button onClick="{{ exportJSON }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ JSON</button>
-        <sc-if value="{{ canImport }}" hint-placeholder-val="{{ false }}"><button onClick="{{ importJSON }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:#4F46E5; background:#EEF2FF; border:1px solid #C7D2FE; padding:8px 13px; border-radius:9px; cursor:pointer;">⬆ Import</button></sc-if>
       </span>
       <sc-if value="{{ showAddTask }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ openAddTask }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer; flex-shrink:0;">+ เพิ่มงาน</button>
@@ -617,9 +616,12 @@
                     <div style="padding:6px 16px 16px;">
                       <sc-for list="{{ p.groups }}" as="g" hint-placeholder-count="4">
                         <div style="margin-top:14px;">
-                          <div style="font-size:11px; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:#4F46E5; margin-bottom:7px;">{{ g.title }}</div>
-                          <div style="display:flex; flex-direction:column; gap:6px;">
-                            <sc-for list="{{ g.areas }}" as="a" hint-placeholder-count="3">
+                          <div style="display:flex; align-items:center; gap:9px; margin-bottom:7px;">
+                            <button onClick="{{ g.onGroup }}" title="เลือก/ยกเลิกทั้งกลุ่ม" style="{{ g.groupChkStyle }}">{{ g.groupChkLabel }}</button>
+                            <span style="font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:#4F46E5;">{{ g.title }}</span>
+                          </div>
+                          <div style="display:flex; flex-direction:column; gap:6px; padding-left:29px;">
+                            <sc-for list="{{ g.pages }}" as="a" hint-placeholder-count="3">
                               <div style="display:flex; align-items:center; gap:8px; padding:7px 11px; border:1px solid #F1F5F9; border-radius:10px; background:#FCFDFE;">
                                 <span style="flex:1; font-size:13px; font-weight:600; color:#334155;">{{ a.label }}</span>
                                 <button onClick="{{ a.onView }}" title="เข้าดู" style="{{ a.viewStyle }}">👁</button>
@@ -1212,7 +1214,10 @@ class Component extends DCLogic {
     if(!anyLeft && posList.length){ const first=posList[0]; if(!P[first]) P[first]={}; if(!P[first].team) P[first].team={view:true,edit:true,del:false}; P[first].team.view=true; P[first].team.edit=true; }
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return true; return p[area].view!==false; }
-  navArea(v){ return { plan:'tasks', adsplan:'tasks', table:'tasks', report:'tasks', team:'team', channels:'channels', content:'content', procedure:'procedure', status:'status', format:'format', size:'size', branch:'branch', history:'history', kol:'ads', doctor:'ads', price:'ads', adPostType:'ads', adFunnel:'ads', adCampaign:'ads', adAudience:'ads', adObjective:'ads', adStatus:'ads' }[v]; }
+  navArea(v){ return v; }
+  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', history:'🕘 ประวัติ' }[k]||k; }
+  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','history']]]; }
+  togglePermGroup(pos, keys){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; const allOn=keys.every(k=>{ const pk=perms[pos][k]; return pk?pk.view!==false:true; }); const nv=!allOn; keys.forEach(k=>{ perms[pos][k]={ view:nv, edit:nv, del:nv }; }); return { perms }; }, ()=>this.persist()); }
   firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
   defaultSeed(){
@@ -1766,11 +1771,11 @@ class Component extends DCLogic {
     const permAreas=areaDefs.map(a=>a[1]);
     const pchip=(on,kind)=>{ const c=kind==='del'?'#EF4444':(kind==='view'?'#0EA5E9':'#4F46E5'); return 'font-size:12px;width:30px;height:28px;border-radius:8px;cursor:pointer;'+(on?'border:1px solid '+c+'55;background:'+c+'18;color:'+c+';':'border:1px solid #E2E8F0;background:#fff;color:#CBD5E1;'); };
     const permRows=positionsUsed.map(pos=>({ pos, onDelete:()=>this.askDeletePosition(pos), cells: areaDefs.map(([ak])=>{ const v=getP(pos,ak,'view'), e=getP(pos,ak,'edit'), d=getP(pos,ak,'del'); return { viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,ak,'view'), onEdit:()=>this.togglePerm(pos,ak,'edit'), onDel:()=>this.togglePerm(pos,ak,'del') }; }) }));
-    const areaLbl={}; areaDefs.forEach(a=>{ areaLbl[a[0]]=a[1]; });
-    const PERM_GROUPS=[['แผนงาน / ปฏิทิน',['tasks']],['Data',['channels','content','procedure','format','size','branch','status']],['ADS',['ads']],['ตั้งค่า',['team','history']]];
-    const permOpen=S.permOpen||{};
+    const permOpen=S.permOpen||{}; const NAV_G=this.navGroups();
+    const gchk=(on)=>'width:20px;height:20px;border-radius:6px;cursor:pointer;flex-shrink:0;font-size:11px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;'+(on?'background:#4F46E5;color:#fff;border:1px solid #4F46E5;':'background:#fff;color:#CBD5E1;border:1px solid #CBD5E1;');
     const permTree=positionsUsed.map(pos=>({ pos, canDel:canPosDel, onDelete:()=>this.askDeletePosition(pos), open:!!permOpen[pos], caret:permOpen[pos]?'▼':'▶', onToggle:()=>this.togglePermPos(pos),
-      groups:PERM_GROUPS.map(g=>({ title:g[0], areas:g[1].map(ak=>{ const v=getP(pos,ak,'view'), e=getP(pos,ak,'edit'), d=getP(pos,ak,'del'); return { label:areaLbl[ak]||ak, viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,ak,'view'), onEdit:()=>this.togglePerm(pos,ak,'edit'), onDel:()=>this.togglePerm(pos,ak,'del') }; }) })) }));
+      groups:NAV_G.map(g=>{ const keys=g[1]; const allOn=keys.every(k=>getP(pos,k,'view')); return { title:g[0], groupChkStyle:gchk(allOn), groupChkLabel:allOn?'✓':'', onGroup:()=>this.togglePermGroup(pos, keys),
+        pages:keys.map(k=>{ const v=getP(pos,k,'view'), e=getP(pos,k,'edit'), d=getP(pos,k,'del'); return { label:this.navPermLabel(k), viewStyle:pchip(v,'view'), editStyle:pchip(e,'edit'), delStyle:pchip(d,'del'), onView:()=>this.togglePerm(pos,k,'view'), onEdit:()=>this.togglePerm(pos,k,'edit'), onDel:()=>this.togglePerm(pos,k,'del') }; }) }; }) }));
 
     const chKindLbl2={online:'Online',offline:'Offline'};
     const chJobLbl={online:'ช่องทางต่างๆ',central:'งานกลาง',kol:'KOL'};
@@ -1967,7 +1972,6 @@ class Component extends DCLogic {
       openAddFormat:()=>this.openAddTag('format'), openAddSize:()=>this.openAddTag('size'), onFSize:e=>this.setF('size',e.target.value),
       showAddTask:(S.view==='plan'||S.view==='table')&&can('tasks','edit'),
       exportCSV:()=>this.exportCSV(), exportJSON:()=>this.exportJSON(), exportExcel:()=>this.exportExcel(),
-      canImport:can('tasks','edit'), importJSON:()=>this.importJSON(),
       modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
       rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
