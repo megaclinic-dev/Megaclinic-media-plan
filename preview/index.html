@@ -259,14 +259,14 @@
                     <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
                       <div onClick="{{ cell.onAdd }}" style="{{ cell.style }}">
                         <sc-if value="{{ cell.compact }}" hint-placeholder-val="{{ false }}">
-                          <sc-if value="{{ cell.count }}" hint-placeholder-val="">
+                          <sc-if value="{{ cell.showCount }}" hint-placeholder-val="{{ false }}">
                             <div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
                               <span style="font-size:14px; font-weight:700;">{{ cell.count }}</span>
                               <div style="display:flex; gap:2px;"><sc-for list="{{ cell.dots }}" as="ds" hint-placeholder-count="1"><span style="width:5px; height:5px; border-radius:50%; background:{{ ds }};"></span></sc-for></div>
                             </div>
                           </sc-if>
                         </sc-if>
-                        <sc-if value="{{ cell.wide }}" hint-placeholder-val="{{ true }}">
+                        <sc-if value="{{ cell.showChips }}" hint-placeholder-val="{{ true }}">
                           <sc-for list="{{ cell.tasks }}" as="t" hint-placeholder-count="1">
                             <div onClick="{{ t.onOpen }}" title="{{ t.tip }}" style="background:{{ t.tint }}; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer;"><sc-if value="{{ t.isResize }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block; font-size:8px; font-weight:800; color:#fff; background:#7C3AED; border-radius:3px; padding:1px 4px; margin-bottom:2px; letter-spacing:.03em;">RESIZE</span></sc-if>
                               <sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" controls="controls" preload="metadata" onClick="{{ t.onVid }}" style="width:100%; height:auto; max-height:150px; border-radius:4px; display:block; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:auto; border-radius:4px; display:block;"></sc-if></sc-if>
@@ -367,11 +367,11 @@
                     <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="7">
                       <div onClick="{{ cell.onAdd }}" style="{{ cell.style }}">
                         <sc-if value="{{ cell.compact }}" hint-placeholder-val="{{ false }}">
-                          <sc-if value="{{ cell.count }}" hint-placeholder-val="">
+                          <sc-if value="{{ cell.showCount }}" hint-placeholder-val="{{ false }}">
                             <div style="display:flex; flex-direction:column; align-items:center; gap:3px;"><span style="font-size:14px; font-weight:700;">{{ cell.count }}</span><div style="display:flex; gap:2px;"><sc-for list="{{ cell.dots }}" as="ds" hint-placeholder-count="1"><span style="width:5px; height:5px; border-radius:50%; background:{{ ds }};"></span></sc-for></div></div>
                           </sc-if>
                         </sc-if>
-                        <sc-if value="{{ cell.wide }}" hint-placeholder-val="{{ true }}">
+                        <sc-if value="{{ cell.showChips }}" hint-placeholder-val="{{ true }}">
                           <sc-for list="{{ cell.tasks }}" as="t" hint-placeholder-count="1">
                             <button onClick="{{ t.onClick }}" title="{{ t.tip }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
                               <div style="display:flex; align-items:center; gap:5px;"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ t.title }}</span><span style="margin-left:auto; font-size:9px; font-weight:700; color:#fff; background:{{ t.avatarBg }}; border-radius:4px; padding:1px 4px; flex-shrink:0;">{{ t.initials }}</span></div>
@@ -1073,7 +1073,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19e';
+    this.APP_VERSION='2026-08-19f';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1597,13 +1597,13 @@ class Component extends DCLogic {
     const matrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
       const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t)); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
-        const ckey=c.id+'|'+d.iso; const expanded=!!((S.expandedCells||{})[ckey]); const lim=compact?0:(expanded?ct.length:3);
+        const ckey=c.id+'|'+d.iso; const expanded=!!((S.expandedCells||{})[ckey]); const lim=compact?(expanded?ct.length:0):(expanded?ct.length:3);
         const shown=ct.slice(0,lim).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true;
           return { title:t.title, tip:t.title+' · '+(p.name||'')+' · '+s.label, color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', isResize:!!t.resize, onOpen:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.openEditTask(t); } }; });
-        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''))+(d.isToday?'border-left:2px solid #EF4444;border-right:2px solid #EF4444;':'');
-        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown,
-          more:(!compact&&!expanded&&ct.length>3)?(ct.length-3):0, expanded:(!compact&&expanded&&ct.length>3),
-          onAdd:()=>{ if(this._skipAdd){ this._skipAdd=false; return; } this.openModal('task','add',this.blankTask(isOther?{ ch:'other', jobType:'central', date:d.iso }:{ ch:c.id, date:d.iso })); },
+        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+((compact&&!expanded)?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''))+(d.isToday?'border-left:2px solid #EF4444;border-right:2px solid #EF4444;':'');
+        return { compact, wide:!compact, count:ct.length||null, showCount:(compact&&!expanded&&ct.length>0), showChips:(!compact||expanded), dots, tasks:shown,
+          more:(!compact&&!expanded&&ct.length>3)?(ct.length-3):0, expanded:(expanded&&ct.length>0),
+          onAdd:()=>{ if(this._skipAdd){ this._skipAdd=false; return; } if(compact&&!expanded&&ct.length>0){ this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); ec[ckey]=true; return { expandedCells:ec }; }); return; } this.openModal('task','add',this.blankTask(isOther?{ ch:'other', jobType:'central', date:d.iso }:{ ch:c.id, date:d.iso })); },
           onMore:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); if(ec[ckey])delete ec[ckey]; else ec[ckey]=true; return { expandedCells:ec }; }); }, style };
       });
       return { name:c.name, color:c.color, total, cells };
@@ -1626,12 +1626,12 @@ class Component extends DCLogic {
     const adsMatrixRows=adsRowChannels.map(c=>{ let total=0;
       const cells=dayObjs.map(d=>{ const ct=T.filter(t=>adsPass(t)&&((t.brief&&t.brief.platforms)||[]).indexOf(c.id)>=0&&adDateOf(t)===d.iso); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
-        const ckey='ads|'+c.id+'|'+d.iso; const expanded=!!((S.expandedCells||{})[ckey]); const lim=compact?0:(expanded?ct.length:3);
+        const ckey='ads|'+c.id+'|'+d.iso; const expanded=!!((S.expandedCells||{})[ckey]); const lim=compact?(expanded?ct.length:0):(expanded?ct.length:3);
         const shown=ct.slice(0,lim).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status);
           return { title:t.title, tip:this.buildAdName(t), color:c.color, tint:c.color+'1A', statusColor:s.color, avatarBg:p.color||'#94A3B8', initials:init(p.name), useName:true, isResize:!!t.resize, onOpen:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.openEditTaskBrief(t); } }; });
-        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+(compact?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''))+(d.isToday?'border-left:2px solid #EF4444;border-right:2px solid #EF4444;':'');
-        return { compact, wide:!compact, count:ct.length||null, dots, tasks:shown,
-          more:(!compact&&!expanded&&ct.length>3)?(ct.length-3):0, expanded:(!compact&&expanded&&ct.length>3), onAdd:null,
+        const style='min-height:'+(compact?'46px':'54px')+';padding:5px;border-left:1px solid #F1F5F9;display:flex;flex-direction:column;gap:3px;'+((compact&&!expanded)?'align-items:center;justify-content:center;':'')+'cursor:pointer;'+(d.isSel?'background:rgba(79,70,229,.05);':(d.isWe?'background:#FCFDFE;':''))+(d.isToday?'border-left:2px solid #EF4444;border-right:2px solid #EF4444;':'');
+        return { compact, wide:!compact, count:ct.length||null, showCount:(compact&&!expanded&&ct.length>0), showChips:(!compact||expanded), dots, tasks:shown,
+          more:(!compact&&!expanded&&ct.length>3)?(ct.length-3):0, expanded:(expanded&&ct.length>0), onAdd:(compact&&ct.length>0)?(()=>{ if(this._skipAdd){ this._skipAdd=false; return; } this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); if(ec[ckey])delete ec[ckey]; else ec[ckey]=true; return { expandedCells:ec }; }); }):null,
           onMore:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); if(ec[ckey])delete ec[ckey]; else ec[ckey]=true; return { expandedCells:ec }; }); }, style };
       });
       return { name:c.name, color:c.color, total, cells };
