@@ -488,7 +488,8 @@
                           <sc-if value="{{ t.useName }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:5px; margin-top:{{ t.nameMt }};"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ t.title }}</span><span style="font-size:9px; font-weight:700; color:#64748B; flex-shrink:0;">{{ t.initials }}</span></div></sc-if>
                         </button>
                       </sc-for>
-                      <sc-if value="{{ c.more }}" hint-placeholder-val="{{ false }}"><div style="font-size:10px; color:#94A3B8; padding-left:3px;">+{{ c.more }} เพิ่มเติม</div></sc-if>
+                      <sc-if value="{{ c.more }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onMore }}" style="font-size:10px; font-weight:700; color:#4F46E5; background:#EEF2FF; border:none; border-radius:5px; padding:2px 7px; cursor:pointer; align-self:flex-start;">+{{ c.more }} ดูเพิ่มเติม</button></sc-if>
+                      <sc-if value="{{ c.expanded }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onMore }}" style="font-size:10px; font-weight:700; color:#94A3B8; background:transparent; border:none; padding:2px 7px; cursor:pointer; align-self:flex-start;">▲ ย่อ</button></sc-if>
                     </div>
                   </sc-if>
                 </sc-for>
@@ -1072,7 +1073,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19d';
+    this.APP_VERSION='2026-08-19e';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1728,12 +1729,13 @@ class Component extends DCLogic {
       const iso=this.addDays(gridStart,i);
       if(iso<calS || iso>calE){ calCells.push({ blank:true, day:false, items:[], style:'min-height:120px;background:#FAFBFC;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;' }); continue; }
       const dts=T.filter(t=>t.date===iso&&calFilter(t)).slice().sort((a,b)=> a.ch<b.ch?-1:(a.ch>b.ch?1:0));
-      const items=dts.slice(0,4).map(t=>{ const c=chMap[t.ch]||{},p=pMap[t.creative]||pMap[t.graphic]||{},s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true; return { title:t.title, color:c.color||'#CBD5E1', tint:(c.color||'#CBD5E1')+'1A', statusColor:s.color, initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTask(t); } }; });
+      const ckey='cal|'+iso; const cexp=!!((S.expandedCells||{})[ckey]);
+      const items=(cexp?dts:dts.slice(0,4)).map(t=>{ const c=chMap[t.ch]||{},p=pMap[t.creative]||pMap[t.graphic]||{},s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true; return { title:t.title, color:c.color||'#CBD5E1', tint:(c.color||'#CBD5E1')+'1A', statusColor:s.color, initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTask(t); } }; });
       const isToday=iso===S.today;
-      calCells.push({ blank:false, day:true, dnum:this.parse(iso).getDate(), items, more: dts.length>4?dts.length-4:0,
+      calCells.push({ blank:false, day:true, dnum:this.parse(iso).getDate(), items, more: (!cexp&&dts.length>4)?dts.length-4:0, expanded: cexp&&dts.length>4, onMore:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); if(ec[ckey])delete ec[ckey]; else ec[ckey]=1; return { expandedCells:ec }; }); },
         numStyle:'font-size:12px;font-weight:700;'+(isToday?'background:#EF4444;color:#fff;border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;':'color:#334155;'),
         style:'min-height:120px;padding:6px;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;cursor:pointer;display:flex;flex-direction:column;gap:4px;'+(isToday?'box-shadow:inset 0 0 0 2px #EF4444;':''),
-        onClick:()=>this.openModal('task','add',this.blankTask({ ch:(fChans.length===1?fChans[0]:(S.channels[0]||{}).id), date:iso, start:iso })) });
+        onClick:()=>{ if(this._skipAdd){ this._skipAdd=false; return; } this.openModal('task','add',this.blankTask({ ch:(fChans.length===1?fChans[0]:(S.channels[0]||{}).id), date:iso, start:iso })); } });
     }
     const calWeekHeads=['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'];
     const durDays=(a,b)=>{ if(!a||!b) return null; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
