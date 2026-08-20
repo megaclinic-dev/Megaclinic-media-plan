@@ -100,6 +100,8 @@
 
   <div onClick="{{ closeNav }}" class="mp-overlay" style="position:fixed; inset:0; background:rgba(15,23,42,.4); z-index:55;"></div>
 
+  <sc-if value="{{ syncShow }}" hint-placeholder-val="{{ false }}"><div style="position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:9999; pointer-events:none; display:flex; align-items:center; justify-content:center;"><span style="font-size:26px; font-weight:800; padding:28px 52px; border-radius:22px; white-space:nowrap; color:{{ syncColor }}; background:{{ syncBg }}; box-shadow:0 18px 55px rgba(15,23,42,.28); border:1px solid rgba(15,23,42,.06);">{{ syncText }}</span></div></sc-if>
+
   <!-- ================= SIDEBAR ================= -->
   <aside class="mp-sidebar" style="width:236px; flex-shrink:0; background:#0F172A; color:#E2E8F0; display:flex; flex-direction:column; padding:20px 14px; overflow-y:auto;">
     <div style="padding:6px 10px 20px;">
@@ -145,7 +147,6 @@
         <h1 style="font-size:19px; font-weight:700; margin:0; letter-spacing:-.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ viewTitle }}</h1>
         <div style="font-size:12px; color:#64748B; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ viewSubtitle }}</div>
       </div>
-      <sc-if value="{{ syncShow }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; font-weight:700; padding:6px 11px; border-radius:99px; white-space:nowrap; color:{{ syncColor }}; background:{{ syncBg }};">{{ syncText }}</span></sc-if>
       <span class="mp-hide-sm" style="display:inline-flex; gap:8px;">
         <button onClick="{{ exportExcel }}" style="display:inline-flex; align-items:center; gap:6px; white-space:nowrap; font-size:13px; font-weight:700; color:#15803D; background:#F0FDF4; border:1px solid #BBF7D0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ Excel</button>
         <button onClick="{{ exportCSV }}" style="display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:8px 13px; border-radius:9px; cursor:pointer;">⬇ CSV</button>
@@ -1073,7 +1074,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19f';
+    this.APP_VERSION='2026-08-19g';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
