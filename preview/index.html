@@ -923,7 +923,7 @@
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">คำบรรยายภาพ / บทพูด</span>
                 <textarea value="{{ form.imgDesc }}" onChange="{{ onFImgDesc }}" rows="4" placeholder="อธิบายภาพ หรือใส่บทพูดประกอบภาพ..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
               <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดรูปภาพ<input type="file" accept="image/*" multiple onChange="{{ onUploadImages }}" style="display:none;"></label>
-              <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือกด <b>Ctrl + V</b> เพื่อวางรูปจากคลิปบอร์ดได้เลย</div>
+              <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือ <b>ลากไฟล์มาวาง</b> ในหน้านี้ · หรือกด <b>Ctrl + V</b> วางรูปจากคลิปบอร์ด</div>
               <div style="display:flex; flex-direction:column; gap:12px;">
                 <sc-for list="{{ imgList }}" as="im" hint-placeholder-count="0">
                   <div style="position:relative; border-radius:10px; overflow:hidden; border:1px solid #E2E8F0; background:#F8FAFC;">
@@ -945,7 +945,8 @@
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ลิงก์งาน</span>
                 <input value="{{ form.link }}" onChange="{{ onFLink }}" placeholder="วางลิงก์ Google Drive / โพสต์ / ไฟล์งาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
                 <sc-if value="{{ form.link }}" hint-placeholder-val=""><a href="{{ form.link }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิดลิงก์งาน</a></sc-if></div>
-              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดไฟล์ AW / VDO<input type="file" multiple onChange="{{ onUploadAW }}" style="display:none;"></label>
+              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดไฟล์ AW / VDO<input type="file" accept="image/*,video/*" multiple onChange="{{ onUploadAW }}" style="display:none;"></label>
+              <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือ <b>ลากไฟล์มาวาง</b> ในหน้านี้ได้เลย (รูป/วิดีโอ)</div>
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <sc-for list="{{ awList }}" as="im" hint-placeholder-count="0">
                   <div style="display:flex; align-items:center; gap:11px; padding:9px 11px; border:1px solid #EEF2F6; border-radius:10px;">
@@ -1285,11 +1286,16 @@ class Component extends DCLogic {
       for(var i=0;i<items.length;i++){ if(items[i].type&&items[i].type.indexOf('image')===0){ var f=items[i].getAsFile(); if(f) files.push(f); } }
       if(files.length){ e.preventDefault(); this.addFiles('images', files); } };
     window.addEventListener('paste', this._onPaste);
+    const _dropOK=()=>{ const S=this.state; const tab=(S.form||{}).tab||'detail'; return S.modal&&S.modal.kind==='task'&&(tab==='images'||tab==='aw')?tab:null; };
+    this._onDragOver=(e)=>{ if(_dropOK()){ e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='copy'; } };
+    this._onDrop=(e)=>{ const tab=_dropOK(); if(!tab) return; const files=(e.dataTransfer&&e.dataTransfer.files)||[]; if(files.length){ e.preventDefault(); this.addFiles(tab==='aw'?'aw':'images', files); } };
+    window.addEventListener('dragover', this._onDragOver);
+    window.addEventListener('drop', this._onDrop);
     this._onBeforeUnload=(e)=>{ if((this._pend||0)>0 || this.state.syncStatus==='saving' || this.state.syncStatus==='error'){ e.preventDefault(); e.returnValue='ยังบันทึกไม่เสร็จ ถ้าปิดตอนนี้งานล่าสุดอาจหาย'; return e.returnValue; } };
     window.addEventListener('beforeunload', this._onBeforeUnload);
     this._loadAll().then(()=>this._initSync()).catch(err=>{ console.error('[load]',err&&err.message); this.setState({ loading:false, loadErr:true }); this._retryLoad(); }); }
   componentDidUpdate(){ if(this._reloadWhenIdle && !this.state.modal && (this._pend||0)===0){ this._reloadWhenIdle=false; setTimeout(()=>location.reload(), 300); } } // deferred update fires once the user closes the form and saves finish
-  componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); if(this._onPaste) window.removeEventListener('paste',this._onPaste); if(this._onBeforeUnload) window.removeEventListener('beforeunload',this._onBeforeUnload); }
+  componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); if(this._onPaste) window.removeEventListener('paste',this._onPaste); if(this._onDragOver) window.removeEventListener('dragover',this._onDragOver); if(this._onDrop) window.removeEventListener('drop',this._onDrop); if(this._onBeforeUnload) window.removeEventListener('beforeunload',this._onBeforeUnload); }
 
   commit(patch, action, detail, changes, meta){
     this.setState(s=>{
