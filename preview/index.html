@@ -1324,14 +1324,14 @@ class Component extends DCLogic {
   closeModal(){ this.setState({ modal:null, form:{} }); }
   setF(field, val){ this.setState(s=>({ form:{ ...s.form, [field]:val } })); }
   setTab(t){ this.setF('tab', t); }
-  doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId)||S.people.find(x=>x.name===(S.loginName||'').trim()); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้ — พิมพ์ชื่อให้ตรง' }); return; } if((p.pass||'1234')!==S.loginPw){ this.setState({ loginErr:'รหัสผ่านไม่ถูกต้อง' }); return; } try{ localStorage.setItem('mp.lastUserId', p.id); localStorage.setItem('mp.session', JSON.stringify({ id:p.id, exp:Date.now()+604800000 })); }catch(e){} this.setState({ authed:true, actor:p.id, loginId:p.id, loginName:p.name, loginPw:'', loginErr:'', loginOpen:false, view:this.firstPermittedView(p.position) }); }
+  doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId)||S.people.find(x=>x.name===(S.loginName||'').trim()); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้ — พิมพ์ชื่อให้ตรง' }); return; } if(p.left){ this.setState({ loginErr:'บัญชีนี้ปิดใช้งาน (ลาออกแล้ว)' }); return; } if((p.pass||'1234')!==S.loginPw){ this.setState({ loginErr:'รหัสผ่านไม่ถูกต้อง' }); return; } try{ localStorage.setItem('mp.lastUserId', p.id); localStorage.setItem('mp.session', JSON.stringify({ id:p.id, exp:Date.now()+604800000 })); }catch(e){} this.setState({ authed:true, actor:p.id, loginId:p.id, loginName:p.name, loginPw:'', loginErr:'', loginOpen:false, view:this.firstPermittedView(p.position) }); }
   logout(){ try{ localStorage.removeItem('mp.session'); }catch(e){} this.setState({ authed:false, loginPw:'', loginErr:'', navOpen:false }); }
   _compressDataUrl(dataUrl){ return new Promise(res=>{ const img=new Image(); img.onload=()=>{ let w=img.width, h=img.height; const M=1400; if(w>M||h>M){ const s=Math.min(M/w,M/h); w=Math.round(w*s); h=Math.round(h*s); } try{ const cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); const out=cv.toDataURL('image/jpeg',0.82); res((out&&out.length<dataUrl.length)?out:dataUrl); }catch(e){ res(dataUrl); } }; img.onerror=()=>res(dataUrl); img.src=dataUrl; }); }
   _compressImage(file){ return new Promise(res=>{ const r=new FileReader(); r.onload=()=>{ this._compressDataUrl(r.result).then(res); }; r.readAsDataURL(file); }); }
   async _compressStateImages(){ if(this._shrinkDone) return; this._shrinkDone=true; const S=this.state; let changed=false; const tasks=(S.tasks||[]).map(t=>({ ...t }));
     for(const t of tasks){ for(const fld of ['images','aw']){ const arr=t[fld]; if(!Array.isArray(arr)) continue; const na=arr.slice(); for(let i=0;i<na.length;i++){ const it=na[i]; if(it&&typeof it.data==='string'&&it.data.indexOf('data:image')===0&&it.data.length>500000){ const d=await this._compressDataUrl(it.data); if(d&&d.length<it.data.length){ na[i]={ ...it, data:d }; changed=true; } } } t[fld]=na; } }
     if(changed){ this.setState({ tasks:tasks }, ()=>this.persist()); } }
-  addFiles(field, files){ const arr=[...files]; if(!arr.length) return; const MAXMB=50; const okType=f=>/^(image|video)\//.test(f.type||''); const good=arr.filter(f=>okType(f)&&f.size<=MAXMB*1024*1024); const skipped=arr.length-good.length; if(skipped){ this.setState({ modal:{ kind:'confirm', title:'บางไฟล์ไม่ผ่าน', yesLabel:'ตกลง', yesBg:'#EF4444', msg:'รับเฉพาะรูปภาพ/วิดีโอ ขนาดไม่เกิน '+MAXMB+'MB — ข้าม '+skipped+' ไฟล์ที่ไม่ผ่าน', onYes:()=>this.setState({ modal:null }) } }); } if(!good.length) return; const tid=this._ensureFormId(); this._syncSet('saving');
+  addFiles(field, files){ const arr=[...files]; if(!arr.length) return; const MAXMB=500; const okType=f=>/^(image|video)\//.test(f.type||''); const good=arr.filter(f=>okType(f)&&f.size<=MAXMB*1024*1024); const skipped=arr.length-good.length; if(skipped){ this.setState({ modal:{ kind:'confirm', title:'บางไฟล์ไม่ผ่าน', yesLabel:'ตกลง', yesBg:'#EF4444', msg:'รับเฉพาะรูปภาพ/วิดีโอ ขนาดไม่เกิน '+MAXMB+'MB — ข้าม '+skipped+' ไฟล์ที่ไม่ผ่าน', onYes:()=>this.setState({ modal:null }) } }); } if(!good.length) return; const tid=this._ensureFormId(); this._syncSet('saving');
     Promise.all(good.map((f,idx)=>{ const isImg=(f.type||'').indexOf('image')===0; const prep=isImg?this._compressImage(f):new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); }); return prep.then(dataUrl=>this._uploadMedia(tid, field, idx, dataUrl, f)); }))
       .then(items=>{ this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } })); this._syncSet('saved'); })
       .catch(e=>{ console.error('[addFiles]',e); this._syncSet('error'); }); }
@@ -1455,7 +1455,7 @@ class Component extends DCLogic {
   askDeleteTask(t){ const S=this.state; const cn=(S.channels.find(c=>c.id===t.ch)||{}).name;
     this.setState({ modal:{ kind:'confirm', msg:'ลบงาน "'+t.title+'" ('+cn+') ใช่หรือไม่?', onYes:()=>this.commit({ tasks:S.tasks.filter(x=>x.id!==t.id), modal:null }, 'ลบ', 'งาน "'+t.title+'"', [], { medium:t.medium, ch:t.ch }) } }); }
   askDeletePerson(p){ const S=this.state; const cnt=S.tasks.filter(t=>t.creative===p.id||t.graphic===p.id).length;
-    this.setState({ modal:{ kind:'confirm', msg:'ลบพนักงาน "'+p.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นที่เกี่ยวข้องจะถูกปลดชื่อออก':''), onYes:()=>this.commit({ people:S.people.filter(x=>x.id!==p.id), tasks:S.tasks.map(t=>({ ...t, creative:t.creative===p.id?'':t.creative, graphic:t.graphic===p.id?'':t.graphic })), modal:null }, 'ลบ', 'พนักงาน "'+p.name+'"') } }); }
+    this.setState({ modal:{ kind:'confirm', msg:'นำ "'+p.name+'" ออกจากทีม (ลาออก)?'+(cnt?' — งาน '+cnt+' ชิ้นยังอยู่ครบ และชื่อยังแสดงบนงานเดิม':'')+' คนนี้จะเข้าระบบไม่ได้ และไม่ถูกเลือกให้งานใหม่', onYes:()=>this.commit({ people:S.people.map(x=>x.id===p.id?{ ...x, left:true }:x), modal:null }, 'ลบ', 'พนักงาน "'+p.name+'" (ลาออก)') } }); }
   askDeleteChannel(c){ const S=this.state; const cnt=S.tasks.filter(t=>t.ch===c.id).length;
     this.setState({ modal:{ kind:'confirm', msg:'ลบช่องทาง "'+c.name+'"?'+(cnt?' งาน '+cnt+' ชิ้นในช่องทางนี้จะถูกลบด้วย':''), onYes:()=>this.commit({ channels:S.channels.filter(x=>x.id!==c.id), tasks:S.tasks.filter(t=>t.ch!==c.id), modal:null }, 'ลบ', 'ช่องทาง "'+c.name+'"'+(cnt?' และงาน '+cnt+' ชิ้น':'')) } }); }
   askDeleteTag(entity, it){ const S=this.state;
@@ -1671,7 +1671,7 @@ class Component extends DCLogic {
     const wlTab=(['creative','graphic','other'].indexOf(S.wlTab)>=0)?S.wlTab:'creative';
     const wlKey=(wlTab==='creative')?'cN':((wlTab==='graphic')?'gN':'oN');
     const wlColor=wlTab==='creative'?'#4F46E5':(wlTab==='graphic'?'#EC4899':'#0EA5E9');
-    const wlPeople=(wlTab==='other')?S.people.filter(p=>['Creative','Graphic'].indexOf(p.position||'')<0):S.people.filter(p=>(p.position||'')===(wlTab==='creative'?'Creative':'Graphic'));
+    const wlPeople=((wlTab==='other')?S.people.filter(p=>['Creative','Graphic'].indexOf(p.position||'')<0):S.people.filter(p=>(p.position||'')===(wlTab==='creative'?'Creative':'Graphic'))).filter(p=>!p.left);
     const wlBase=wlPeople.map(p=>{ const cN=wlPool.filter(t=>t.creative===p.id).length; const gN=wlPool.filter(t=>t.graphic===p.id).length; const oN=wlPool.filter(t=>t.creative===p.id||t.graphic===p.id).length; const rN=wlResizePool.filter(t=>t.creative===p.id||t.graphic===p.id).length; return { ...p, cN, gN, oN, rN }; });
     const maxWk=Math.max(1,...wlBase.map(w=>w[wlKey]));
     const workload=wlBase.slice().sort((a,b)=>b[wlKey]-a[wlKey]).map(w=>{ const active=S.fPerson===w.id; const count=w[wlKey];
@@ -1763,7 +1763,7 @@ class Component extends DCLogic {
     const reportSections=secDefs.map(s=>({ ...s, empty:s.items.length===0 }));
 
     const teamQ=(S.fTeamSearch||'').trim().toLowerCase();
-    const teamRows=S.people.filter(p=>!teamQ||(p.name||'').toLowerCase().indexOf(teamQ)>=0||(p.position||'').toLowerCase().indexOf(teamQ)>=0).map(p=>({ name:p.name, position:p.position, color:p.color, initials:init(p.name), onEdit:()=>this.openEditPerson(p), onDelete:()=>this.askDeletePerson(p) }));
+    const teamRows=S.people.filter(p=>!p.left && (!teamQ||(p.name||'').toLowerCase().indexOf(teamQ)>=0||(p.position||'').toLowerCase().indexOf(teamQ)>=0)).map(p=>({ name:p.name, position:p.position, color:p.color, initials:init(p.name), onEdit:()=>this.openEditPerson(p), onDelete:()=>this.askDeletePerson(p) }));
     const positionsUsed=[...new Set([...(S.positions||[]), ...S.people.map(p=>p.position).filter(Boolean)])];
     const canPosEdit=can('perms','edit'), canPosDel=can('perms','del');
     const areaDefs=this.areas();
@@ -1859,7 +1859,7 @@ class Component extends DCLogic {
     const wantJc=f.jobType||'online';
     const medChannels=S.channels.filter(c=>(c.kind||'online')===chKind && (c.jobcat||'online')===wantJc);
     const channelOpts=medChannels.length?medChannels.map(c=>({ value:c.id, label:c.name })):[{ value:'', label:'— ยังไม่มีช่องทาง ('+(chKind==='offline'?'Offline':'Online')+' · '+(jcLabel[wantJc]||wantJc)+') · เพิ่มที่เมนูช่องทาง —' }];
-    const personPick=[{ value:'', label:'— ไม่ระบุ —' }, ...S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position }))];
+    const personPick=[{ value:'', label:'— ไม่ระบุ —' }, ...S.people.filter(p=>!p.left).map(p=>({ value:p.id, label:p.name+' · '+p.position })), ...S.people.filter(p=>p.left).map(p=>({ value:p.id, label:p.name+' · '+p.position+' (ลาออก)' }))];
     const formatOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.formats,f.format).map(x=>({ value:x.id, label:x.name }))];
     const sizeOpts=[{ value:'', label:'— ไม่ระบุ —' }, ...scoped2(S.sizes,f.size).map(x=>({ value:x.id, label:x.name }))];
     const jobTypeOpts=(fMed==='offline')?[{ value:'central', label:'งานกลาง' }]:this.jobTypes.map(j=>({ value:j.id, label:j.label }));
@@ -1936,11 +1936,11 @@ class Component extends DCLogic {
 
     return {
       authed:S.authed, notAuthed:!S.authed && !S.loading, loading:!!S.loading, loadErr:!!S.loadErr, newVer:!!S.newVer, reloadNow:()=>location.reload(),
-      loginPeopleOpts:S.people.map(p=>({ value:p.id, label:p.name+' · '+p.position })), loginId:S.loginId, loginPw:S.loginPw, loginErr:S.loginErr,
+      loginPeopleOpts:S.people.filter(p=>!p.left).map(p=>({ value:p.id, label:p.name+' · '+p.position })), loginId:S.loginId, loginPw:S.loginPw, loginErr:S.loginErr,
       onLoginId:e=>this.setState({ loginId:e.target.value, loginErr:'' }), onLoginPw:e=>this.setState({ loginPw:e.target.value, loginErr:'' }), onLoginKey:e=>{ if(e.key==='Enter') this.doLogin(); }, doLogin:()=>this.doLogin(), logout:()=>this.logout(),
       loginName:S.loginName||'', loginOpen:!!S.loginOpen, onLoginFocus:()=>this.setState({ loginOpen:true }), onLoginToggle:()=>this.setState(s=>({ loginOpen:!s.loginOpen })),
       onLoginName:e=>{ const v=e.target.value; const p=S.people.find(x=>x.name===v); this.setState({ loginName:v, loginId:p?p.id:'', loginErr:'', loginOpen:true }); },
-      loginUserList:S.people.filter(p=>{ const q=(S.loginName||'').toLowerCase(); return !q||(p.name||'').toLowerCase().indexOf(q)>=0; }).map(p=>({ name:p.name, position:p.position||'', onPick:()=>this.setState({ loginName:p.name, loginId:p.id, loginErr:'', loginOpen:false }) })),
+      loginUserList:S.people.filter(p=>{ if(p.left) return false; const q=(S.loginName||'').toLowerCase(); return !q||(p.name||'').toLowerCase().indexOf(q)>=0; }).map(p=>({ name:p.name, position:p.position||'', onPick:()=>this.setState({ loginName:p.name, loginId:p.id, loginErr:'', loginOpen:false }) })),
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(),
