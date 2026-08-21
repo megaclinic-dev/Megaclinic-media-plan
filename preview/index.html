@@ -159,6 +159,8 @@
 
     <div class="mp-main-pad" style="flex:1; overflow:auto; padding:22px 26px;">
 
+      <sc-if value="{{ noAccess }}" hint-placeholder-val="{{ false }}"><div style="max-width:460px; margin:60px auto; text-align:center; padding:32px; border:1px solid #E2E8F0; border-radius:16px; background:#fff;"><div style="font-size:40px; margin-bottom:10px;">🔒</div><div style="font-size:16px; font-weight:700; color:#0F172A; margin-bottom:6px;">ไม่มีสิทธิ์เข้าหน้านี้</div><div style="font-size:13px; color:#64748B; line-height:1.5;">บัญชีของคุณยังไม่ได้รับสิทธิ์ในหน้านี้ — ติดต่อผู้ดูแล (Strategy/PM) เพื่อกำหนดสิทธิ์ตามตำแหน่ง</div></div></sc-if>
+
       <!-- ============ PLAN VIEW ============ -->
       <sc-if value="{{ isPlan }}" hint-placeholder-val="{{ true }}">
         <div style="display:flex; flex-direction:column; gap:18px;">
@@ -1177,7 +1179,8 @@ class Component extends DCLogic {
   _eq(a,b){ return JSON.stringify(a)===JSON.stringify(b); }
   _minDiff(o,c){ if(this._eq(o,c)) return undefined; if(this._isObj(o)&&this._isObj(c)){ const out={}; Object.keys(c).forEach(k=>{ const d=this._minDiff(o[k],c[k]); if(d!==undefined) out[k]=(this._isObj(o[k])&&this._isObj(c[k]))?d:c[k]; }); return Object.keys(out).length?out:undefined; } return c; }
   _saveTask(id, patch){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.rpc('mp_save_task',{ p_id:id, p_patch:patch }).then(({error})=>{ if(error){ console.error('[save task]',error.message); this._syncSet('error'); clearTimeout(this['_rt_'+id]); this['_rt_'+id]=setTimeout(go,4000); } else this._pEnd(); }); go(); }
-  _delTask(id){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_tasks').delete().eq('id',id).then(({error})=>{ if(error){ console.error('[del task]',error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }); go(); }
+  _delTask(id){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_tasks').delete().eq('id',id).then(({error})=>{ if(error){ console.error('[del task]',error.message); this._syncSet('error'); setTimeout(go,4000); } else { this._cleanupMedia(id); this._pEnd(); } }); go(); }
+  _cleanupMedia(tid){ if(!window.sb||tid==null) return; try{ window.sb.storage.from('media').list(String(tid)).then(({data})=>{ if(data&&data.length){ window.sb.storage.from('media').remove(data.map(f=>tid+'/'+f.name)); } }).catch(()=>{}); }catch(e){} }
   _saveState(kind, val){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_state').upsert({ id:kind, data:val, updated_at:new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save state]',kind,error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }); go(); }
   _saveLog(entry){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_log').upsert({ id:entry.id, data:entry, created_at:entry.iso||new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save log]',error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }); go(); }
   _KINDS(){ return ['channels','people','contentTypes','procedures','statuses','perms','positions','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices','delTasks']; }
@@ -1217,7 +1220,7 @@ class Component extends DCLogic {
     const anyLeft=posList.some(p=>{ const o=P[p]; return !o||!o.team||o.team.view!==false; });
     if(!anyLeft && posList.length){ const first=posList[0]; if(!P[first]) P[first]={}; if(!P[first].team) P[first].team={view:true,edit:true,del:false}; P[first].team.view=true; P[first].team.edit=true; }
     return P; }
-  permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return true; return p[area].view!==false; }
+  permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return false; return p[area].view!==false; }
   navArea(v){ return v; }
   navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
   navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
@@ -1328,8 +1331,8 @@ class Component extends DCLogic {
   async _compressStateImages(){ if(this._shrinkDone) return; this._shrinkDone=true; const S=this.state; let changed=false; const tasks=(S.tasks||[]).map(t=>({ ...t }));
     for(const t of tasks){ for(const fld of ['images','aw']){ const arr=t[fld]; if(!Array.isArray(arr)) continue; const na=arr.slice(); for(let i=0;i<na.length;i++){ const it=na[i]; if(it&&typeof it.data==='string'&&it.data.indexOf('data:image')===0&&it.data.length>500000){ const d=await this._compressDataUrl(it.data); if(d&&d.length<it.data.length){ na[i]={ ...it, data:d }; changed=true; } } } t[fld]=na; } }
     if(changed){ this.setState({ tasks:tasks }, ()=>this.persist()); } }
-  addFiles(field, files){ const arr=[...files]; if(!arr.length) return; const tid=this._ensureFormId(); this._syncSet('saving');
-    Promise.all(arr.map((f,idx)=>{ const isImg=(f.type||'').indexOf('image')===0; const prep=isImg?this._compressImage(f):new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); }); return prep.then(dataUrl=>this._uploadMedia(tid, field, idx, dataUrl, f)); }))
+  addFiles(field, files){ const arr=[...files]; if(!arr.length) return; const MAXMB=50; const okType=f=>/^(image|video)\//.test(f.type||''); const good=arr.filter(f=>okType(f)&&f.size<=MAXMB*1024*1024); const skipped=arr.length-good.length; if(skipped){ this.setState({ modal:{ kind:'confirm', title:'บางไฟล์ไม่ผ่าน', yesLabel:'ตกลง', yesBg:'#EF4444', msg:'รับเฉพาะรูปภาพ/วิดีโอ ขนาดไม่เกิน '+MAXMB+'MB — ข้าม '+skipped+' ไฟล์ที่ไม่ผ่าน', onYes:()=>this.setState({ modal:null }) } }); } if(!good.length) return; const tid=this._ensureFormId(); this._syncSet('saving');
+    Promise.all(good.map((f,idx)=>{ const isImg=(f.type||'').indexOf('image')===0; const prep=isImg?this._compressImage(f):new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f); }); return prep.then(dataUrl=>this._uploadMedia(tid, field, idx, dataUrl, f)); }))
       .then(items=>{ this.setState(s=>({ form:{ ...s.form, [field]:[...(s.form[field]||[]), ...items] } })); this._syncSet('saved'); })
       .catch(e=>{ console.error('[addFiles]',e); this._syncSet('error'); }); }
   removeAttach(field, idx){ this.setState(s=>({ form:{ ...s.form, [field]:(s.form[field]||[]).filter((_,i)=>i!==idx) } })); }
@@ -1478,7 +1481,7 @@ class Component extends DCLogic {
     return [ nmM(S.channels,b.platforms), nmM(S.kols,b.kols), nmM(S.doctors,b.doctors), nmM(S.prices,b.prices), nm(S.adPostTypes,b.postType), nm(S.adFunnels,b.funnel), nm(S.adCampaigns,b.campaign), nm(S.adAudiences,b.audience), nm(S.adObjectives,b.objective), nm(S.adStatuses,b.adStatus), b.adStart||'', b.adEnd||'', (b.note||'').replace(/\n/g,' '), (b.remark||'').replace(/\n/g,' '), this.buildAdName(t) ]; }
   isAdsRow(t){ const b=t.brief||{}; const pf=(b.platforms||[]).some(x=>x&&x!=='__none__'); const stt=this.state.adStatuses.find(s=>s.id===b.adStatus); return pf && !this.isNoAds(stt); }
   exportCSV(){ const S=this.state; const cn=id=>id==='other'?'อื่นๆ':((S.channels.find(c=>c.id===id)||{}).name||''); const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||k; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id;
-    const esc=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"';
+    const esc=v=>{ let s=String(v==null?'':v); if(/^[=+\-@\t\r]/.test(s)) s="'"+s; return '"'+s.replace(/"/g,'""')+'"'; };
     const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
     const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
     const rows=[['วันลงงาน','วันเริ่มทำงาน','ระยะเวลา(วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบ','Size','Creative','Graphic','สถานะ','แคปชั่น','รายละเอียด','ลิงก์'].concat(this.briefHeaders())];
@@ -1513,7 +1516,7 @@ class Component extends DCLogic {
     const brRows=[['สาขา','สี','จำนวนงาน','ชิ้นรวม']]; S.branches.forEach(b=>brRows.push([b.name,b.color,S.tasks.filter(t=>Number((t.branchQty||{})[b.id])>0).length,S.tasks.reduce((s,t)=>s+(Number((t.branchQty||{})[b.id])||0),0)]));
     const perms=[['ตำแหน่ง',...this.areas().map(a=>a[1]+' (ดู/แก้/ลบ)')]];
     const held=[...new Set([...(S.positions||[]), ...S.people.map(p=>p.position).filter(Boolean)])];
-    const gp=(pos,area,act)=>{ const o=(S.perms||{})[pos]; if(!o||!o[area]) return true; return o[area][act]!==false; };
+    const gp=(pos,area,act)=>{ const o=(S.perms||{})[pos]; if(!o||!o[area]) return false; return o[area][act]!==false; };
     held.forEach(pos=>perms.push([pos,...this.areas().map(([a])=>[gp(pos,a,'view')?'ดู':'-',gp(pos,a,'edit')?'แก้':'-',gp(pos,a,'del')?'ลบ':'-'].join('/'))]));
     const hist=[['เวลา','ผู้ใช้งาน','การกระทำ','รายการ','ช่องที่แก้ไข','ค่าเก่า','ค่าใหม่']];
     S.log.forEach(l=>{ const who=(S.people.find(p=>p.id===l.actorId)||{}).name||'—';
@@ -1562,7 +1565,7 @@ class Component extends DCLogic {
     const ctMap={}; S.contentTypes.forEach(c=>ctMap[c.id]=c);
     const prMap={}; S.procedures.forEach(c=>prMap[c.id]=c);
     const init=n=>(n||'').slice(0,2).toUpperCase();
-    const getP=(pos,area,act)=>{ const p=(S.perms||{})[pos]; if(!p||!p[area]) return true; return p[area][act]!==false; };
+    const getP=(pos,area,act)=>{ const p=(S.perms||{})[pos]; if(!p||!p[area]) return false; return p[area][act]!==false; };
     const actorPos=(pMap[S.actor]||{}).position||'';
     const can=(area,act)=>getP(actorPos,area,act);
     const st=id=>stMap[id]||{label:'',color:'#94A3B8'};
@@ -1959,7 +1962,8 @@ class Component extends DCLogic {
       navSections, chipViewTabs, actor:S.actor, people:S.people,
       viewTitle:titles[S.view][0], viewSubtitle:titles[S.view][1],
       syncText:({saving:'⟳ กำลังบันทึก…',saved:'✓ บันทึกแล้ว',error:'⚠ บันทึกไม่สำเร็จ กำลังลองใหม่'}[S.syncStatus||'idle'])||'', syncShow:!!({saving:1,saved:1,error:1}[S.syncStatus]), syncColor:({saving:'#B45309',saved:'#15803D',error:'#B91C1C'}[S.syncStatus])||'#64748B', syncBg:({saving:'#FEF3C7',saved:'#F0FDF4',error:'#FEF2F2'}[S.syncStatus])||'#fff',
-      isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:S.view==='history',
+      noAccess:!viewAllowed,
+      isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
       isFormat:viewAllowed&&S.view==='format', isSize:viewAllowed&&S.view==='size',
       formatRows, sizeRows, sizeOpts, branchRows, isBranch:viewAllowed&&S.view==='branch', canBrEdit:can('branch','edit'), canBrDel:can('branch','del'), openAddBranch:()=>this.openAddTag('branch'),
       mediumChips, mediumPick, branchPick, branchSummary, branchTotalLabel, isOffline, deliveryHint, showBranches, tagScopePick, showTagScope,
