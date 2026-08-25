@@ -660,7 +660,8 @@
                 <div style="font-size:12px; font-weight:700; color:#64748B; margin-bottom:9px; text-transform:uppercase; letter-spacing:.05em;">{{ g.name }}</div>
                 <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
                   <sc-for list="{{ g.channels }}" as="c" hint-placeholder-count="3">
-                    <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid #F1F5F9;">
+                    <div draggable="true" onDragStart="{{ c.onDragStart }}" onDragOver="{{ onRowDragOver }}" onDrop="{{ c.onRowDrop }}" style="display:flex; align-items:center; gap:12px; padding:12px 18px; border-bottom:1px solid #F1F5F9; cursor:grab;">
+                      <sc-if value="{{ canChEdit }}" hint-placeholder-val="{{ true }}"><span title="ลากเพื่อจัดลำดับ" style="color:#CBD5E1; font-size:15px; cursor:grab; user-select:none;">⠿</span></sc-if>
                       <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }};"></span>
                       <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
                       <sc-if value="{{ canChEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onUp }}" title="เลื่อนขึ้น" style="{{ c.upStyle }}">▲</button><button onClick="{{ c.onDown }}" title="เลื่อนลง" style="{{ c.downStyle }}">▼</button></sc-if>
@@ -1372,6 +1373,8 @@ class Component extends DCLogic {
   toggleAdf(key,id){ this.setState(s=>{ const arr=Array.isArray(s[key])?s[key].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { [key]:arr }; }); }
   toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
   moveChannel(id, dir){ const S=this.state; const arr=S.channels.slice(); const i=arr.findIndex(c=>c&&c.id===id); if(i<0) return; const gkey=x=>{ const k=(x.kind==='offline')?'offline':'online'; let j=x.jobcat||'online'; if(k==='offline') j='central'; return k+'|'+j; }; const gk=gkey(arr[i]); let j=i+dir; while(j>=0&&j<arr.length&&gkey(arr[j])!==gk) j+=dir; if(j<0||j>=arr.length) return; const c=arr[i]; arr[i]=arr[j]; arr[j]=c; this.commit({ channels:arr }, 'แก้ไข', 'สลับลำดับช่องทาง "'+c.name+'"'); }
+  _chGkey(x){ const k=(x.kind==='offline')?'offline':'online'; let j=x.jobcat||'online'; if(k==='offline') j='central'; return k+'|'+j; }
+  dropChannel(targetId){ const dragId=this._dragCh; this._dragCh=null; if(!dragId||dragId===targetId) return; const S=this.state; let arr=S.channels.slice(); const drag=arr.find(c=>c&&c.id===dragId), tgt=arr.find(c=>c&&c.id===targetId); if(!drag||!tgt||this._chGkey(drag)!==this._chGkey(tgt)) return; arr=arr.filter(c=>c&&c.id!==dragId); const ti=arr.findIndex(c=>c.id===targetId); arr.splice(ti,0,drag); this.commit({ channels:arr }, 'แก้ไข', 'เรียงช่องทาง "'+drag.name+'"'); }
   setBrief(field,val){ this.setState(s=>({ form:{ ...s.form, brief:Object.assign({}, s.form.brief, { [field]:val }) } })); }
   toggleBrief(field,id){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); const arr=Array.isArray(b[field])?b[field].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); b[field]=arr; return { form:{ ...s.form, brief:b } }; }); }
   openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
@@ -1789,7 +1792,7 @@ class Component extends DCLogic {
     const chOrder=[['online','online'],['online','central'],['online','kol'],['offline','central']];
     const gmap={}; chOrder.forEach(([k,j])=>{ gmap[k+'|'+j]={ name:chKindLbl2[k]+' · '+chJobLbl[j], channels:[] }; });
     const paChip=on=>'display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 11px;border-radius:8px;cursor:pointer;white-space:nowrap;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#94A3B8;');
-    S.channels.forEach(c=>{ const k=(c.kind==='offline')?'offline':'online'; let j=c.jobcat||'online'; if(k==='offline') j='central'; const key=k+'|'+j; if(!gmap[key]) gmap[key]={ name:chKindLbl2[k]+' · '+(chJobLbl[j]||j), channels:[] }; gmap[key].channels.push({ name:c.name, color:c.color, paOn:!!c.platformAd, paLabel:(c.platformAd?'☑':'☐')+' Platform Ads', paStyle:paChip(!!c.platformAd), onTogglePA:()=>this.toggleChannelPA(c), onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c), onUp:()=>this.moveChannel(c.id,-1), onDown:()=>this.moveChannel(c.id,1) }); });
+    S.channels.forEach(c=>{ const k=(c.kind==='offline')?'offline':'online'; let j=c.jobcat||'online'; if(k==='offline') j='central'; const key=k+'|'+j; if(!gmap[key]) gmap[key]={ name:chKindLbl2[k]+' · '+(chJobLbl[j]||j), channels:[] }; gmap[key].channels.push({ name:c.name, color:c.color, paOn:!!c.platformAd, paLabel:(c.platformAd?'☑':'☐')+' Platform Ads', paStyle:paChip(!!c.platformAd), onTogglePA:()=>this.toggleChannelPA(c), onEdit:()=>this.openEditChannel(c), onDelete:()=>this.askDeleteChannel(c), onUp:()=>this.moveChannel(c.id,-1), onDown:()=>this.moveChannel(c.id,1), onDragStart:(e)=>{ this._dragCh=c.id; if(e&&e.dataTransfer){ e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', c.id); }catch(_){} } }, onRowDrop:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); this.dropChannel(c.id); } }); });
     const mvBtn=on=>'width:28px;height:28px;font-size:11px;color:#475569;background:#fff;border:1px solid #E2E8F0;border-radius:7px;cursor:'+(on?'pointer':'default')+';opacity:'+(on?'1':'.3')+';flex-shrink:0;';
     Object.keys(gmap).forEach(kk=>{ const ch=gmap[kk].channels; ch.forEach((row,idx)=>{ row.upStyle=mvBtn(idx>0); row.downStyle=mvBtn(idx<ch.length-1); }); });
     const groups=chOrder.map(([k,j])=>gmap[k+'|'+j]).filter(g=>g&&g.channels.length);
@@ -1993,7 +1996,7 @@ class Component extends DCLogic {
       wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'), wlTabOtherStyle:wlTabBtn(wlTab==='other','#0EA5E9'),
       onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}), onWlOther:()=>this.setState({wlTab:'other'}),
       reportSections, reportTotal:rep.length,
-      teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, openAddChannel:()=>this.openAddChannel(),
+      teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, onRowDragOver:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); }, openAddChannel:()=>this.openAddChannel(),
       contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
       isAdsMaster:viewAllowed&&!!adsView, adsRows, adsCanEdit, adsCanDel, adsAddLabel, adsEmpty, adsOnAdd:()=>this.openAddTag(S.view),
       historyRows, historyEmpty:logFiltered.length===0,
