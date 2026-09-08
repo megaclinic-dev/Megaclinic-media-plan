@@ -486,6 +486,7 @@
                       <div style="display:flex; align-items:center; justify-content:flex-start;"><span style="{{ c.numStyle }}">{{ c.dnum }}</span></div>
                       <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="2">
                         <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
+                          <sc-if value="{{ t.isResize }}" hint-placeholder-val="{{ false }}"><span style="display:inline-block; font-size:8px; font-weight:800; color:#fff; background:#7C3AED; border-radius:3px; padding:1px 4px; margin-bottom:2px; letter-spacing:.03em;">RESIZE</span></sc-if>
                           <sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" controls="controls" preload="metadata" onClick="{{ t.onVid }}" style="width:100%; height:auto; max-height:150px; border-radius:4px; display:block; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:auto; border-radius:4px; display:block;"></sc-if></sc-if>
                           <sc-if value="{{ t.imgFooter }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:4px; margin-top:3px;"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }};"></span><span style="font-size:9px; font-weight:700; color:#64748B;">{{ t.initials }}</span></div></sc-if>
                           <sc-if value="{{ t.useName }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:5px; margin-top:{{ t.nameMt }};"><span style="width:6px; height:6px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ t.title }}</span><span style="font-size:9px; font-weight:700; color:#64748B; flex-shrink:0;">{{ t.initials }}</span></div></sc-if>
@@ -1078,7 +1079,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19i';
+    this.APP_VERSION='2026-08-19j';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1743,7 +1744,7 @@ class Component extends DCLogic {
       if(iso<calS || iso>calE){ calCells.push({ blank:true, day:false, items:[], style:'min-height:120px;background:#FAFBFC;border-right:1px solid #F1F5F9;border-bottom:1px solid #F1F5F9;' }); continue; }
       const dts=T.filter(t=>t.date===iso&&calFilter(t)).slice().sort((a,b)=> a.ch<b.ch?-1:(a.ch>b.ch?1:0));
       const ckey='cal|'+iso; const cexp=!!((S.expandedCells||{})[ckey]);
-      const items=(cexp?dts:dts.slice(0,4)).map(t=>{ const c=chMap[t.ch]||{},p=pMap[t.creative]||pMap[t.graphic]||{},s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true; return { title:t.title, color:c.color||'#CBD5E1', tint:(c.color||'#CBD5E1')+'1A', statusColor:s.color, initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTask(t); } }; });
+      const items=(cexp?dts:dts.slice(0,4)).map(t=>{ const c=chMap[t.ch]||{},p=pMap[t.creative]||pMap[t.graphic]||{},s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true; return { title:t.title, isResize:!!t.resize, color:c.color||'#CBD5E1', tint:(c.color||'#CBD5E1')+'1A', statusColor:s.color, initials:init(p.name), img:img, useImg:!!img, isVid:!!(md&&md.isVid), notVid:!!(md&&!md.isVid), onVid:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); }, useName:useName, imgFooter:!!img&&!useName, nameMt:(!!img&&useName)?'4px':'0', onClick:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this.openEditTask(t); } }; });
       const isToday=iso===S.today;
       calCells.push({ blank:false, day:true, dnum:this.parse(iso).getDate(), items, more: (!cexp&&dts.length>4)?dts.length-4:0, expanded: cexp&&dts.length>4, onMore:(e)=>{ if(e&&e.stopPropagation)e.stopPropagation(); this._skipAdd=true; this.setState(s=>{ const ec=Object.assign({},s.expandedCells||{}); if(ec[ckey])delete ec[ckey]; else ec[ckey]=1; return { expandedCells:ec }; }); },
         numStyle:'font-size:12px;font-weight:700;'+(isToday?'background:#EF4444;color:#fff;border-radius:50%;min-width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;':'color:#334155;'),
