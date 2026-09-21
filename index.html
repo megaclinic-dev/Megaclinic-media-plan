@@ -905,7 +905,13 @@
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันส่งมอบงาน</span><input type="date" value="{{ form.delivery }}" onChange="{{ onFDelivery }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
               <label style="flex:2; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันลงงาน <span style="color:#EF4444;">*</span></span><input type="date" value="{{ form.date }}" onChange="{{ onFDate }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
-              <label style="flex:1; min-width:130px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เวลาลงงาน <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">· 24 ชม.</span></span><input type="text" inputmode="numeric" maxlength="5" value="{{ form.time }}" onChange="{{ onFTime }}" onBlur="{{ onFTime }}" placeholder="เช่น 09.30 หรือ 18.00" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+              <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เวลาลงงาน <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">· 24 ชม.</span></span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <select value="{{ timeH }}" onChange="{{ onFTimeH }}" style="flex:1; min-width:0; font-size:14px; padding:10px 8px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><option value="">– ชม. –</option><sc-for list="{{ timeHourOpts }}" as="o" hint-placeholder-count="24"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+                  <span style="font-size:16px; font-weight:800; color:#94A3B8;">:</span>
+                  <select value="{{ timeM }}" onChange="{{ onFTimeM }}" style="flex:1; min-width:0; font-size:14px; padding:10px 8px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><option value="">– นาที –</option><sc-for list="{{ timeMinOpts }}" as="o" hint-placeholder-count="60"><option value="{{ o }}">{{ o }}</option></sc-for></select>
+                </div>
+              </label>
             </div>
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทคอนเทนต์</span><div style="position:relative;"><input value="{{ cbCtype.value }}" onInput="{{ cbCtype.onInput }}" onFocus="{{ cbCtype.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbCtype.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbCtype.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbCtype.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">หัตถการ <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน (ใช้เป็น Product ในชื่อ Ad)</span></span>
@@ -1082,7 +1088,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19l';
+    this.APP_VERSION='2026-08-19m';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -2028,7 +2034,11 @@ class Component extends DCLogic {
       canCopyTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can(curArea,'edit'), copyFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.copyTask(t); },
       channelOpts, formatOpts, contentOpts, statusPick, palette, positionOpts:positionsUsed, groupOpts,
       cbChannel:this._mkCb('form.ch', f.ch, channelOpts, v=>this.setF('ch',v)), cbCtype:this._mkCb('form.ctype', f.ctype, contentOpts, v=>this.setF('ctype',v)), cbCreative:this._mkCb('form.creative', f.creative, personPick, v=>this.setF('creative',v)), cbGraphic:this._mkCb('form.graphic', f.graphic, personPick, v=>this.setF('graphic',v)), cbFormat:this._mkCb('form.format', f.format, formatOpts, v=>this.setF('format',v)), cbSize:this._mkCb('form.size', f.size, sizeOpts, v=>this.setF('size',v)),
-      onFTitle:e=>this.setF('title',e.target.value), onFChannel:e=>this.setF('ch',e.target.value), onFDate:e=>this.setF('date',e.target.value), onFTime:e=>{ const raw=e.target.value; const n=this.normTime(raw); this.setF('time', n||raw.trim()); },
+      onFTitle:e=>this.setF('title',e.target.value), onFChannel:e=>this.setF('ch',e.target.value), onFDate:e=>this.setF('date',e.target.value),
+      timeHourOpts:Array.from({length:24},(_,i)=>String(i).padStart(2,'0')), timeMinOpts:Array.from({length:60},(_,i)=>String(i).padStart(2,'0')),
+      timeH:(/^(\d{1,2})[:.](\d{2})/.test(f.time||''))?f.time.split(/[:.]/)[0].padStart(2,'0'):'', timeM:(/^(\d{1,2})[:.](\d{2})/.test(f.time||''))?f.time.split(/[:.]/)[1]:'',
+      onFTimeH:e=>{ const H=e.target.value; const cur=this.state.form.time||''; const M=(/[:.](\d{2})/.exec(cur)||[])[1]||'00'; this.setF('time', H?(H+':'+M):''); },
+      onFTimeM:e=>{ const M=e.target.value; const cur=this.state.form.time||''; const H=((/^(\d{1,2})[:.]/.exec(cur)||[])[1]||'00').padStart(2,'0'); this.setF('time', M?(H+':'+M):''); },
       onFFormat:e=>this.setF('format',e.target.value), onFCtype:e=>this.setF('ctype',e.target.value), onFProc:e=>this.setF('proc',e.target.value),
       onFResize:()=>this.setF('resize',!f.resize), resizeBtnLabel:(f.resize?'✓ ':'')+'🟪 งาน Resize', resizeBtnStyle:'font-size:13px;font-weight:700;padding:9px 15px;border-radius:9px;cursor:pointer;'+(f.resize?'background:#7C3AED;color:#fff;border:1px solid #7C3AED;':'background:#fff;color:#7C3AED;border:1px solid #DDD6FE;'),
       onFName:e=>this.setF('name',e.target.value), onFPosition:e=>this.setF('position',e.target.value), onFGroup:e=>this.setF('group',e.target.value),
