@@ -1096,7 +1096,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19q';
+    this.APP_VERSION='2026-08-19r';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1390,6 +1390,8 @@ class Component extends DCLogic {
   toggleAdf(key,id){ this.setState(s=>{ const arr=Array.isArray(s[key])?s[key].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { [key]:arr }; }); }
   toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
   _chGkey(x){ const k=(x.kind==='offline')?'offline':'online'; let j=x.jobcat||'online'; if(k==='offline') j='central'; return k+'|'+j; }
+  _chGroupRank(c){ const order=['online|online','online|central','online|kol','offline|central']; const i=order.indexOf(this._chGkey(c)); return i<0?order.length:i; }
+  orderedChannels(){ return (this.state.channels||[]).map((c,i)=>({c,i})).sort((a,b)=>(this._chGroupRank(a.c)-this._chGroupRank(b.c))||(a.i-b.i)).map(x=>x.c); }
   dropChannel(targetId){ const dragId=this._dragCh; this._dragCh=null; if(!dragId||dragId===targetId) return; const S=this.state; let arr=S.channels.slice(); const drag=arr.find(c=>c&&c.id===dragId), tgt=arr.find(c=>c&&c.id===targetId); if(!drag||!tgt||this._chGkey(drag)!==this._chGkey(tgt)) return; arr=arr.filter(c=>c&&c.id!==dragId); const ti=arr.findIndex(c=>c.id===targetId); arr.splice(ti,0,drag); this.commit({ channels:arr }, 'แก้ไข', 'เรียงช่องทาง "'+drag.name+'"'); }
   setBrief(field,val){ this.setState(s=>({ form:{ ...s.form, brief:Object.assign({}, s.form.brief, { [field]:val }) } })); }
   toggleBrief(field,id){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); const arr=Array.isArray(b[field])?b[field].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); b[field]=arr; return { form:{ ...s.form, brief:b } }; }); }
@@ -1629,11 +1631,12 @@ class Component extends DCLogic {
     const tmin=t=>{ const m=/^(\d{1,2})[:.](\d{2})/.exec((t&&t.time)||''); return m?(+m[1]*60+ +m[2]):99999; };
     const tcmp=(a,b)=>tmin(a)-tmin(b);
     const tlab=t=>{ const s=(t&&t.time)||''; const m=/^(\d{1,2})[:.](\d{2})/.exec(s); return m?(m[1].padStart(2,'0')+'.'+m[2]):''; };
-    const chOrderIdx={}; S.channels.forEach((c,i)=>{ chOrderIdx[c.id]=i; }); const chOrd=t=>(chOrderIdx[t.ch]!=null?chOrderIdx[t.ch]:9999);
+    const ordChannels=this.orderedChannels();
+    const chOrderIdx={}; ordChannels.forEach((c,i)=>{ chOrderIdx[c.id]=i; }); const chOrd=t=>(chOrderIdx[t.ch]!=null?chOrderIdx[t.ch]:9999);
 
     const realIds=new Set(S.channels.map(c=>c.id));
     const otherCh={ id:'other', name:'อื่นๆ (งานกลาง/KOL/Offline)', color:'#94A3B8' };
-    const baseRowChannels=S.channels.filter(c=>(fChans.length===0||fcSet.has(c.id)) && (S.fMedium==='all'||(c.kind||'online')===S.fMedium) && (S.fJob==='all'||(c.jobcat||'online')===S.fJob));
+    const baseRowChannels=ordChannels.filter(c=>(fChans.length===0||fcSet.has(c.id)) && (S.fMedium==='all'||(c.kind||'online')===S.fMedium) && (S.fJob==='all'||(c.jobcat||'online')===S.fJob));
     const hasOther=T.some(t=>daySet.has(t.date)&&!realIds.has(t.ch));
     const rowChannels=(fChans.length===0&&hasOther)?[...baseRowChannels, otherCh]:baseRowChannels;
     const matrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
@@ -1664,7 +1667,7 @@ class Component extends DCLogic {
     const adsQ=(S.adfSearch||'').trim().toLowerCase();
     const adsSearchMatch=t=>!adsQ||(t.title||'').toLowerCase().indexOf(adsQ)>=0||this.buildAdName(t).toLowerCase().indexOf(adsQ)>=0;
     const adsPass=t=>isAdsTask(t)&&adsMatch(t)&&adsSearchMatch(t);
-    const adsRowChannels=S.channels.filter(c=>c.platformAd&&(fChans.length===0||fcSet.has(c.id)));
+    const adsRowChannels=ordChannels.filter(c=>c.platformAd&&(fChans.length===0||fcSet.has(c.id)));
     const adsMatrixRows=adsRowChannels.map(c=>{ let total=0;
       const cells=dayObjs.map(d=>{ const ct=T.filter(t=>adsPass(t)&&((t.brief&&t.brief.platforms)||[]).indexOf(c.id)>=0&&adDateOf(t)===d.iso).sort(tcmp); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
