@@ -848,6 +848,84 @@
         </div>
       </sc-if>
 
+      <sc-if value="{{ isFunnelres }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
+            <sc-for list="{{ fnTiles }}" as="ft" hint-placeholder-count="4">
+              <div style="border-radius:12px; padding:13px 15px; background:#F6F8FB;">
+                <div style="font-size:12px; font-weight:800; color:#475569;">{{ ft.lab }}</div>
+                <div style="font-size:23px; font-weight:800; margin-top:3px;">{{ ft.val }}</div>
+                <div style="font-size:11px; color:#94A3B8; margin-top:2px;">{{ ft.rate }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <select value="{{ fnChan }}" onChange="{{ onFnChan }}" style="font-size:13px; padding:8px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:220px;">
+              <sc-for list="{{ fnChanOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+            </select>
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;">
+              <sc-for list="{{ fnModeTabs }}" as="m" hint-placeholder-count="4"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for>
+            </div>
+            <div style="display:flex; align-items:center; gap:7px;">
+              <input type="date" value="{{ fnFrom }}" onChange="{{ onFnFrom }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+              <span style="color:#94A3B8;">–</span>
+              <input type="date" value="{{ fnTo }}" onChange="{{ onFnTo }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
+            </div>
+            <span style="margin-left:auto; font-size:12px; color:#94A3B8;">{{ fnCount }} โพสต์ในช่วงนี้</span>
+          </div>
+          <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow-x:auto;">
+            <table style="border-collapse:collapse; width:100%; min-width:960px;">
+              <thead><tr>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">รูป</th>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ชื่องาน</th>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ประเภทงาน</th>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ช่องทาง</th>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">วันที่ลงงาน</th>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">Creative</th>
+                <th style="padding:11px 8px; text-align:center; font-size:11px; font-weight:800; color:#2563EB; border-bottom:1px solid #EEF2F6;">Awareness</th>
+                <th style="padding:11px 8px; text-align:center; font-size:11px; font-weight:800; color:#0EA5B7; border-bottom:1px solid #EEF2F6;">Interest</th>
+                <th style="padding:11px 8px; text-align:center; font-size:11px; font-weight:800; color:#D97706; border-bottom:1px solid #EEF2F6;">Consideration</th>
+                <th style="padding:11px 8px; text-align:center; font-size:11px; font-weight:800; color:#059669; border-bottom:1px solid #EEF2F6;">Confirmation</th>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">กรอกเมื่อ</th>
+              </tr></thead>
+              <tbody>
+                <sc-for list="{{ fnRows }}" as="r" hint-placeholder-count="6">
+                  <tr>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
+                      <sc-if value="{{ r.isImg }}" hint-placeholder-val="{{ false }}"><img src="{{ r.img }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #E2E8F0;"></sc-if>
+                      <sc-if value="{{ r.isVid }}" hint-placeholder-val="{{ false }}"><div style="width:48px; height:48px; border-radius:8px; background:#0F172A; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px;">🎞️</div></sc-if>
+                      <sc-if value="{{ r.noMedia }}" hint-placeholder-val="{{ true }}"><div style="width:48px; height:48px; border-radius:8px; background:#F1F5F9; display:flex; align-items:center; justify-content:center; font-size:16px; color:#94A3B8;">🖼️</div></sc-if>
+                      <span style="font-size:9px; font-weight:800; color:{{ r.imgTagColor }};">{{ r.imgTag }}</span>
+                    </div></td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:13px; font-weight:700; min-width:160px;">{{ r.title }}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155;">{{ r.job }}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:7px; white-space:nowrap; color:#fff; background:{{ r.chColor }};">{{ r.chName }}</span></td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#64748B; white-space:nowrap;">🗓️ {{ r.date }}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><span style="display:inline-flex; align-items:center; gap:6px; font-size:12px;"><span style="width:20px; height:20px; border-radius:6px; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; background:{{ r.creColor }};">{{ r.creInit }}</span>{{ r.cre }}</span></td>
+                    <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.aw }}" onInput="{{ r.onAw }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #2563EB; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.aw }}</span></sc-if></td>
+                    <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><div style="font-size:9px; font-weight:800; color:#0EA5B7; margin-bottom:3px;">{{ r.imetric }}</div><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.in }}" onInput="{{ r.onIn }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #0EA5B7; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.in }}</span></sc-if></td>
+                    <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.co }}" onInput="{{ r.onCo }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #D97706; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.co }}</span></sc-if></td>
+                    <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.cf }}" onInput="{{ r.onCf }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #059669; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.cf }}</span></sc-if></td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155; white-space:nowrap;">{{ r.enteredTH }}</td>
+                  </tr>
+                </sc-for>
+                <tr>
+                  <td style="padding:12px; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
+                  <td style="padding:12px; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0; font-size:13px;">รวม ({{ fnCount }} โพสต์)</td>
+                  <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
+                  <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.aw }}</td>
+                  <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.in }}</td>
+                  <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.co }}</td>
+                  <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.cf }}</td>
+                  <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="font-size:11px; color:#94A3B8;">การ์ดบนสุดสรุปรวม + % ที่ไหลจากขั้นก่อนหน้า · Interest ใช้เมตริกตามช่องทาง (FB/Wechat=แชร์ · IG/TikTok/Douyin/XHS/Lemon8=เซฟ · LINE=คลิก) · รูปใช้ AW จริงถ้ามี ไม่มีใช้ดราฟ</div>
+        </div>
+      </sc-if>
+
     </div>
   </main>
 
@@ -1096,7 +1174,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19r';
+    this.APP_VERSION='2026-08-19s';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1131,6 +1209,7 @@ class Component extends DCLogic {
       fMedium:'all',
       dateMode:'week', weekStart:_ws, calMonth:_today.slice(0,7), rangeStart:_ws, rangeEnd:_we, today:_today,
       fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:_today, adsDateMode:'post',
+      fnFrom:_ws, fnTo:_we, fnChan:'all', fnMode:'week',
       adfStatus:[], adfKol:[], adfDoctor:[], adfPrice:[], adfPost:[], adfFunnel:[], adfCamp:[], adfAud:[], adfObj:[], adfProc:[], adfFormat:[], adfSearch:'', adfOpen:'',
       loading:true, loadErr:false, newVer:false, chipView:'name',
       modal:null, form:{}
@@ -1242,8 +1321,8 @@ class Component extends DCLogic {
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return false; return p[area].view!==false; }
   navArea(v){ return v; }
-  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
-  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
+  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
+  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report','funnelres']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
   togglePermGroup(pos, keys){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; const allOn=keys.every(k=>{ const pk=perms[pos][k]; return pk?pk.view!==false:true; }); const nv=!allOn; keys.forEach(k=>{ perms[pos][k]={ view:nv, edit:nv, del:nv }; }); return { perms }; }, ()=>this.persist()); }
   firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
@@ -1364,7 +1443,7 @@ class Component extends DCLogic {
 
   setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; const k=(form.medium==='offline')?'offline':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k&&(c.jobcat||'online')===v)){ const fc=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===v); form.ch=fc?fc.id:''; } return { form }; }); }
   blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const firstCh=(S.channels.find(c=>(c.kind||'online')==='online'&&(c.jobcat||'online')===jt)||{}).id||'';
-    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', time:'', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', resize:false, ctype:'', proc:'', procs:[], imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), tab:'detail' };
+    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', time:'', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', resize:false, ctype:'', proc:'', procs:[], imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), funres:this.blankFunnel(), tab:'detail' };
     base.brief.adStatus=((S.adStatuses.find(s=>this.isNoAds(s))||S.adStatuses[0]||{}).id)||'';
     const o=Object.assign(base, over||{});
     const chObj=S.channels.find(c=>c.id===o.ch);
@@ -1382,8 +1461,18 @@ class Component extends DCLogic {
     const pairs=[[nm(S.formats,t.format),'Post Format'],[nm(S.adCampaigns,b.campaign),'Campaign'],[(t.title||'').trim(),'ชื่องาน'],[nmM(S.procedures,this.procIds(t)),'Product'],[nmM(S.prices,b.prices),'Price'],[nmM(S.channels,b.platforms),'Platform Ads'],[nm(S.adPostTypes,b.postType),'Post Type'],[((S.people.find(p=>p.id===t.creative)||{}).name||''),'Creative'],[nm(S.adObjectives,b.objective),'Objective'],[nmM(S.kols,b.kols),'KOL/KOC'],[nm(S.adFunnels,b.funnel),'Funnel'],[nmM(S.doctors,b.doctors),'Doctor Name']];
     return pairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_'); }
   blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'' }; }
+  blankFunnel(){ return { aw:'', in:'', co:'', cf:'', at:'' }; }
+  interestMetric(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'คลิก'; if(/facebook|fb|wechat/.test(name)) return 'แชร์'; return 'เซฟ'; }
+  setFunnel(id, key, raw){ const S=this.state; const v=(raw===''||raw==null)?'':(isNaN(+raw)?'':+raw);
+    const tasks=S.tasks.map(t=>{ if(t.id!==id) return t; const fn=Object.assign({}, t.funres||{}); fn[key]=v; const any=['aw','in','co','cf'].some(k=>fn[k]!==''&&fn[k]!=null); fn.at=any?(S.today||this.iso(new Date())):''; return Object.assign({}, t, { funres:fn }); });
+    this.setState({ tasks }); clearTimeout(this._fnT); this._fnT=setTimeout(()=>this.persist(), 700); }
+  setFnRange(mode){ const S=this.state; const td=S.today||this.iso(new Date()); let from=S.fnFrom, to=S.fnTo;
+    if(mode==='week'){ const d=this.parse(td); from=this.addDays(td,-((d.getDay()+6)%7)); to=this.addDays(from,6); }
+    else if(mode==='30'){ from=this.addDays(td,-29); to=td; } else if(mode==='90'){ from=this.addDays(td,-89); to=td; }
+    else if(mode==='all'){ from=(S.tasks||[]).reduce((m,t)=>(t.date&&t.date<m)?t.date:m, td); to=td; }
+    this.setState({ fnMode:mode, fnFrom:from, fnTo:to }); }
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
-  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), tab:'detail' }); }
+  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), funres:Object.assign(this.blankFunnel(), t.funres||{}), tab:'detail' }); }
   copyTask(t){ const S=this.state; const todo=((S.statuses.find(s=>s.label==='ยังไม่เริ่ม')||S.statuses[0]||{}).id)||'todo';
     this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:this.normalizeBrief(t.brief) })); }
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
@@ -1438,7 +1527,7 @@ class Component extends DCLogic {
         if(!brief.postType) adReq.push('Post Type'); if(!brief.funnel) adReq.push('Funnel'); if(!brief.campaign) adReq.push('Campaign'); if(!brief.adEnd) adReq.push('วันปิดแอด');
         if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'สถานะ "'+(selAdStatus.name||'')+'" ต้องกรอก Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
       const procs=Array.isArray(f.procs)?f.procs:[];
-      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, time:timeN, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', resize:!!f.resize, ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief };
+      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, time:timeN, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', resize:!!f.resize, ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief, funres:f.funres||this.blankFunnel() };
       if (m.mode==='add'){ const t={ id:f.id||('t'+Date.now()), ...rec };
         this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec), { medium:rec.medium, ch:rec.ch }); }
       else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
@@ -1803,6 +1892,40 @@ class Component extends DCLogic {
     ];
     const reportSections=secDefs.map(s=>({ ...s, empty:s.items.length===0 }));
 
+    // ===== Funnel results (ผลโพสต์ตาม Funnel) =====
+    const fnFrom=S.fnFrom||'2000-01-01', fnTo=S.fnTo||'2100-01-01';
+    const _thM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    const fmtTH=iso=>{ if(!iso) return ''; const d=this.parse(iso); return d.getDate()+' '+_thM[d.getMonth()]; };
+    const jobLbl=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id||'';
+    const fnNum=v=>(v===''||v==null)?0:(+v||0);
+    const fnReal=t=>(t.aw||[]).some(a=>a&&a.data&&!a.vid&&!isVidSrc(a.data));
+    const fnChanOpts=[{value:'all',label:'ทุกช่องทาง'}].concat(this.orderedChannels().map(c=>({value:c.id,label:c.name})));
+    const fnList=T.filter(t=>t.date>=fnFrom&&t.date<=fnTo&&(S.fnChan==='all'||t.ch===S.fnChan)).slice().sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0));
+    const fnCanEdit=can(this.navArea('funnelres'),'edit');
+    const fnRows=fnList.map(t=>{ const c=chMap[t.ch]||{}; const p=pMap[t.creative]||{}; const md=taskMedia(t); const fr=t.funres||{}; const real=fnReal(t);
+      const vv=k=>(fr[k]===0?0:(fr[k]||''));
+      return { id:t.id, title:t.title||'(ไม่มีชื่อ)', job:jobLbl(t.jobType), chName:(c.name||(t.ch==='other'?'อื่นๆ':t.ch)), chColor:c.color||'#94A3B8',
+        date:fmtTH(t.date), cre:(p.name||'—'), creInit:init(p.name||'—'), creColor:p.color||'#94A3B8',
+        hasMedia:!!md, noMedia:!md, img:md?md.src:'', isImg:!!(md&&!md.isVid), isVid:!!(md&&md.isVid),
+        imgTag:real?'รูปจริง':(md?'ดราฟ':'ยังไม่มีรูป'), imgTagColor:real?'#059669':(md?'#C2410C':'#94A3B8'),
+        imetric:this.interestMetric(c.name),
+        aw:vv('aw'), in:vv('in'), co:vv('co'), cf:vv('cf'),
+        enteredTH:fr.at?('🗓️ '+fmtTH(fr.at)):'—',
+        onAw:e=>this.setFunnel(t.id,'aw',e.target.value), onIn:e=>this.setFunnel(t.id,'in',e.target.value), onCo:e=>this.setFunnel(t.id,'co',e.target.value), onCf:e=>this.setFunnel(t.id,'cf',e.target.value) }; });
+    const fnSum=k=>fnRows.reduce((a,r)=>a+fnNum(r[k]),0);
+    const fnPct=(a,b)=>b>0?(Math.round(a/b*1000)/10+'%'):'—';
+    const fnA=fnSum('aw'),fnI=fnSum('in'),fnC=fnSum('co'),fnF=fnSum('cf');
+    const fnFmt=n=>Number(n).toLocaleString('en-US');
+    const fnTiles=[
+      { lab:'Awareness', val:fnFmt(fnA), rate:'ฐาน 100%', cls:'faw' },
+      { lab:'Interest', val:fnFmt(fnI), rate:'จาก Awareness '+fnPct(fnI,fnA), cls:'fin' },
+      { lab:'Consideration', val:fnFmt(fnC), rate:'จาก Interest '+fnPct(fnC,fnI), cls:'fco' },
+      { lab:'Confirmation', val:fnFmt(fnF), rate:'ปิดจากฐาน '+fnPct(fnF,fnA), cls:'fcf' }
+    ];
+    const fnTotals={ aw:fnFmt(fnA), in:fnFmt(fnI), co:fnFmt(fnC), cf:fnFmt(fnF) };
+    const fnModeTabs=[['week','สัปดาห์นี้ (จ–อา)'],['30','30 วัน'],['90','90 วัน'],['all','ทั้งหมด']].map(x=>({ label:x[1], style:cvBtn(S.fnMode===x[0]), onClick:()=>this.setFnRange(x[0]) }));
+    const fnCount=fnRows.length;
+
     const teamQ=(S.fTeamSearch||'').trim().toLowerCase();
     const teamRows=S.people.filter(p=>!p.left && (!teamQ||(p.name||'').toLowerCase().indexOf(teamQ)>=0||(p.position||'').toLowerCase().indexOf(teamQ)>=0)).map(p=>({ name:p.name, position:p.position, color:p.color, initials:init(p.name), onEdit:()=>this.openEditPerson(p), onDelete:()=>this.askDeletePerson(p) }));
     const positionsUsed=[...new Set([...(S.positions||[]), ...S.people.map(p=>p.position).filter(Boolean)])];
@@ -1867,14 +1990,14 @@ class Component extends DCLogic {
         changes:ch, noChanges:ch.length===0,
         actionStyle:'font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap;color:'+(actClr[l.action]||'#64748B')+';background:'+(actClr[l.action]||'#64748B')+'18;' }; });
 
-    const navMeta={ plan:['📋','แผนงาน'], adsplan:['📣','แผนงาน ADS'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], perms:['🔑','สิทธิ์ตามตำแหน่ง'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adStatus:['🚦','สถานะ ADS'] };
+    const navMeta={ plan:['📋','แผนงาน'], adsplan:['📣','แผนงาน ADS'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], funnelres:['📈','ผล Funnel'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], perms:['🔑','สิทธิ์ตามตำแหน่ง'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adStatus:['🚦','สถานะ ADS'] };
     const navBadge={ plan:S.tasks.length, table:null, report:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length, kol:S.kols.length, doctor:S.doctors.length, price:S.prices.length, adPostType:S.adPostTypes.length, adFunnel:S.adFunnels.length, adCampaign:S.adCampaigns.length, adAudience:S.adAudiences.length, adObjective:S.adObjectives.length, adStatus:S.adStatuses.length };
     const mkNav=k=>({ label:navMeta[k][1], icon:navMeta[k][0], badge:navBadge[k]||null,
       style:'display:flex;align-items:center;gap:11px;width:100%;font-size:13px;font-weight:600;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;'+(S.view===k?'background:#4F46E5;color:#fff;':'background:transparent;color:#94A3B8;'),
       onClick:()=>this.setView(k) });
     const navOpen=S.navOpen||{};
     const navSections=[
-      { title:null, keys:['plan','adsplan','table','report'] },
+      { title:null, keys:['plan','adsplan','table','report','funnelres'] },
       { title:'DATA', keys:['channels','content','procedure','format','size','branch','status','kol','doctor','price'] },
       { title:'ADS', keys:['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective'] },
       { title:'SETTING', keys:['team','perms','history'] }
@@ -1888,7 +2011,7 @@ class Component extends DCLogic {
         headStyle:'display:flex;align-items:center;width:100%;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.08em;padding:14px 12px 5px;background:transparent;border:none;cursor:pointer;'+(hasCurrent&&!open?'color:#818CF8;':'') };
     }).filter(sec=>sec.items.length);
     const curArea=this.navArea(S.view); const viewAllowed=curArea==null||can(curArea,'view');
-    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
+    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], funnelres:['ผลโพสต์ตาม Funnel','กรอกผลแต่ละขั้น Awareness → Interest → Consideration → Confirmation'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
 
     const m=S.modal, f=S.form||{};
     let modalTitle='';
@@ -2004,7 +2127,9 @@ class Component extends DCLogic {
       viewTitle:titles[S.view][0], viewSubtitle:titles[S.view][1],
       syncText:({saving:'⟳ กำลังบันทึก…',saved:'✓ บันทึกแล้ว',error:'⚠ บันทึกไม่สำเร็จ กำลังลองใหม่'}[S.syncStatus||'idle'])||'', syncShow:!!({saving:1,saved:1,error:1}[S.syncStatus]), syncColor:({saving:'#B45309',saved:'#15803D',error:'#B91C1C'}[S.syncStatus])||'#64748B', syncBg:({saving:'#FEF3C7',saved:'#F0FDF4',error:'#FEF2F2'}[S.syncStatus])||'#fff',
       noAccess:!viewAllowed,
-      isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
+      isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isFunnelres:viewAllowed&&S.view==='funnelres',
+      fnTiles, fnRows, fnModeTabs, fnChanOpts, fnCount, fnTotals, fnCanEdit, fnReadonly:!fnCanEdit, fnChan:S.fnChan, fnFrom:S.fnFrom, fnTo:S.fnTo,
+      onFnChan:e=>this.setState({fnChan:e.target.value}), onFnFrom:e=>this.setState({fnFrom:e.target.value,fnMode:'custom'}), onFnTo:e=>this.setState({fnTo:e.target.value,fnMode:'custom'}), isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
       isFormat:viewAllowed&&S.view==='format', isSize:viewAllowed&&S.view==='size',
       formatRows, sizeRows, sizeOpts, branchRows, isBranch:viewAllowed&&S.view==='branch', canBrEdit:can('branch','edit'), canBrDel:can('branch','del'), openAddBranch:()=>this.openAddTag('branch'),
       mediumChips, mediumPick, branchPick, branchSummary, branchTotalLabel, isOffline, deliveryHint, showBranches, tagScopePick, showTagScope,
