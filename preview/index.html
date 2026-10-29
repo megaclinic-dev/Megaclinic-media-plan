@@ -859,18 +859,27 @@
               </div>
             </sc-for>
           </div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-            <select value="{{ fnChan }}" onChange="{{ onFnChan }}" style="font-size:13px; padding:8px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:220px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:12px 16px;">
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;">
+              <sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for>
+            </div>
+            <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button onClick="{{ prevPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">‹</button>
+                <div style="font-size:14px; font-weight:600; min-width:170px; text-align:center;">{{ periodLabel }}</div>
+                <button onClick="{{ nextPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">›</button>
+              </div>
+            </sc-if>
+            <sc-if value="{{ showRange }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <input type="date" value="{{ rangeStart }}" onChange="{{ onRangeStart }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;">
+                <span style="color:#94A3B8;">–</span>
+                <input type="date" value="{{ rangeEnd }}" onChange="{{ onRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;">
+              </div>
+            </sc-if>
+            <select value="{{ fnChan }}" onChange="{{ onFnChan }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:220px;">
               <sc-for list="{{ fnChanOpts }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
             </select>
-            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;">
-              <sc-for list="{{ fnModeTabs }}" as="m" hint-placeholder-count="4"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for>
-            </div>
-            <div style="display:flex; align-items:center; gap:7px;">
-              <input type="date" value="{{ fnFrom }}" onChange="{{ onFnFrom }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
-              <span style="color:#94A3B8;">–</span>
-              <input type="date" value="{{ fnTo }}" onChange="{{ onFnTo }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;">
-            </div>
             <span style="margin-left:auto; font-size:12px; color:#94A3B8;">{{ fnCount }} โพสต์ในช่วงนี้</span>
           </div>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow-x:auto;">
@@ -1174,7 +1183,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19t';
+    this.APP_VERSION='2026-08-19u';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1406,7 +1415,7 @@ class Component extends DCLogic {
 
   setView(v){ const patch={ view:v, navOpen:false }; const td=this.state.today;
     if(v==='table'){ patch.dateMode='month'; if(td) patch.calMonth=td.slice(0,7); }
-    else if(v==='plan'||v==='adsplan'||v==='report'){ patch.dateMode='week'; if(td){ const d=this.parse(td); patch.weekStart=this.addDays(td,-((d.getDay()+6)%7)); } }
+    else if(v==='plan'||v==='adsplan'||v==='report'||v==='funnelres'){ patch.dateMode='week'; if(td){ const d=this.parse(td); patch.weekStart=this.addDays(td,-((d.getDay()+6)%7)); } }
     this.setState(patch); }
   toggleNav(){ this.setState(s=>({ navOpen:!s.navOpen })); }
   closeNav(){ this.setState({ navOpen:false }); }
@@ -1893,7 +1902,10 @@ class Component extends DCLogic {
     const reportSections=secDefs.map(s=>({ ...s, empty:s.items.length===0 }));
 
     // ===== Funnel results (ผลโพสต์ตาม Funnel) =====
-    const fnFrom=S.fnFrom||'2000-01-01', fnTo=S.fnTo||'2100-01-01';
+    let fnFrom, fnTo;
+    if(S.dateMode==='week'){ fnFrom=S.weekStart; fnTo=this.addDays(S.weekStart,6); }
+    else if(S.dateMode==='custom'){ fnFrom=(S.rangeStart<=S.rangeEnd?S.rangeStart:S.rangeEnd); fnTo=(S.rangeStart<=S.rangeEnd?S.rangeEnd:S.rangeStart); }
+    else { const _pm=(S.calMonth||'2026-01').split('-').map(Number); fnFrom=this.iso(new Date(_pm[0],_pm[1]-1,1)); fnTo=this.iso(new Date(_pm[0],_pm[1],0)); }
     const _thM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
     const fmtTH=iso=>{ if(!iso) return ''; const d=this.parse(iso); return d.getDate()+' '+_thM[d.getMonth()]; };
     const jobLbl=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id||'';
@@ -1929,7 +1941,6 @@ class Component extends DCLogic {
       { lab:'Confirmation', val:fnFmt(fnF), rate:'ปิดจากฐาน '+fnPct(fnF,fnA), cls:'fcf' }
     ];
     const fnTotals={ aw:fnFmt(fnA), in:fnFmt(fnI), co:fnFmt(fnC), cf:fnFmt(fnF) };
-    const fnModeTabs=[['week','สัปดาห์นี้ (จ–อา)'],['30','30 วัน'],['90','90 วัน'],['all','ทั้งหมด']].map(x=>({ label:x[1], style:cvBtn(S.fnMode===x[0]), onClick:()=>this.setFnRange(x[0]) }));
     const fnCount=fnRows.length;
 
     const teamQ=(S.fTeamSearch||'').trim().toLowerCase();
@@ -2134,8 +2145,8 @@ class Component extends DCLogic {
       syncText:({saving:'⟳ กำลังบันทึก…',saved:'✓ บันทึกแล้ว',error:'⚠ บันทึกไม่สำเร็จ กำลังลองใหม่'}[S.syncStatus||'idle'])||'', syncShow:!!({saving:1,saved:1,error:1}[S.syncStatus]), syncColor:({saving:'#B45309',saved:'#15803D',error:'#B91C1C'}[S.syncStatus])||'#64748B', syncBg:({saving:'#FEF3C7',saved:'#F0FDF4',error:'#FEF2F2'}[S.syncStatus])||'#fff',
       noAccess:!viewAllowed,
       isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isFunnelres:viewAllowed&&S.view==='funnelres',
-      fnTiles, fnRows, fnModeTabs, fnChanOpts, fnCount, fnTotals, fnCanEdit, fnReadonly:!fnCanEdit, fnChan:S.fnChan, fnFrom:S.fnFrom, fnTo:S.fnTo,
-      onFnChan:e=>this.setState({fnChan:e.target.value}), onFnFrom:e=>this.setState({fnFrom:e.target.value,fnMode:'custom'}), onFnTo:e=>this.setState({fnTo:e.target.value,fnMode:'custom'}), isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
+      fnTiles, fnRows, fnChanOpts, fnCount, fnTotals, fnCanEdit, fnReadonly:!fnCanEdit, fnChan:S.fnChan,
+      onFnChan:e=>this.setState({fnChan:e.target.value}), isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
       isFormat:viewAllowed&&S.view==='format', isSize:viewAllowed&&S.view==='size',
       formatRows, sizeRows, sizeOpts, branchRows, isBranch:viewAllowed&&S.view==='branch', canBrEdit:can('branch','edit'), canBrDel:can('branch','del'), openAddBranch:()=>this.openAddTag('branch'),
       mediumChips, mediumPick, branchPick, branchSummary, branchTotalLabel, isOffline, deliveryHint, showBranches, tagScopePick, showTagScope,
