@@ -1174,7 +1174,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19s';
+    this.APP_VERSION='2026-08-19t';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1899,8 +1899,14 @@ class Component extends DCLogic {
     const jobLbl=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id||'';
     const fnNum=v=>(v===''||v==null)?0:(+v||0);
     const fnReal=t=>(t.aw||[]).some(a=>a&&a.data&&!a.vid&&!isVidSrc(a.data));
-    const fnChanOpts=[{value:'all',label:'ทุกช่องทาง'}].concat(this.orderedChannels().map(c=>({value:c.id,label:c.name})));
-    const fnList=T.filter(t=>t.date>=fnFrom&&t.date<=fnTo&&(S.fnChan==='all'||t.ch===S.fnChan)).slice().sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0));
+    const _fnGN={'online|online':'Online · ช่องทางต่างๆ','online|central':'Online · งานกลาง','online|kol':'Online · KOL','offline|central':'Offline'};
+    const _fnGO=['online|online','online|central','online|kol','offline|central'];
+    const _fnOrd=this.orderedChannels();
+    const fnChanOpts=[{value:'all',label:'ทุกช่องทาง'}];
+    _fnGO.forEach(g=>{ const chs=_fnOrd.filter(c=>this._chGkey(c)===g); if(!chs.length) return; fnChanOpts.push({value:'grp:'+g,label:'▸ '+(_fnGN[g]||g)+' (ทั้งประเภท)'}); chs.forEach(c=>fnChanOpts.push({value:c.id,label:'　– '+c.name})); });
+    const _fnChSel=S.fnChan||'all';
+    const _fnMatch=t=>{ if(_fnChSel==='all') return true; if(_fnChSel.indexOf('grp:')===0) return this._chGkey(chMap[t.ch]||{})===_fnChSel.slice(4); return t.ch===_fnChSel; };
+    const fnList=T.filter(t=>t.date>=fnFrom&&t.date<=fnTo&&_fnMatch(t)).slice().sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0));
     const fnCanEdit=can(this.navArea('funnelres'),'edit');
     const fnRows=fnList.map(t=>{ const c=chMap[t.ch]||{}; const p=pMap[t.creative]||{}; const md=taskMedia(t); const fr=t.funres||{}; const real=fnReal(t);
       const vv=k=>(fr[k]===0?0:(fr[k]||''));
