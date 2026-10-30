@@ -849,13 +849,22 @@
       </sc-if>
 
       <sc-if value="{{ isFunnelres }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex; flex-direction:column; gap:16px;">
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;">
+        <style>
+          .fnx table th{font-size:13px !important; padding:14px 13px !important;}
+          .fnx table td{font-size:15px !important;}
+          .fnx table td input{width:96px !important; font-size:16px !important; font-weight:800 !important; padding:11px 8px !important;}
+          .fnx table img{width:58px !important; height:58px !important;}
+          .fnx select{font-size:14px !important; padding:9px 12px !important;}
+          .fnx .fnimgtag{font-size:11px !important;}
+          .fnx .fnmetric{font-size:12px !important;}
+        </style>
+        <div class="fnx" style="display:flex; flex-direction:column; gap:18px;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:14px;">
             <sc-for list="{{ fnTiles }}" as="ft" hint-placeholder-count="4">
-              <div style="border-radius:12px; padding:13px 15px; background:#F6F8FB;">
-                <div style="font-size:12px; font-weight:800; color:#475569;">{{ ft.lab }}</div>
-                <div style="font-size:23px; font-weight:800; margin-top:3px;">{{ ft.val }}</div>
-                <div style="font-size:11px; color:#94A3B8; margin-top:2px;">{{ ft.rate }}</div>
+              <div style="border-radius:12px; padding:17px 19px; background:#F6F8FB;">
+                <div style="font-size:14px; font-weight:800; color:#475569;">{{ ft.lab }}</div>
+                <div style="font-size:30px; font-weight:800; margin-top:4px;">{{ ft.val }}</div>
+                <div style="font-size:12px; color:#94A3B8; margin-top:3px;">{{ ft.rate }}</div>
               </div>
             </sc-for>
           </div>
@@ -907,7 +916,7 @@
                       <sc-if value="{{ r.isImg }}" hint-placeholder-val="{{ false }}"><img src="{{ r.img }}" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #E2E8F0;"></sc-if>
                       <sc-if value="{{ r.isVid }}" hint-placeholder-val="{{ false }}"><div style="width:48px; height:48px; border-radius:8px; background:#0F172A; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px;">🎞️</div></sc-if>
                       <sc-if value="{{ r.noMedia }}" hint-placeholder-val="{{ true }}"><div style="width:48px; height:48px; border-radius:8px; background:#F1F5F9; display:flex; align-items:center; justify-content:center; font-size:16px; color:#94A3B8;">🖼️</div></sc-if>
-                      <span style="font-size:9px; font-weight:800; color:{{ r.imgTagColor }};">{{ r.imgTag }}</span>
+                      <span class="fnimgtag" style="font-size:9px; font-weight:800; color:{{ r.imgTagColor }};">{{ r.imgTag }}</span>
                     </div></td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:13px; font-weight:700; min-width:160px;">{{ r.title }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155;">{{ r.job }}</td>
@@ -915,7 +924,7 @@
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#64748B; white-space:nowrap;">🗓️ {{ r.date }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><span style="display:inline-flex; align-items:center; gap:6px; font-size:12px;"><span style="width:20px; height:20px; border-radius:6px; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; background:{{ r.creColor }};">{{ r.creInit }}</span>{{ r.cre }}</span></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.aw }}" onInput="{{ r.onAw }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #2563EB; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.aw }}</span></sc-if></td>
-                    <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><div style="font-size:9px; font-weight:800; color:#0EA5B7; margin-bottom:3px;">{{ r.imetric }}</div><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.in }}" onInput="{{ r.onIn }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #0EA5B7; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.in }}</span></sc-if></td>
+                    <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><div class="fnmetric" style="font-size:9px; font-weight:800; color:#0EA5B7; margin-bottom:3px;">{{ r.imetric }}</div><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.in }}" onInput="{{ r.onIn }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #0EA5B7; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.in }}</span></sc-if></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.co }}" onInput="{{ r.onCo }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #D97706; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.co }}</span></sc-if></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.cf }}" onInput="{{ r.onCf }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #059669; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.cf }}</span></sc-if></td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155; white-space:nowrap;">{{ r.enteredTH }}</td>
@@ -1186,7 +1195,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19v';
+    this.APP_VERSION='2026-08-19w';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
