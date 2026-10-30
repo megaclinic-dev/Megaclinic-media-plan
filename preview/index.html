@@ -912,6 +912,7 @@
                 <th style="padding:11px 8px; text-align:center; font-size:11px; font-weight:800; color:#D97706; border-bottom:1px solid #EEF2F6;">Consideration</th>
                 <th style="padding:11px 8px; text-align:center; font-size:11px; font-weight:800; color:#059669; border-bottom:1px solid #EEF2F6;">Confirmation</th>
                 <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">กรอกเมื่อ</th>
+                <th style="padding:11px 10px; text-align:center; font-size:11px; font-weight:800; color:#B45309; border-bottom:1px solid #EEF2F6;">ทีมกรอกเอง</th>
               </tr></thead>
               <tbody>
                 <sc-for list="{{ fnRows }}" as="r" hint-placeholder-count="6">
@@ -933,6 +934,7 @@
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.co }}" onInput="{{ r.onCo }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #D97706; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.co }}</span></sc-if></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.cf }}" onInput="{{ r.onCf }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #059669; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.cf }}</span></sc-if></td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155; white-space:nowrap;">{{ r.enteredTH }}</td>
+                    <td style="padding:6px 10px; border-bottom:1px solid #F1F5F9; text-align:center;"><button onClick="{{ r.onManual }}" title="ติ๊กถ้าทีมกรอกข้อมูลเอง" style="border:none; background:transparent; cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; gap:2px; line-height:1;"><sc-if value="{{ r.manual }}" hint-placeholder-val="{{ false }}"><span style="font-size:28px;">⚠️</span><span style="font-size:10px; font-weight:800; color:#B45309;">ทีมกรอกเอง</span></sc-if><sc-if value="{{ r.notManual }}" hint-placeholder-val="{{ true }}"><span style="font-size:22px; color:#CBD5E1;">☐</span><span style="font-size:10px; color:#94A3B8;">ทีมกรอกเอง</span></sc-if></button></td>
                   </tr>
                 </sc-for>
                 <tr>
@@ -943,6 +945,7 @@
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.in }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.co }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.cf }}</td>
+                  <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
                   <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
                 </tr>
               </tbody>
@@ -1200,7 +1203,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19y';
+    this.APP_VERSION='2026-08-19z';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1492,6 +1495,7 @@ class Component extends DCLogic {
   setFunnel(id, key, raw){ const S=this.state; const v=(raw===''||raw==null)?'':(isNaN(+raw)?'':+raw);
     const tasks=S.tasks.map(t=>{ if(t.id!==id) return t; const fn=Object.assign({}, t.funres||{}); fn[key]=v; const any=['aw','in','co','cf'].some(k=>fn[k]!==''&&fn[k]!=null); fn.at=any?(S.today||this.iso(new Date())):''; return Object.assign({}, t, { funres:fn }); });
     this.setState({ tasks }); clearTimeout(this._fnT); this._fnT=setTimeout(()=>this.persist(), 700); }
+  toggleFunnelManual(id){ const S=this.state; const tasks=S.tasks.map(t=>{ if(t.id!==id) return t; const fn=Object.assign({}, t.funres||{}); fn.manual=!fn.manual; return Object.assign({}, t, { funres:fn }); }); this.setState({ tasks }); clearTimeout(this._fnT); this._fnT=setTimeout(()=>this.persist(), 700); }
   setFnRange(mode){ const S=this.state; const td=S.today||this.iso(new Date()); let from=S.fnFrom, to=S.fnTo;
     if(mode==='week'){ const d=this.parse(td); from=this.addDays(td,-((d.getDay()+6)%7)); to=this.addDays(from,6); }
     else if(mode==='30'){ from=this.addDays(td,-29); to=td; } else if(mode==='90'){ from=this.addDays(td,-89); to=td; }
@@ -1953,6 +1957,7 @@ class Component extends DCLogic {
         imetric:this.interestMetric(c.name),
         aw:vv('aw'), in:vv('in'), co:vv('co'), cf:vv('cf'),
         enteredTH:fr.at?('🗓️ '+fmtTH(fr.at)):'—',
+        manual:!!fr.manual, notManual:!fr.manual, onManual:()=>this.toggleFunnelManual(t.id),
         onAw:e=>this.setFunnel(t.id,'aw',e.target.value), onIn:e=>this.setFunnel(t.id,'in',e.target.value), onCo:e=>this.setFunnel(t.id,'co',e.target.value), onCf:e=>this.setFunnel(t.id,'cf',e.target.value) }; });
     const fnSum=k=>fnRows.reduce((a,r)=>a+fnNum(r[k]),0);
     const fnPct=(a,b)=>b>0?(Math.round(a/b*1000)/10+'%'):'—';
