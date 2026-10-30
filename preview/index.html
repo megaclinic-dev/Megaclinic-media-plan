@@ -892,6 +892,9 @@
             <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:180px;">
               <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
             </select>
+            <select value="{{ fnProc }}" onChange="{{ onFnProc }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:180px;">
+              <sc-for list="{{ fnProcOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+            </select>
             <span style="margin-left:auto; font-size:12px; color:#94A3B8;">{{ fnCount }} โพสต์ในช่วงนี้</span>
           </div>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow-x:auto;">
@@ -901,6 +904,7 @@
                 <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ชื่องาน</th>
                 <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ประเภทงาน</th>
                 <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ช่องทาง</th>
+                <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">หัตถการ</th>
                 <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">วันที่ลงงาน</th>
                 <th style="padding:11px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">Creative</th>
                 <th style="padding:11px 8px; text-align:center; font-size:11px; font-weight:800; color:#2563EB; border-bottom:1px solid #EEF2F6;">Awareness</th>
@@ -921,6 +925,7 @@
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:13px; font-weight:700; min-width:160px;">{{ r.title }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155;">{{ r.job }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:7px; white-space:nowrap; color:#fff; background:{{ r.chColor }};">{{ r.chName }}</span></td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155; min-width:120px;">{{ r.procLabel }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#64748B; white-space:nowrap;">🗓️ {{ r.date }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><span style="display:inline-flex; align-items:center; gap:6px; font-size:12px;"><span style="width:20px; height:20px; border-radius:6px; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; background:{{ r.creColor }};">{{ r.creInit }}</span>{{ r.cre }}</span></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.aw }}" onInput="{{ r.onAw }}" placeholder="–" style="width:80px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #2563EB; border-radius:8px; background:#F6F8FB; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.aw }}</span></sc-if></td>
@@ -933,7 +938,7 @@
                 <tr>
                   <td style="padding:12px; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
                   <td style="padding:12px; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0; font-size:13px;">รวม ({{ fnCount }} โพสต์)</td>
-                  <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
+                  <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td><td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.aw }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.in }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0;">{{ fnTotals.co }}</td>
@@ -1195,7 +1200,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19x';
+    this.APP_VERSION='2026-08-19y';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1230,7 +1235,7 @@ class Component extends DCLogic {
       fMedium:'all',
       dateMode:'week', weekStart:_ws, calMonth:_today.slice(0,7), rangeStart:_ws, rangeEnd:_we, today:_today,
       fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:_today, adsDateMode:'post',
-      fnFrom:_ws, fnTo:_we, fnChan:'all', fnMode:'week',
+      fnFrom:_ws, fnTo:_we, fnChan:'all', fnProc:'all', fnMode:'week',
       adfStatus:[], adfKol:[], adfDoctor:[], adfPrice:[], adfPost:[], adfFunnel:[], adfCamp:[], adfAud:[], adfObj:[], adfProc:[], adfFormat:[], adfSearch:'', adfOpen:'',
       loading:true, loadErr:false, newVer:false, chipView:'name',
       modal:null, form:{}
@@ -1932,12 +1937,17 @@ class Component extends DCLogic {
     const _fnMatch=t=>{ if(_fnChSel==='all') return true; if(_fnChSel.indexOf('grp:')===0) return this._chGkey(chMap[t.ch]||{})===_fnChSel.slice(4); return t.ch===_fnChSel; };
     const _fnPSel=S.fPerson||'all';
     const _fnPMatch=t=>_fnPSel==='all'||t.creative===_fnPSel||t.graphic===_fnPSel;
-    const fnList=T.filter(t=>t.date>=fnFrom&&t.date<=fnTo&&_fnMatch(t)&&_fnPMatch(t)).slice().sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0));
+    const _prMap={}; S.procedures.forEach(p=>_prMap[p.id]=p);
+    const fnProcOpts=[{value:'all',label:'ทุกหัตถการ'}].concat(S.procedures.map(p=>({value:p.id,label:p.name})));
+    const _fnProcSel=S.fnProc||'all';
+    const _fnProcMatch=t=>_fnProcSel==='all'||this.procIds(t).indexOf(_fnProcSel)>=0;
+    const fnList=T.filter(t=>t.date>=fnFrom&&t.date<=fnTo&&_fnMatch(t)&&_fnPMatch(t)&&_fnProcMatch(t)).slice().sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0));
     const fnCanEdit=can(this.navArea('funnelres'),'edit');
     const fnRows=fnList.map(t=>{ const c=chMap[t.ch]||{}; const p=pMap[t.creative]||{}; const md=taskMedia(t); const fr=t.funres||{}; const real=fnReal(t);
       const vv=k=>(fr[k]===0?0:(fr[k]||''));
       return { id:t.id, title:t.title||'(ไม่มีชื่อ)', job:jobLbl(t.jobType), chName:(c.name||(t.ch==='other'?'อื่นๆ':t.ch)), chColor:c.color||'#94A3B8',
         date:fmtTH(t.date), cre:(p.name||'—'), creInit:init(p.name||'—'), creColor:p.color||'#94A3B8',
+        procLabel:(this.procIds(t).map(id=>(_prMap[id]||{}).name).filter(Boolean).join(', ')||'—'),
         hasMedia:!!md, noMedia:!md, img:md?md.src:'', isImg:!!(md&&!md.isVid), isVid:!!(md&&md.isVid),
         imgTag:real?'รูปจริง':(md?'ดราฟ':'ยังไม่มีรูป'), imgTagColor:real?'#059669':(md?'#C2410C':'#94A3B8'),
         imetric:this.interestMetric(c.name),
@@ -2159,8 +2169,8 @@ class Component extends DCLogic {
       syncText:({saving:'⟳ กำลังบันทึก…',saved:'✓ บันทึกแล้ว',error:'⚠ บันทึกไม่สำเร็จ กำลังลองใหม่'}[S.syncStatus||'idle'])||'', syncShow:!!({saving:1,saved:1,error:1}[S.syncStatus]), syncColor:({saving:'#B45309',saved:'#15803D',error:'#B91C1C'}[S.syncStatus])||'#64748B', syncBg:({saving:'#FEF3C7',saved:'#F0FDF4',error:'#FEF2F2'}[S.syncStatus])||'#fff',
       noAccess:!viewAllowed,
       isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isFunnelres:viewAllowed&&S.view==='funnelres',
-      fnTiles, fnRows, fnChanOpts, fnCount, fnTotals, fnCanEdit, fnReadonly:!fnCanEdit, fnChan:S.fnChan,
-      onFnChan:e=>this.setState({fnChan:e.target.value}), isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
+      fnTiles, fnRows, fnChanOpts, fnProcOpts, fnCount, fnTotals, fnCanEdit, fnReadonly:!fnCanEdit, fnChan:S.fnChan, fnProc:S.fnProc||'all',
+      onFnChan:e=>this.setState({fnChan:e.target.value}), onFnProc:e=>this.setState({fnProc:e.target.value}), isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
       isFormat:viewAllowed&&S.view==='format', isSize:viewAllowed&&S.view==='size',
       formatRows, sizeRows, sizeOpts, branchRows, isBranch:viewAllowed&&S.view==='branch', canBrEdit:can('branch','edit'), canBrDel:can('branch','del'), openAddBranch:()=>this.openAddTag('branch'),
       mediumChips, mediumPick, branchPick, branchSummary, branchTotalLabel, isOffline, deliveryHint, showBranches, tagScopePick, showTagScope,
