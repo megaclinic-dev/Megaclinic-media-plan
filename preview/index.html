@@ -1046,8 +1046,8 @@
           </sc-if>
           <sc-if value="{{ tabImages }}" hint-placeholder-val="{{ false }}">
             <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">คำบรรยายภาพ / บทพูด</span>
-                <textarea value="{{ form.imgDesc }}" onChange="{{ onFImgDesc }}" rows="4" placeholder="อธิบายภาพ หรือใส่บทพูดประกอบภาพ..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ชื่อ / Link Draft</span>
+                <textarea value="{{ form.imgDesc }}" onChange="{{ onFImgDesc }}" rows="3" placeholder="ชื่อ หรือวางลิงก์ไฟล์ Draft..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
               <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดรูปภาพ<input type="file" accept="image/*" multiple onChange="{{ onUploadImages }}" style="display:none;"></label>
               <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือ <b>ลากไฟล์มาวาง</b> ในหน้านี้ · หรือกด <b>Ctrl + V</b> วางรูปจากคลิปบอร์ด</div>
               <div style="display:flex; flex-direction:column; gap:12px;">
@@ -1059,19 +1059,25 @@
                   </div>
                 </sc-for>
               </div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">คอมเมนต์ (ใต้รูป)</span>
+                <textarea value="{{ form.imgComment }}" onChange="{{ onFImgComment }}" rows="3" placeholder="คอมเมนต์/ฟีดแบ็กเกี่ยวกับรูป Draft..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
               <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">แคปชั่น (สำหรับโพสต์จริง)</span>
-                <textarea value="{{ form.caption }}" onChange="{{ onFCaption }}" rows="5" placeholder="แคปชั่นที่จะใช้โพสต์จริง #แฮชแท็ก..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">รายละเอียดอื่นๆ</span>
                 <textarea value="{{ form.details }}" onChange="{{ onFDetails }}" rows="4" placeholder="โน้ต / รายละเอียดเพิ่มเติม / สิ่งที่ต้องระวัง..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
             </div>
           </sc-if>
           <sc-if value="{{ tabAW }}" hint-placeholder-val="{{ false }}">
             <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ลิงก์งาน</span>
-                <input value="{{ form.link }}" onChange="{{ onFLink }}" placeholder="วางลิงก์ Google Drive / โพสต์ / ไฟล์งาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
-                <sc-if value="{{ form.link }}" hint-placeholder-val=""><a href="{{ form.link }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิดลิงก์งาน</a></sc-if></div>
-              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดไฟล์ AW / VDO<input type="file" accept="image/*,video/*" multiple onChange="{{ onUploadAW }}" style="display:none;"></label>
+              <sc-if value="{{ showBounce }}" hint-placeholder-val="{{ false }}">
+                <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ก้อนเด้ง <span style="color:#94A3B8; font-weight:500;">· เฉพาะ LINE BC</span></span>
+                  <textarea value="{{ form.lineBounce }}" onChange="{{ onFLineBounce }}" rows="3" placeholder="ข้อความ/รายละเอียดก้อนเด้ง (LINE Broadcast)..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              </sc-if>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">แคปชั่น (สำหรับโพสต์จริง)</span>
+                <textarea value="{{ form.caption }}" onChange="{{ onFCaption }}" rows="5" placeholder="แคปชั่นที่จะใช้โพสต์จริง #แฮชแท็ก..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Link ลงงาน <span style="color:#94A3B8; font-weight:500;">· ช่องทางที่โพสต์ (IG/FB/TikTok ฯลฯ)</span></span>
+                <input value="{{ form.postLink }}" onChange="{{ onFPostLink }}" placeholder="วางลิงก์โพสต์ที่ลงจริง" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
+                <sc-if value="{{ form.postLink }}" hint-placeholder-val=""><a href="{{ form.postLink }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิด Link ลงงาน</a></sc-if></div>
+              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดรูป / ไฟล์ AW / VDO<input type="file" accept="image/*,video/*" multiple onChange="{{ onUploadAW }}" style="display:none;"></label>
               <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือ <b>ลากไฟล์มาวาง</b> ในหน้านี้ได้เลย (รูป/วิดีโอ)</div>
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <sc-for list="{{ awList }}" as="im" hint-placeholder-count="0">
@@ -1083,6 +1089,10 @@
                   </div>
                 </sc-for>
               </div>
+              <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Link ที่เก็บงาน <span style="color:#94A3B8; font-weight:500;">· สำหรับ Graphic</span></span>
+                <input value="{{ form.link }}" onChange="{{ onFLink }}" placeholder="วางลิงก์ Google Drive / ที่เก็บไฟล์งาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
+                <sc-if value="{{ form.link }}" hint-placeholder-val=""><a href="{{ form.link }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิด Link ที่เก็บงาน</a></sc-if></div>
             </div>
           </sc-if>
           <sc-if value="{{ tabBrief }}" hint-placeholder-val="{{ false }}">
@@ -1203,7 +1213,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-19z';
+    this.APP_VERSION='2026-08-20a';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1472,7 +1482,7 @@ class Component extends DCLogic {
 
   setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; const k=(form.medium==='offline')?'offline':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k&&(c.jobcat||'online')===v)){ const fc=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===v); form.ch=fc?fc.id:''; } return { form }; }); }
   blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const firstCh=(S.channels.find(c=>(c.kind||'online')==='online'&&(c.jobcat||'online')===jt)||{}).id||'';
-    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', time:'', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', resize:false, ctype:'', proc:'', procs:[], imgDesc:'', caption:'', details:'', link:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), funres:this.blankFunnel(), tab:'detail' };
+    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', time:'', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', resize:false, ctype:'', proc:'', procs:[], imgDesc:'', imgComment:'', caption:'', details:'', link:'', postLink:'', lineBounce:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), funres:this.blankFunnel(), tab:'detail' };
     base.brief.adStatus=((S.adStatuses.find(s=>this.isNoAds(s))||S.adStatuses[0]||{}).id)||'';
     const o=Object.assign(base, over||{});
     const chObj=S.channels.find(c=>c.id===o.ch);
@@ -1502,9 +1512,9 @@ class Component extends DCLogic {
     else if(mode==='all'){ from=(S.tasks||[]).reduce((m,t)=>(t.date&&t.date<m)?t.date:m, td); to=td; }
     this.setState({ fnMode:mode, fnFrom:from, fnTo:to }); }
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
-  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), funres:Object.assign(this.blankFunnel(), t.funres||{}), tab:'detail' }); }
+  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), funres:Object.assign(this.blankFunnel(), t.funres||{}), tab:'detail' }); }
   copyTask(t){ const S=this.state; const todo=((S.statuses.find(s=>s.label==='ยังไม่เริ่ม')||S.statuses[0]||{}).id)||'todo';
-    this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', caption:t.caption||'', details:t.details||'', link:t.link||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:this.normalizeBrief(t.brief) })); }
+    this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:this.normalizeBrief(t.brief) })); }
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
   toggleAdf(key,id){ this.setState(s=>{ const arr=Array.isArray(s[key])?s[key].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { [key]:arr }; }); }
   toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
@@ -1533,7 +1543,7 @@ class Component extends DCLogic {
     const fmn=id=>id?((S.formats.find(x=>x.id===id)||{}).name||id):'—'; const szn=id=>id?((S.sizes.find(x=>x.id===id)||{}).name||id):'—';
     cmp('รูปแบบ',fmn(o.format),fmn(n.format)); cmp('Size',szn(o.size),szn(n.size)); cmp('สถานะ',sn(o.status),sn(n.status));
     const txt=(label,a,b)=>{ if((a||'')!==(b||'')) out.push({ f:label, from:(a||'—'), to:(b||'—'), long:true }); };
-    txt('คำบรรยายภาพ',o.imgDesc,n.imgDesc); txt('แคปชั่น',o.caption,n.caption); txt('รายละเอียดอื่นๆ',o.details,n.details); txt('ลิงก์งาน',o.link,n.link);
+    txt('ชื่อ Link Draft',o.imgDesc,n.imgDesc); txt('คอมเมนต์',o.imgComment,n.imgComment); txt('แคปชั่น',o.caption,n.caption); txt('รายละเอียดอื่นๆ',o.details,n.details); txt('Link ที่เก็บงาน',o.link,n.link); txt('Link ลงงาน',o.postLink,n.postLink); txt('ก้อนเด้ง',o.lineBounce,n.lineBounce);
     if((o.images||[]).length!==(n.images||[]).length) out.push({ f:'รูปภาพ', from:(o.images||[]).length+' ไฟล์', to:(n.images||[]).length+' ไฟล์' });
     if((o.aw||[]).length!==(n.aw||[]).length) out.push({ f:'ไฟล์ AW/VDO', from:(o.aw||[]).length+' ไฟล์', to:(n.aw||[]).length+' ไฟล์' });
     return out;
@@ -1557,7 +1567,7 @@ class Component extends DCLogic {
         if(!brief.postType) adReq.push('Post Type'); if(!brief.funnel) adReq.push('Funnel'); if(!brief.campaign) adReq.push('Campaign'); if(!brief.adEnd) adReq.push('วันปิดแอด');
         if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'สถานะ "'+(selAdStatus.name||'')+'" ต้องกรอก Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
       const procs=Array.isArray(f.procs)?f.procs:[];
-      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, time:timeN, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', resize:!!f.resize, ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', caption:f.caption||'', details:f.details||'', link:f.link||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief, funres:f.funres||this.blankFunnel() };
+      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, time:timeN, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', resize:!!f.resize, ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', imgComment:f.imgComment||'', caption:f.caption||'', details:f.details||'', link:f.link||'', postLink:f.postLink||'', lineBounce:f.lineBounce||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief, funres:f.funres||this.blankFunnel() };
       if (m.mode==='add'){ const t={ id:f.id||('t'+Date.now()), ...rec };
         this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec), { medium:rec.medium, ch:rec.ch }); }
       else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
@@ -1631,12 +1641,12 @@ class Component extends DCLogic {
     const nmM=(list,ids)=>(ids||[]).filter(x=>x!=='__none__').map(id=>nm(list,id)).filter(Boolean).join(', ');
     return [ nmM(S.channels,b.platforms), nmM(S.kols,b.kols), nmM(S.doctors,b.doctors), nmM(S.prices,b.prices), nm(S.adPostTypes,b.postType), nm(S.adFunnels,b.funnel), nm(S.adCampaigns,b.campaign), nm(S.adAudiences,b.audience), nm(S.adObjectives,b.objective), nm(S.adStatuses,b.adStatus), b.adStart||'', b.adEnd||'', (b.note||'').replace(/\n/g,' '), (b.remark||'').replace(/\n/g,' '), this.buildAdName(t) ]; }
   isAdsRow(t){ const b=t.brief||{}; const pf=(b.platforms||[]).some(x=>x&&x!=='__none__'); const stt=this.state.adStatuses.find(s=>s.id===b.adStatus); return pf && !this.isNoAds(stt); }
-  taskExportHead(){ return ['วันลงงาน','เวลาลงงาน','วันเริ่มทำงาน','ระยะเวลา (วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบงาน','Size งาน','งาน Resize','Creative','Graphic','สถานะ','คำบรรยายภาพ','แคปชั่น','รายละเอียดอื่นๆ','ลิงก์งาน','จำนวนรูป','จำนวนไฟล์ AW'].concat(this.briefHeaders()); }
+  taskExportHead(){ return ['วันลงงาน','เวลาลงงาน','วันเริ่มทำงาน','ระยะเวลา (วัน)','Online/Offline','วันส่งมอบงาน','สาขา (จำนวนชิ้น)','ชิ้นรวม','ช่องทาง','ประเภทงาน','ประเภทคอนเทนต์','หัตถการ','ชื่องาน','รูปแบบงาน','Size งาน','งาน Resize','Creative','Graphic','สถานะ','ชื่อ Link Draft','คอมเมนต์','แคปชั่น','รายละเอียดอื่นๆ','Link ที่เก็บงาน','Link ลงงาน','ก้อนเด้ง','จำนวนรูป','จำนวนไฟล์ AW'].concat(this.briefHeaders()); }
   taskExportRow(t){ const S=this.state;
     const cn=id=>id==='other'?'อื่นๆ':((S.channels.find(c=>c.id===id)||{}).name||''); const pn=id=>(S.people.find(p=>p.id===id)||{}).name||''; const sn=k=>(S.statuses.find(s=>s.id===k)||{}).label||k; const ctn=id=>(S.contentTypes.find(c=>c.id===id)||{}).name||''; const prn=id=>(S.procedures.find(c=>c.id===id)||{}).name||''; const jn=id=>(this.jobTypes.find(j=>j.id===id)||{}).label||id; const fmn=id=>(S.formats.find(x=>x.id===id)||{}).name||''; const szn=id=>(S.sizes.find(x=>x.id===id)||{}).name||''; const mdn=id=>(this.mediums.find(x=>x.id===id)||{}).label||''; const brn=q=>{ const s=this.branchText(q,S.branches); return s==='—'?'':s; };
     const dur=(a,b)=>{ if(!a||!b) return ''; return Math.round((this.parse(b)-this.parse(a))/86400000)+1; };
     const tl=(t.time||'').replace(':','.');
-    return [t.date,tl,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),this.procIds(t).map(prn).join(', '),t.title,fmn(t.format),szn(t.size),(t.resize?'ใช่':''),pn(t.creative),pn(t.graphic),sn(t.status),(t.imgDesc||'').replace(/\n/g,' '),(t.caption||'').replace(/\n/g,' '),(t.details||'').replace(/\n/g,' '),t.link||'',(t.images||[]).length,(t.aw||[]).length].concat(this.briefRow(t)); }
+    return [t.date,tl,t.start||'',dur(t.start,t.date),mdn(t.medium),t.delivery||'',brn(t.branchQty),this.branchTotal(t.branchQty),cn(t.ch),jn(t.jobType),ctn(t.ctype),this.procIds(t).map(prn).join(', '),t.title,fmn(t.format),szn(t.size),(t.resize?'ใช่':''),pn(t.creative),pn(t.graphic),sn(t.status),(t.imgDesc||'').replace(/\n/g,' '),(t.imgComment||'').replace(/\n/g,' '),(t.caption||'').replace(/\n/g,' '),(t.details||'').replace(/\n/g,' '),t.link||'',t.postLink||'',(t.lineBounce||'').replace(/\n/g,' '),(t.images||[]).length,(t.aw||[]).length].concat(this.briefRow(t)); }
   exportCSV(){ const S=this.state;
     const esc=v=>{ let s=String(v==null?'':v); if(/^[=+\-@\t\r]/.test(s)) s="'"+s; return '"'+s.replace(/"/g,'""')+'"'; };
     const rows=[this.taskExportHead()];
@@ -2106,7 +2116,7 @@ class Component extends DCLogic {
 
     const formTab=f.tab||'detail';
     const ttab=active=>'font-size:13px;font-weight:600;padding:11px 12px;border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid '+(active?'#4F46E5;color:#4F46E5;':'transparent;color:#94A3B8;');
-    const taskTabs=[['detail','รายละเอียด'],['images','Draft / แคปชั่น'+((f.images||[]).length?' ('+f.images.length+')':'')],['aw','AW/VDO'+((f.aw||[]).length?' ('+f.aw.length+')':'')],['brief','Brief Ads']].map(([k,l])=>({ label:l, onClick:()=>this.setTab(k), style:ttab(formTab===k) }));
+    const taskTabs=[['detail','รายละเอียด'],['images','Draft / แคปชั่น'+((f.images||[]).length?' ('+f.images.length+')':'')],['aw','AW / ลงโพสต์'+((f.aw||[]).length?' ('+f.aw.length+')':'')],['brief','Brief Ads']].map(([k,l])=>({ label:l, onClick:()=>this.setTab(k), style:ttab(formTab===k) }));
     const brf=f.brief||this.blankBrief();
     const briefDate=f.date||'';
     const chipSel=on=>'display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#334155;');
@@ -2164,7 +2174,7 @@ class Component extends DCLogic {
       onBriefAdStart:e=>this.setBrief('adStart',e.target.value), onBriefAdEnd:e=>this.setBrief('adEnd',e.target.value),
       taskErr:(m&&m.kind==='task')?(f._err||''):'',
       onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
-      onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFStart:e=>this.setF('start',e.target.value), durationLabel,
+      onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFImgComment:e=>this.setF('imgComment',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFPostLink:e=>this.setF('postLink',e.target.value), onFLineBounce:e=>this.setF('lineBounce',e.target.value), showBounce:/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), notBounce:!/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), onFStart:e=>this.setF('start',e.target.value), durationLabel,
       onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setJobType(e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
       calWeekHeads, calCells, permRows, permAreas, permTree, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
       newPos:S.newPos, onNewPos:e=>this.setState({ newPos:e.target.value }), onNewPosKey:e=>{ if(e.key==='Enter') this.addPosition(); }, addPosition:()=>this.addPosition(),
