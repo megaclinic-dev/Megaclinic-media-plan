@@ -955,6 +955,99 @@
         </div>
       </sc-if>
 
+      <!-- ============ CS VIEW (read-only) ============ -->
+      <sc-if value="{{ isCsview }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; flex-direction:column; gap:14px;">
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;">
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;"><sc-for list="{{ csPeriodTabs }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.onClick }}" style="{{ b.style }}">{{ b.label }}</button></sc-for></div>
+            <sc-if value="{{ csShowNav }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex; align-items:center; gap:8px;"><button onClick="{{ csPrev }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">‹</button><div style="font-size:14px; font-weight:700; min-width:160px; text-align:center;">{{ csPeriodLabel }}</div><button onClick="{{ csNext }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; font-size:15px; color:#475569;">›</button></div>
+            </sc-if>
+            <sc-if value="{{ csShowRange }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex; align-items:center; gap:8px;"><input type="date" value="{{ csRangeStart }}" onChange="{{ onCsRangeStart }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"><span style="color:#94A3B8;">–</span><input type="date" value="{{ csRangeEnd }}" onChange="{{ onCsRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+            </sc-if>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;">
+            <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;"><sc-for list="{{ csModeTabs }}" as="b" hint-placeholder-count="2"><button onClick="{{ b.onClick }}" style="{{ b.style }}">{{ b.label }}</button></sc-for></div>
+            <div style="display:inline-flex; align-items:center; gap:7px;"><span style="font-size:11px; color:#94A3B8; font-weight:600;">แสดงเป็น</span><div style="display:inline-flex; background:#E9EDF3; border-radius:9px; padding:3px;"><sc-for list="{{ csChipTabs }}" as="b" hint-placeholder-count="2"><button onClick="{{ b.onClick }}" style="{{ b.style }}">{{ b.label }}</button></sc-for></div></div>
+            <select value="{{ csChanVal }}" onChange="{{ onCsChan }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"><sc-for list="{{ csChanOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
+            <span style="margin-left:auto; font-size:12px; color:#94A3B8;">{{ csCount }}</span>
+          </div>
+          <!-- calendar mode -->
+          <sc-if value="{{ csModeCal }}" hint-placeholder-val="{{ true }}">
+            <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; overflow-x:auto;">
+              <div style="min-width:820px;">
+                <div style="display:grid; {{ csCalStyle }} background:#FAFBFC; border-bottom:1px solid #EEF2F6;"><sc-for list="{{ csHeads }}" as="h" hint-placeholder-count="7"><div style="padding:9px 6px; text-align:center; font-size:11px; font-weight:700; color:#94A3B8; border-left:1px solid #F1F5F9;">{{ h }}</div></sc-for></div>
+                <div style="display:grid; {{ csCalStyle }}">
+                  <sc-for list="{{ csCells }}" as="c" hint-placeholder-count="14">
+                    <sc-if value="{{ c.blank }}" hint-placeholder-val="{{ false }}"><div style="min-height:104px; background:#FAFBFC; border-left:1px solid #F1F5F9; border-bottom:1px solid #F1F5F9;"></div></sc-if>
+                    <sc-if value="{{ c.day }}" hint-placeholder-val="{{ true }}">
+                      <div style="min-height:104px; padding:6px; border-left:1px solid #F1F5F9; border-bottom:1px solid #F1F5F9; display:flex; flex-direction:column; gap:4px;">
+                        <span style="font-size:11px; font-weight:700; color:#334155;">{{ c.dnum }}</span>
+                        <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="2">
+                          <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
+                            <sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}">
+                              <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" preload="metadata" style="width:100%; height:58px; object-fit:cover; border-radius:4px; display:block; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:58px; object-fit:cover; border-radius:4px; display:block;"></sc-if></sc-if>
+                              <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ true }}"></sc-if>
+                            </sc-if>
+                            <div style="display:flex; align-items:center; gap:5px; margin-top:2px;"><span style="width:7px; height:7px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; color:#0F172A;">{{ t.title }}</span><sc-if value="{{ t.hasTime }}" hint-placeholder-val="{{ false }}"><span style="font-size:9px; font-weight:800; color:#4F46E5; flex-shrink:0;">{{ t.time }}</span></sc-if></div>
+                          </button>
+                        </sc-for>
+                      </div>
+                    </sc-if>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+          <!-- channel matrix mode -->
+          <sc-if value="{{ csModeChan }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; overflow-x:auto;">
+              <div style="min-width:820px;">
+                <div style="display:grid; {{ csMatStyle }} background:#FAFBFC; border-bottom:1px solid #EEF2F6;"><div style="padding:10px 12px; font-size:11px; font-weight:700; color:#94A3B8;">ช่องทาง \ วัน</div><sc-for list="{{ csDayHeads }}" as="h" hint-placeholder-count="7"><div style="padding:9px 6px; text-align:center; font-size:11px; font-weight:700; color:#94A3B8; border-left:1px solid #F1F5F9;">{{ h }}</div></sc-for></div>
+                <sc-if value="{{ csRowsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:30px; text-align:center; color:#94A3B8; font-size:13px;">ไม่มีงานในช่วง/ช่องทางนี้</div></sc-if>
+                <sc-for list="{{ csRows }}" as="r" hint-placeholder-count="5">
+                  <div style="display:grid; {{ csMatStyle }} border-bottom:1px solid #F1F5F9;">
+                    <div style="padding:10px 12px; display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600;"><span style="width:9px; height:9px; border-radius:3px; background:{{ r.color }}; flex-shrink:0;"></span>{{ r.name }}</div>
+                    <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="7">
+                      <div style="min-height:46px; padding:5px; border-left:1px solid #F1F5F9; display:flex; flex-direction:column; gap:3px;">
+                        <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="1">
+                          <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;"><div style="display:flex; align-items:center; gap:5px;"><span style="width:7px; height:7px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; color:#0F172A;">{{ t.title }}</span><sc-if value="{{ t.hasTime }}" hint-placeholder-val="{{ false }}"><span style="font-size:9px; font-weight:800; color:#4F46E5; flex-shrink:0;">{{ t.time }}</span></sc-if></div></button>
+                        </sc-for>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        <!-- read-only detail popup -->
+        <sc-if value="{{ csDetailOpen }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ csDetail.onClose }}" style="position:fixed; inset:0; background:rgba(15,23,42,.45); display:flex; align-items:center; justify-content:center; z-index:70; padding:16px;">
+            <div onClick="{{ stop }}" style="background:#fff; border-radius:16px; width:100%; max-width:440px; max-height:90vh; overflow:auto; box-shadow:0 24px 60px rgba(15,23,42,.3);">
+              <div style="padding:16px 18px; border-bottom:1px solid #F1F5F9; display:flex; align-items:flex-start; gap:10px;">
+                <div style="flex:1;"><div style="font-size:16px; font-weight:800; color:#0F172A;">{{ csDetail.title }}</div><div style="font-size:15px; font-weight:700; color:#334155; margin-top:5px;">🗓️ {{ csDetail.dateLabel }}<sc-if value="{{ csDetail.hasTime }}" hint-placeholder-val="{{ false }}"> · ⏰ {{ csDetail.time }} น.</sc-if></div></div>
+                <button onClick="{{ csDetail.onClose }}" style="width:30px; height:30px; border:none; background:#F1F5F9; border-radius:8px; cursor:pointer; font-size:15px; color:#64748B; flex-shrink:0;">✕</button>
+              </div>
+              <div style="padding:16px 18px; display:flex; flex-direction:column; gap:13px;">
+                <div><span style="font-size:11px; font-weight:800; color:#fff; background:{{ csDetail.chColor }}; padding:3px 10px; border-radius:7px;">{{ csDetail.chName }}</span></div>
+                <sc-if value="{{ csDetail.hasImg }}" hint-placeholder-val="{{ false }}">
+                  <sc-if value="{{ csDetail.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ csDetail.img }}" controls="controls" preload="metadata" style="width:100%; border-radius:10px; max-height:300px; background:#000;"></video></sc-if>
+                  <sc-if value="{{ csDetail.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ csDetail.img }}" style="width:100%; border-radius:10px; display:block;"></sc-if>
+                </sc-if>
+                <sc-if value="{{ csDetail.hasBounce }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; font-weight:700; color:#C2410C; background:#FFF7ED; border-radius:8px; padding:9px 12px;">⚠️ ก้อนเด้ง (LINE BC)<div style="font-size:12px; font-weight:500; color:#9A3412; margin-top:4px; white-space:pre-wrap;">{{ csDetail.bounce }}</div></div></sc-if>
+                <div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">แคปชั่น</div><div style="font-size:14px; color:#0F172A; line-height:1.5; white-space:pre-wrap;">{{ csDetail.caption }}</div></div>
+                <sc-if value="{{ csDetail.hasProcs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">หัตถการ</div><div><sc-for list="{{ csDetail.procs }}" as="x" hint-placeholder-count="2"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#EEF2FF; color:#4338CA;">{{ x }}</span></sc-for></div></div></sc-if>
+                <sc-if value="{{ csDetail.hasKols }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">KOL / KOC</div><div><sc-for list="{{ csDetail.kols }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#FBEAF0; color:#BE1D56;">{{ x }}</span></sc-for></div></div></sc-if>
+                <sc-if value="{{ csDetail.hasDocs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Doctor Name</div><div><sc-for list="{{ csDetail.docs }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#E1F5EE; color:#0F6E56;">{{ x }}</span></sc-for></div></div></sc-if>
+                <div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Link ที่ลงงาน</div><sc-if value="{{ csDetail.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ csDetail.link }}" target="_blank" style="font-size:13px; font-weight:700; color:#4F46E5; word-break:break-all;">↗ {{ csDetail.link }}</a></sc-if><sc-if value="{{ csDetail.hasLink }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px; color:#94A3B8;">—</span></sc-if></div>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+
     </div>
   </main>
 
@@ -1222,7 +1315,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20e';
+    this.APP_VERSION='2026-08-20f';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1357,7 +1450,7 @@ class Component extends DCLogic {
     this.setState({ modal:{ kind:'confirm', msg:'ลบตำแหน่ง "'+pos+'"?'+(cnt?' มีพนักงาน '+cnt+' คนใช้ตำแหน่งนี้อยู่ (ชื่อตำแหน่งของเขาจะยังคงอยู่ แต่จะไม่มีสิทธิ์กำหนดไว้)':''),
       onYes:()=>{ let perms=JSON.parse(JSON.stringify(S.perms||{})); delete perms[pos]; const positions=S.positions.filter(p=>p!==pos); perms=this.ensureTeamAccess(perms, positions, S.people); this.commit({ positions, perms, modal:null }, 'ลบ', 'ตำแหน่ง "'+pos+'"'); } } }); }
 
-  areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา'],['ads','ADS'],['history','ประวัติ']]; }
+  areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา'],['ads','ADS'],['csview','CS View'],['history','ประวัติ']]; }
   defaultPerms(){ const p={}; this.positions.forEach(pos=>{ const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del: a==='tasks' }; }); p[pos]=o; }); return p; }
   togglePermPos(pos){ this.setState(s=>{ const o=Object.assign({}, s.permOpen||{}); o[pos]=!o[pos]; return { permOpen:o }; }); }
   togglePerm(pos,area,act){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; if(!perms[pos][area]) perms[pos][area]={view:true,edit:true,del:true}; const cur=perms[pos][area][act]!==false; perms[pos][area][act]=!cur;
@@ -1371,8 +1464,8 @@ class Component extends DCLogic {
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return false; return p[area].view!==false; }
   navArea(v){ return v; }
-  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
-  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report','funnelres']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
+  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', csview:'🎧 CS View', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
+  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report','funnelres','csview']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
   togglePermGroup(pos, keys){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; const allOn=keys.every(k=>{ const pk=perms[pos][k]; return pk?pk.view!==false:true; }); const nv=!allOn; keys.forEach(k=>{ perms[pos][k]={ view:nv, edit:nv, del:nv }; }); return { perms }; }, ()=>this.persist()); }
   firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
@@ -1539,6 +1632,77 @@ class Component extends DCLogic {
   openEditPerson(p){ this.openModal('person','edit',{ id:p.id, name:p.name, position:p.position, color:p.color, pass:p.pass||'1234' }); }
   openAddChannel(){ this.openModal('channel','add',{ name:'', group:'อื่นๆ', kind:'online', jobcat:'online', color:this.PAL[Math.floor(Math.random()*this.PAL.length)] }); }
   dropMedia(field, targetIdx){ const d=this._dragMedia; this._dragMedia=null; if(!d||d.field!==field||d.i===targetIdx) return; this.setState(s=>{ const f=s.form||{}; const arr=(f[field]||[]).slice(); if(d.i<0||d.i>=arr.length||targetIdx<0||targetIdx>=arr.length) return {}; const m=arr.splice(d.i,1)[0]; arr.splice(targetIdx,0,m); const nf={...f}; nf[field]=arr; return { form:nf }; }); }
+  // ===== CS View (read-only viewer) =====
+  _csFinImg(t){ const pick=a=>{ const arr=Array.isArray(a)?a:[]; for(let i=0;i<arr.length;i++){ const im=arr[i]; if(im&&im.data) return { url:im.data, vid: !!im.vid || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(im.data) }; } return null; }; return pick(t&&t.aw) || pick(t&&t.images) || { url:'', vid:false }; }
+  setCsMode(m){ this.setState({ csMode:m }); }
+  setCsPeriod(p){ this.setState({ csPeriod:p }); }
+  setCsChip(v){ this.setState({ csChip:v }); }
+  csShift(dir){ const S=this.state; const today=S.today||this.iso(new Date()); const ref=S.csRef||today; const period=S.csPeriod||'week'; if(period==='week'){ this.setState({ csRef:this.addDays(ref, dir*7) }); } else if(period==='month'){ const d=this.parse(ref); this.setState({ csRef:this.iso(new Date(d.getFullYear(), d.getMonth()+dir, 1)) }); } }
+  openCsDetail(id){ this.setState({ csDetail:id }); }
+  closeCsDetail(){ this.setState({ csDetail:null }); }
+  _csView(){
+    const S=this.state; if(S.view!=='csview') return { isCsview:false };
+    const today=S.today||this.iso(new Date());
+    const mode=S.csMode||'cal', period=S.csPeriod||'week', ref=S.csRef||today, chip=S.csChip||'name', chan=S.csChan||'all';
+    const chMap={}; (S.channels||[]).forEach(c=>{ chMap[c.id]=c; });
+    const stMap={}; (S.statuses||[]).forEach(s=>{ stMap[s.id]=s; });
+    const kolMap={}; (S.kols||[]).forEach(k=>{ kolMap[k.id]=k; });
+    const docMap={}; (S.doctors||[]).forEach(k=>{ docMap[k.id]=k; });
+    const procMap={}; (S.procedures||[]).forEach(p=>{ procMap[p.id]=p; });
+    const monday=s=>{ const d=this.parse(s); return this.addDays(s, -((d.getDay()+6)%7)); };
+    let days=[];
+    if(period==='week'){ const m=monday(ref); for(let i=0;i<7;i++) days.push(this.addDays(m,i)); }
+    else if(period==='month'){ const d=this.parse(ref), y=d.getFullYear(), mo=d.getMonth(), n=new Date(y,mo+1,0).getDate(); for(let i=1;i<=n;i++) days.push(this.iso(new Date(y,mo,i))); }
+    else { let a=S.csFrom||today, b=S.csTo||today; if(a>b){ const t=a; a=b; b=t; } let c=a,g=0; while(c<=b&&g<120){ days.push(c); c=this.addDays(c,1); g++; } }
+    const inDays={}; days.forEach(d=>{ inDays[d]=1; });
+    const tasks=(S.tasks||[]).filter(t=>t&&t.date&&inDays[t.date]&&(chan==='all'||t.ch===chan));
+    const dowTh=['อา','จ','อ','พ','พฤ','ศ','ส'];
+    const mkChip=t=>{ const c=chMap[t.ch]||{color:'#94A3B8',name:'อื่นๆ'}; const st=stMap[t.status]||{}; const fin=this._csFinImg(t);
+      return { id:t.id, title:t.title||'(ไม่มีชื่อ)', time:(t.time||'').replace(':','.'), hasTime:!!(t.time&&t.time.trim&&t.time.trim()), color:c.color||'#94A3B8', tint:(c.color||'#94A3B8')+'1A', statusColor:st.color||'#CBD5E1', useImg:chip==='image', useName:chip!=='image', hasImg:!!fin.url, img:fin.url, isVid:!!fin.vid, notVid:!fin.vid, onClick:()=>this.openCsDetail(t.id) }; };
+    const dayChips=d=>tasks.filter(t=>t.date===d).map(mkChip);
+    // calendar cells
+    const out={ isCsview:true };
+    const seg=on=>'border:none; font-family:inherit; font-size:13px; font-weight:700; padding:7px 13px; border-radius:8px; cursor:pointer; white-space:nowrap; '+(on?'background:#fff; color:#4F46E5; box-shadow:0 1px 2px rgba(15,23,42,.12);':'background:transparent; color:#64748B;');
+    out.csModeTabs=[['cal','🗓️ ปฏิทิน'],['chan','📊 ช่องทาง']].map(x=>({ label:x[1], style:seg(mode===x[0]), onClick:()=>this.setCsMode(x[0]) }));
+    out.csPeriodTabs=[['week','สัปดาห์'],['month','เดือน'],['custom','กำหนดเอง']].map(x=>({ label:x[1], style:seg(period===x[0]), onClick:()=>this.setCsPeriod(x[0]) }));
+    out.csChipTabs=[['name','ชื่อ'],['image','รูป']].map(x=>({ label:x[1], style:seg(chip===x[0]), onClick:()=>this.setCsChip(x[0]) }));
+    out.csShowNav=(period!=='custom'); out.csShowRange=(period==='custom');
+    out.csRangeStart=S.csFrom||today; out.csRangeEnd=S.csTo||today;
+    out.onCsRangeStart=e=>this.setState({ csFrom:e.target.value }); out.onCsRangeEnd=e=>this.setState({ csTo:e.target.value });
+    out.csPrev=()=>this.csShift(-1); out.csNext=()=>this.csShift(1);
+    if(period==='week'){ const a=this.parse(days[0]), b=this.parse(days[6]); out.csPeriodLabel=a.getDate()+'–'+b.getDate()+' '+this.thMon(b.getMonth())+' '+b.getFullYear(); }
+    else if(period==='month'){ const d=this.parse(ref); out.csPeriodLabel=this.thMon(d.getMonth())+' '+d.getFullYear(); }
+    else { const a=this.parse(out.csRangeStart<=out.csRangeEnd?out.csRangeStart:out.csRangeEnd), b=this.parse(out.csRangeStart<=out.csRangeEnd?out.csRangeEnd:out.csRangeStart); out.csPeriodLabel=a.getDate()+' '+this.thMon(a.getMonth())+' – '+b.getDate()+' '+this.thMon(b.getMonth())+' '+b.getFullYear(); }
+    out.csChanOpts=[{ value:'all', label:'ทุกช่องทาง' }].concat((S.channels||[]).filter(c=>c&&c.id!=='other').map(c=>({ value:c.id, label:c.name }))); out.csChanVal=chan;
+    out.onCsChan=e=>this.setState({ csChan:e.target.value });
+    out.csCount=tasks.length+' งาน';
+    out.csModeCal=(mode==='cal'); out.csModeChan=(mode==='chan');
+    // CAL layout
+    if(period==='month'){ out.csCalStyle='grid-template-columns:repeat(7,minmax(118px,1fr));'; out.csHeads=['จ','อ','พ','พฤ','ศ','ส','อา']; const lead=(this.parse(days[0]).getDay()+6)%7; const cells=[]; for(let i=0;i<lead;i++) cells.push({ blank:true, day:false }); days.forEach(d=>{ cells.push({ blank:false, day:true, dnum:String(this.parse(d).getDate()), items:dayChips(d) }); }); out.csCells=cells; }
+    else { out.csCalStyle='grid-template-columns:repeat('+days.length+',minmax(128px,1fr));'; out.csHeads=days.map(d=>{ const dt=this.parse(d); return dowTh[dt.getDay()]+' '+dt.getDate(); }); out.csCells=days.map(d=>({ blank:false, day:true, dnum:'', items:dayChips(d) })); }
+    // CHAN matrix
+    const chans=(S.channels||[]).filter(c=>c&&c.id!=='other'&&(chan==='all'||c.id===chan)&&tasks.some(t=>t.ch===c.id));
+    out.csMatStyle='grid-template-columns:150px repeat('+days.length+',minmax(118px,1fr));';
+    out.csDayHeads=days.map(d=>{ const dt=this.parse(d); return dowTh[dt.getDay()]+' '+dt.getDate(); });
+    out.csRows=chans.map(c=>({ name:c.name, color:c.color||'#94A3B8', cells:days.map(d=>({ items:tasks.filter(t=>t.ch===c.id&&t.date===d).map(mkChip) })) }));
+    out.csRowsEmpty=out.csRows.length===0;
+    // DETAIL popup
+    const dt=(S.csDetail!=null)?(S.tasks||[]).find(t=>t&&t.id===S.csDetail):null;
+    if(dt){ const c=chMap[dt.ch]||{color:'#94A3B8',name:'อื่นๆ'}; const fin=this._csFinImg(dt); const d=this.parse(dt.date);
+      const names=(ids,map)=>(Array.isArray(ids)?ids:[]).map(id=>(map[id]||{}).name).filter(Boolean);
+      const b=dt.brief||{};
+      out.csDetailOpen=true;
+      out.csDetail={ title:dt.title||'(ไม่มีชื่อ)', dateLabel:d.getDate()+' '+this.thMon(d.getMonth())+' '+d.getFullYear(), time:(dt.time||'').replace(':','.'), hasTime:!!(dt.time&&dt.time.trim&&dt.time.trim()),
+        chName:c.name, chColor:c.color||'#94A3B8', hasImg:!!fin.url, img:fin.url, isVid:!!fin.vid, notVid:!fin.vid,
+        bounce:(dt.lineBounce||'').trim(), hasBounce:!!(dt.lineBounce&&dt.lineBounce.trim()),
+        caption:(dt.caption||'').trim()||'—',
+        procs:names(this.procIds(dt),procMap), kols:names(b.kols,kolMap), docs:names(b.doctors,docMap),
+        link:(dt.postLink||'').trim(), hasLink:!!(dt.postLink&&dt.postLink.trim()),
+        onClose:()=>this.closeCsDetail() };
+      out.csDetail.hasProcs=out.csDetail.procs.length>0; out.csDetail.hasKols=out.csDetail.kols.length>0; out.csDetail.hasDocs=out.csDetail.docs.length>0;
+    } else { out.csDetailOpen=false; out.csDetail=null; }
+    return out;
+  }
   openEditChannel(c){ this.openModal('channel','edit',{ id:c.id, name:c.name, group:c.group, kind:c.kind||'online', jobcat:c.jobcat||'online', color:c.color }); }
   openAddTag(entity){ this.setState({ modal:{ kind:'tag', mode:'add', entity }, form:{ name:'', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], scope:'both', start:'', expiry:'' } }); }
   openEditTag(entity, it){ this.setState({ modal:{ kind:'tag', mode:'edit', entity }, form:{ id:it.id, name:it.name, color:it.color, scope:it.scope||'both', start:it.start||'', expiry:it.expiry||'' } }); }
@@ -2059,14 +2223,14 @@ class Component extends DCLogic {
         changes:ch, noChanges:ch.length===0,
         actionStyle:'font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap;color:'+(actClr[l.action]||'#64748B')+';background:'+(actClr[l.action]||'#64748B')+'18;' }; });
 
-    const navMeta={ plan:['📋','แผนงาน'], adsplan:['📣','แผนงาน ADS'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], funnelres:['📈','ผล Funnel'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], perms:['🔑','สิทธิ์ตามตำแหน่ง'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adStatus:['🚦','สถานะ ADS'] };
-    const navBadge={ plan:S.tasks.length, table:null, report:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length, kol:S.kols.length, doctor:S.doctors.length, price:S.prices.length, adPostType:S.adPostTypes.length, adFunnel:S.adFunnels.length, adCampaign:S.adCampaigns.length, adAudience:S.adAudiences.length, adObjective:S.adObjectives.length, adStatus:S.adStatuses.length };
+    const navMeta={ plan:['📋','แผนงาน'], adsplan:['📣','แผนงาน ADS'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], funnelres:['📈','ผล Funnel'], csview:['🎧','CS View'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], perms:['🔑','สิทธิ์ตามตำแหน่ง'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adStatus:['🚦','สถานะ ADS'] };
+    const navBadge={ plan:S.tasks.length, table:null, report:null, csview:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length, kol:S.kols.length, doctor:S.doctors.length, price:S.prices.length, adPostType:S.adPostTypes.length, adFunnel:S.adFunnels.length, adCampaign:S.adCampaigns.length, adAudience:S.adAudiences.length, adObjective:S.adObjectives.length, adStatus:S.adStatuses.length };
     const mkNav=k=>({ label:navMeta[k][1], icon:navMeta[k][0], badge:navBadge[k]||null,
       style:'display:flex;align-items:center;gap:11px;width:100%;font-size:13px;font-weight:600;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;'+(S.view===k?'background:#4F46E5;color:#fff;':'background:transparent;color:#94A3B8;'),
       onClick:()=>this.setView(k) });
     const navOpen=S.navOpen||{};
     const navSections=[
-      { title:null, keys:['plan','adsplan','table','report','funnelres'] },
+      { title:null, keys:['plan','adsplan','table','report','funnelres','csview'] },
       { title:'DATA', keys:['channels','content','procedure','format','size','branch','status','kol','doctor','price'] },
       { title:'ADS', keys:['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective'] },
       { title:'SETTING', keys:['team','perms','history'] }
@@ -2080,7 +2244,7 @@ class Component extends DCLogic {
         headStyle:'display:flex;align-items:center;width:100%;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.08em;padding:14px 12px 5px;background:transparent;border:none;cursor:pointer;'+(hasCurrent&&!open?'color:#818CF8;':'') };
     }).filter(sec=>sec.items.length);
     const curArea=this.navArea(S.view); const viewAllowed=curArea==null||can(curArea,'view');
-    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], funnelres:['ผลโพสต์ตาม Funnel','กรอกผลแต่ละขั้น Awareness → Interest → Consideration → Confirmation'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
+    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], funnelres:['ผลโพสต์ตาม Funnel','กรอกผลแต่ละขั้น Awareness → Interest → Consideration → Confirmation'], csview:['CS View','ดูงานทั้งหมดแบบอ่านอย่างเดียว · เลือกช่วงเวลา/มุมมอง · คลิกงานเพื่อดูรายละเอียด'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
 
     const m=S.modal, f=S.form||{};
     let modalTitle='';
@@ -2189,6 +2353,8 @@ class Component extends DCLogic {
       onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
       onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFImgComment:e=>this.setF('imgComment',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFPostLink:e=>this.setF('postLink',e.target.value), onFLineBounce:e=>this.setF('lineBounce',e.target.value), showBounce:/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), notBounce:!/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), onFStart:e=>this.setF('start',e.target.value), durationLabel,
       onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setJobType(e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
+      ...this._csView(),
+      isCsview: viewAllowed&&S.view==='csview',
       calWeekHeads, calCells, permRows, permAreas, permTree, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
       newPos:S.newPos, onNewPos:e=>this.setState({ newPos:e.target.value }), onNewPosKey:e=>{ if(e.key==='Enter') this.addPosition(); }, addPosition:()=>this.addPosition(),
       canTeamEdit:can('team','edit'), canTeamDel:can('team','del'), canChEdit:can('channels','edit'), canChDel:can('channels','del'), canCtEdit:can('content','edit'), canCtDel:can('content','del'), canPrEdit:can('procedure','edit'), canPrDel:can('procedure','del'), canStEdit:can('status','edit'), canStDel:can('status','del'), canSaveTask:can(curArea,'edit'),
