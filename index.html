@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20r';
+    this.APP_VERSION='2026-08-20s';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1695,13 +1695,14 @@ class Component extends DCLogic {
     let d=new Date(s2); if(!isNaN(d.getTime())){ out.push(this.iso(d)); return; }
     d=new Date(s); if(!isNaN(d.getTime())) out.push(this.iso(d));
   }); return out; }
-  _rebuildKols(dated){ const S=this.state; const old=S.kols||[];
-    const refIds={}; (S.tasks||[]).forEach(t=>{ const b=t&&t.brief; if(b&&Array.isArray(b.kols)) b.kols.forEach(id=>{ refIds[id]=1; }); });
+  _rebuildKols(dated){ return this._rebuildExt('kols', dated); }
+  _rebuildExt(kind, items){ const key=(kind==='kols')?'kols':'doctors'; const pfx=(kind==='kols')?'kol':'doc'; const S=this.state; const old=S[key]||[];
+    const refIds={}; (S.tasks||[]).forEach(t=>{ const b=t&&t.brief; if(b&&Array.isArray(b[key])) b[key].forEach(id=>{ refIds[id]=1; }); });
     const byNameOld={}; old.forEach(k=>{ if(k&&k.name) byNameOld[String(k.name).trim().toLowerCase()]=k; });
     const result=[]; const used={};
     old.forEach(k=>{ if(k&&!k.ext){ result.push(k); used[String(k.name||'').trim().toLowerCase()]=1; } }); // keep manual
-    dated.forEach(d=>{ const key=String(d.name).trim().toLowerCase(); if(!key||used[key]) return; const o=byNameOld[key]; result.push({ id:(o&&o.id)||('kol'+Date.now()+'_'+Math.floor(Math.random()*1000000)), name:d.name, color:(o&&o.color)||'#4F46E5', ext:true, start:d.start||'', expiry:d.expiry||'' }); used[key]=1; });
-    old.forEach(k=>{ if(k&&k.ext&&refIds[k.id]){ const key=String(k.name||'').trim().toLowerCase(); if(!used[key]){ result.push(k); used[key]=1; } } }); // keep synced that a task still uses
+    (items||[]).forEach(d=>{ const kk=String(d.name).trim().toLowerCase(); if(!kk||used[kk]) return; const o=byNameOld[kk]; const it={ id:(o&&o.id)||(pfx+Date.now()+'_'+Math.floor(Math.random()*1000000)), name:d.name, color:(o&&o.color)||'#4F46E5', ext:true }; if(d.start!==undefined) it.start=d.start||''; if(d.expiry!==undefined) it.expiry=d.expiry||''; result.push(it); used[kk]=1; });
+    old.forEach(k=>{ if(k&&k.ext&&refIds[k.id]){ const kk=String(k.name||'').trim().toLowerCase(); if(!used[kk]){ result.push(k); used[kk]=1; } } }); // keep synced that a task still uses
     return result; }
   _mergeExt(kind, names){ const key=(kind==='kols')?'kols':'doctors'; const list=(this.state[key]||[]).slice(); const by={}; list.forEach(x=>{ if(x&&x.name) by[String(x.name).trim().toLowerCase()]=x; }); let added=0; const pfx=(kind==='kols')?'kol':'doc'; (names||[]).forEach((nm,ix)=>{ const name=String(nm||'').trim(); if(!name||name==='ไม่มี') return; const k=name.toLowerCase(); if(by[k]){ by[k].ext=true; } else { const o={ id:pfx+Date.now()+'_'+ix+'_'+Math.floor(Math.random()*1000), name:name, color:'#4F46E5', ext:true }; list.push(o); by[k]=o; added++; } }); return { list:list, added:added }; }
   syncDoctor(){ const S=this.state; const cfg=S.extDocCfg||((S.extSync&&S.extSync.doc)||{}); const url=(cfg.url||'').trim();
@@ -1712,11 +1713,11 @@ class Component extends DCLogic {
       // Fixed layout: row1 heading, rows2-3 headers, row4+ data. Cols: C(2)=เลข ว. (row-is-doctor; empty=stop), D(3)=ชื่อเล่น, F(5)=ชื่อ, L(11)=ใช้รูปได้
       const names=[]; let scanned=0;
       for(let i=3;i<rows.length;i++){ const row=rows[i]||[]; const C=(row[2]||'').trim(); if(!C) break; scanned++; const duty=parseFloat((row[1]||'').replace(/[^0-9.]/g,''))||0; if(duty>=3){ const nm=((row[3]||'').trim()+' '+(row[5]||'').trim()).replace(/\s+/g,' ').trim(); if(nm) names.push(nm); } }
-      const mg=this._mergeExt('doctors', names);
+      const newDocs=this._rebuildExt('doctors', names.map(function(n){ return { name:n }; }));
       const last=this._extNow(); const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({}, ex.doc, { url:cfg.url, auto:(ex.doc&&ex.doc.auto)!==false }); ex.last=Object.assign({},ex.last,{doctor:last});
       try{ localStorage.setItem('mp.ext.day.doctor', this.iso(new Date())); }catch(e){}
-      this.commit({ doctors:mg.list, extSync:ex }, 'แก้ไข', 'ซิงค์ Doctor จาก Google Sheet (+'+mg.added+')');
-      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอเข้าเวร ≥ 3 วัน '+names.length+' คน (เพิ่มใหม่ '+mg.added+') จากหมอทั้งหมด '+scanned+' คน');
+      this.commit({ doctors:newDocs, extSync:ex }, 'แก้ไข', 'ซิงค์ Doctor จาก Google Sheet (เข้าเวร ≥3 วัน '+names.length+')');
+      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอเข้าเวร ≥ 3 วัน '+names.length+' คน จากหมอทั้งหมด '+scanned+' คน');
     }).catch(e=>{ this._extBusy('doctor',false); this._extStat('doctor','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจว่าทำ "เผยแพร่ไปยังเว็บ (CSV)" แล้ว'); });
   }
   _airFetchAll(base, table, token){ return new Promise(function(resolve,reject){ var out=[]; (function loop(offset){ var u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(offset?('&offset='+encodeURIComponent(offset)):''); fetch(u,{headers:{Authorization:'Bearer '+token}}).then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error('HTTP '+r.status+' ('+table+') '+t.slice(0,80)); }); return r.json(); }).then(function(j){ (j.records||[]).forEach(function(rec){ out.push(rec); }); if(j.offset) loop(j.offset); else resolve(out); }).catch(reject); })(''); }); }
