@@ -788,12 +788,56 @@
       <!-- ============ ADS MASTER VIEW ============ -->
       <sc-if value="{{ isAdsMaster }}" hint-placeholder-val="{{ false }}">
         <div style="max-width:680px;">
+          <sc-if value="{{ extShow }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; padding:16px 18px; margin-bottom:16px;">
+              <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                <sc-if value="{{ extKolView }}" hint-placeholder-val="{{ false }}"><div style="width:42px; height:42px; border-radius:11px; background:#EEF2FF; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">🗂️</div></sc-if>
+                <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="width:42px; height:42px; border-radius:11px; background:#EEF2FF; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">📊</div></sc-if>
+                <div style="flex:1; min-width:160px;">
+                  <sc-if value="{{ extKolView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Airtable (ดึงรายชื่อ KOL อัตโนมัติ)</div></sc-if>
+                  <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Google Sheet (ดึงรายชื่อหมอ · กรองเข้าเวร ≥ 3 วัน)</div></sc-if>
+                  <sc-if value="{{ extHasLast }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#64748B; margin-top:2px;">ซิงค์ล่าสุด {{ extLast }}</div></sc-if>
+                </div>
+                <sc-if value="{{ extConnected }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; background:#ECFDF5; color:#059669;">● เชื่อมแล้ว</span></sc-if>
+                <sc-if value="{{ extConnected }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; background:#FFF7ED; color:#C2410C;">○ ยังไม่เชื่อม</span></sc-if>
+              </div>
+              <sc-if value="{{ extCanEdit }}" hint-placeholder-val="{{ true }}">
+              <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
+                  <div><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">ลิงก์ Google Sheet (เผยแพร่เป็น CSV)</div><input value="{{ extDocUrl }}" onChange="{{ onExtDocUrl }}" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                  <div style="display:flex; gap:9px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:130px;"><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">คอลัมน์ชื่อหมอ <span style="color:#94A3B8; font-weight:500;">(เว้นว่าง = คอลัมน์แรก)</span></div><input value="{{ extDocNameCol }}" onChange="{{ onExtDocNameCol }}" placeholder="เช่น ชื่อเล่น" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                    <div style="flex:1; min-width:130px;"><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">คอลัมน์วันเข้าเวร <span style="color:#94A3B8; font-weight:500;">(เว้นว่าง = ไม่กรอง)</span></div><input value="{{ extDocDutyCol }}" onChange="{{ onExtDocDutyCol }}" placeholder="เช่น วันเข้าเวร" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ extKolView }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
+                  <div><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">Airtable Personal Access Token <span style="color:#94A3B8; font-weight:500;">(เก็บในเครื่องนี้เท่านั้น)</span></div><input type="password" value="{{ extKolToken }}" onChange="{{ onExtKolToken }}" placeholder="patXXXXXXXX..." autocomplete="off" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                  <div style="display:flex; gap:9px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:130px;"><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">Base ID</div><input value="{{ extKolBase }}" onChange="{{ onExtKolBase }}" placeholder="appXXXXXXXX" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                    <div style="flex:1; min-width:130px;"><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">ชื่อตาราง</div><input value="{{ extKolTable }}" onChange="{{ onExtKolTable }}" placeholder="เช่น KOL" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                    <div style="flex:1; min-width:130px;"><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">คอลัมน์ชื่อ <span style="color:#94A3B8; font-weight:500;">(ว่าง=Name)</span></div><input value="{{ extKolField }}" onChange="{{ onExtKolField }}" placeholder="Name" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                  </div>
+                  <div style="font-size:11px; color:#C2410C; background:#FFF7ED; border-radius:8px; padding:8px 11px; line-height:1.5;">🔒 Token เก็บไว้ใน <b>เครื่องนี้เครื่องเดียว</b> (ไม่ขึ้นเว็บ/ฐานข้อมูล) · แนะนำสร้าง token แบบ <b>อ่านอย่างเดียว</b> เฉพาะ Base นี้</div>
+                </div>
+              </sc-if>
+              <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:14px;">
+                <button onClick="{{ onExtConnect }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 16px; border-radius:9px; cursor:pointer;">🔄 เชื่อม / รีเฟรชเดี๋ยวนี้</button>
+                <button onClick="{{ onExtToggleAuto }}" style="font-size:12px; font-weight:700; padding:8px 13px; border-radius:9px; cursor:pointer; {{ extAutoStyle }}"><sc-if value="{{ extAutoOn }}" hint-placeholder-val="{{ true }}">🔁 ซิงค์อัตโนมัติทุกเช้า: เปิด</sc-if><sc-if value="{{ extAutoOn }}" hint-placeholder-val="{{ false }}">🔁 ซิงค์อัตโนมัติทุกเช้า: ปิด</sc-if></button>
+                <sc-if value="{{ extBusyNow }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#4F46E5; font-weight:700;">⏳ กำลังดึง…</span></sc-if>
+              </div>
+              <sc-if value="{{ extHasStatus }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#334155; margin-top:10px; line-height:1.5;">{{ extStatusMsg }}</div></sc-if>
+              </sc-if>
+            </div>
+          </sc-if>
           <sc-if value="{{ adsCanEdit }}" hint-placeholder-val="{{ true }}"><div style="display:flex; justify-content:flex-end; margin-bottom:14px;"><button onClick="{{ adsOnAdd }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 15px; border-radius:9px; cursor:pointer;">{{ adsAddLabel }}</button></div></sc-if>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden;">
             <sc-for list="{{ adsRows }}" as="c" hint-placeholder-count="4">
               <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid #F1F5F9;">
                 <span style="width:12px; height:12px; border-radius:4px; background:{{ c.color }}; flex-shrink:0;"></span>
                 <span style="font-size:14px; font-weight:600; flex:1;">{{ c.name }}</span>
+                <sc-if value="{{ c.ext }}" hint-placeholder-val="{{ false }}"><span style="font-size:10px; font-weight:800; color:#4F46E5; background:#EEF2FF; padding:3px 8px; border-radius:99px; white-space:nowrap;">ซิงค์</span></sc-if>
                 <sc-if value="{{ c.hasDate }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px; font-weight:600; color:#64748B; background:#F1F5F9; padding:3px 9px; border-radius:99px; white-space:nowrap;">{{ c.dateText }}</span></sc-if>
                 <sc-if value="{{ adsCanEdit }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onEdit }}" style="font-size:12px; color:#475569; background:#fff; border:1px solid #E2E8F0; padding:5px 10px; border-radius:8px; cursor:pointer;">แก้ไข</button></sc-if>
                 <sc-if value="{{ adsCanDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onDelete }}" style="font-size:12px; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:5px 10px; border-radius:8px; cursor:pointer;">ลบ</button></sc-if>
@@ -1315,7 +1359,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20g';
+    this.APP_VERSION='2026-08-20h';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1423,14 +1467,14 @@ class Component extends DCLogic {
   _cleanupMedia(tid){ if(!window.sb||!tid) return; const id=String(tid); if(!id.trim()) return; try{ window.sb.storage.from('media').list(id).then(({data})=>{ const files=(data||[]).filter(f=>f&&f.name&&f.id!=null); if(files.length){ window.sb.storage.from('media').remove(files.map(f=>id+'/'+f.name)); } }).catch(()=>{}); }catch(e){} }
   _saveState(kind, val){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_state').upsert({ id:kind, data:val, updated_at:new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save state]',kind,error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }).catch(e=>{ console.error('[save state]',kind,e); this._syncSet('error'); setTimeout(go,4000); }); go(); }
   _saveLog(entry){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_log').upsert({ id:entry.id, data:entry, created_at:entry.iso||new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save log]',error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }).catch(e=>{ console.error('[save log]',e); this._syncSet('error'); setTimeout(go,4000); }); go(); }
-  _KINDS(){ return ['channels','people','contentTypes','procedures','statuses','perms','positions','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices','delTasks']; }
+  _KINDS(){ return ['channels','people','contentTypes','procedures','statuses','perms','positions','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices','delTasks','extSync']; }
   _pubUrl(path){ return 'https://ldokxrqxaunwfdcccvcg.supabase.co/storage/v1/object/public/media/'+path; }
   _ensureFormId(){ let id=this.state.form&&this.state.form.id; if(!id){ id='t'+Date.now(); this.setState(s=>({ form:{ ...s.form, id:id } })); } return id; }
   _uploadMedia(tid, field, idx, dataUrl, file){ const m=/^data:([^;]+);base64,/.exec(dataUrl||''); const mime=m?m[1]:'application/octet-stream'; const ext=(mime.split('/')[1]||'bin').split('+')[0]; const isImg=mime.indexOf('image')===0; const nm=(file&&file.name)?(isImg?file.name.replace(/\.(png|webp|bmp|gif)$/i,'.jpg'):file.name):(field+'.'+ext); const path=tid+'/'+field+'_'+Date.now()+'_'+idx+'.'+ext; return fetch(dataUrl).then(r=>r.blob()).then(blob=>window.sb.storage.from('media').upload(path, blob, { contentType:mime, upsert:true }).then(({error})=>{ if(error){ console.error('[upload]',error.message); return { name:nm, data:dataUrl, vid:mime.indexOf('video')===0 }; } return { name:nm, data:this._pubUrl(path), vid:mime.indexOf('video')===0 }; })); }
   _autoBackup(){ try{ if(!window.sb || !this._loadComplete) return; const S=this.state; const tasks=S.tasks||[]; if(!tasks.length) return; const d=new Date(); const day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); const lk='mp.bk.'+day; try{ if(localStorage.getItem(lk)) return; }catch(e){} const payload=JSON.stringify({ date:day, savedAt:d.toISOString(), count:tasks.length, by:(S.loginName||S.loginId||''), tasks:tasks, channels:S.channels, people:S.people, delTasks:S.delTasks||{} }); const blob=new Blob([payload],{type:'application/json'}); window.sb.storage.from('media').upload('backups/tasks-'+day+'.json', blob, { contentType:'application/json', upsert:true }).then(r=>{ if(!r||!r.error){ try{ localStorage.setItem(lk,'1'); }catch(e){} console.log('[autoBackup] saved',day,tasks.length,'tasks'); } else { console.warn('[autoBackup]',r.error.message); } }).catch(e=>{ console.warn('[autoBackup]',e&&e.message); }); }catch(e){ console.warn('[autoBackup]',e&&e.message); } }
   _fetchAll(table, cols){ return (async function(){ try{ var out=[]; var from=0; var size=1000; var expected=null; for(;;){ var r=await window.sb.from(table).select(cols, (from===0?{count:'exact'}:undefined)).range(from, from+size-1); if(r.error) return { data:null, error:r.error }; if(from===0 && typeof r.count==='number') expected=r.count; var batch=r.data||[]; for(var i=0;i<batch.length;i++) out.push(batch[i]); if(batch.length<size) break; from+=size; if(from>500000) break; } if(expected!=null && out.length!==expected) return { data:null, error:{ message:table+' โหลดไม่ครบ '+out.length+'/'+expected } }; return { data:out, error:null }; }catch(e){ return { data:null, error:e }; } })(); }
   _loadAll(){ if(!window.sb) return Promise.reject(new Error('no supabase')); this._loadComplete=false; return Promise.all([ this._fetchAll('mp_tasks','data'), window.sb.from('mp_state').select('id,data'), this._fetchAll('mp_log','data') ]).then(res=>{ const tr=res[0],sr=res[1],lr=res[2]; const err=tr.error||sr.error||lr.error; if(err) throw err; const tasks=(tr.data||[]).map(r=>r.data).filter(Boolean); const sm={}; (sr.data||[]).forEach(r=>{ sm[r.id]=r.data; }); this._checkVer(sm['appVersion']); this._sig=(sm['reloadSignal']&&sm['reloadSignal'].t)||''; const log=(lr.data||[]).map(r=>r.data).filter(Boolean).sort((a,b)=>{ const A=(a&&a.iso)||'',B=(b&&b.iso)||''; return A<B?1:(A>B?-1:0); }); this._srvTasks={}; tasks.forEach(t=>{ if(t&&t.id!=null) this._srvTasks[t.id]=JSON.stringify(t); }); this._srvLogIds={}; log.forEach(l=>{ if(l&&l.id) this._srvLogIds[l.id]=1; }); this._srvState={}; const patch={ tasks:tasks, log:log, loading:false, loadErr:false }; this._KINDS().forEach(k=>{ const has=sm[k]!==undefined; const v=has?sm[k]:this.state[k]; patch[k]=v; this._srvState[k]=JSON.stringify(v===undefined?null:v); }); if(patch.adStatuses) patch.adStatuses=this.ensureAdStatuses(patch.adStatuses); if(patch.people&&patch.people.length){ let lu=null; try{ lu=localStorage.getItem('mp.lastUserId'); }catch(e){} const luP=(lu&&patch.people.find(p=>p.id===lu))||null; if(luP){ patch.loginId=luP.id; patch.loginName=luP.name; } else if(!patch.people.some(p=>p.id===this.state.loginId)){ patch.loginId=''; patch.loginName=this.state.loginName||''; }
-       if(!this.state.authed){ try{ const ss=JSON.parse(localStorage.getItem('mp.session')||'null'); if(ss&&ss.exp>Date.now()){ const sp=patch.people.find(p=>p.id===ss.id); if(sp){ patch.authed=true; patch.actor=sp.id; patch.loginId=sp.id; patch.loginName=sp.name; patch.view=this.firstPermittedView(sp.position, patch.perms); } } }catch(e){} } } this.setState(patch); this._loadComplete=true; this._autoBackup(); }); }
+       if(!this.state.authed){ try{ const ss=JSON.parse(localStorage.getItem('mp.session')||'null'); if(ss&&ss.exp>Date.now()){ const sp=patch.people.find(p=>p.id===ss.id); if(sp){ patch.authed=true; patch.actor=sp.id; patch.loginId=sp.id; patch.loginName=sp.name; patch.view=this.firstPermittedView(sp.position, patch.perms); } } }catch(e){} } } this.setState(patch); this._loadComplete=true; this._autoBackup(); this._extAuto(); }); }
   _retryLoad(){ clearTimeout(this._loadT); this._loadT=setTimeout(()=>{ this._loadAll().then(()=>{ this.setState({ loadErr:false }); this._initSync(); }).catch(e=>{ console.error('[load retry]',e&&e.message); this.setState({ loadErr:true }); this._retryLoad(); }); }, 4000); }
   _checkVer(d){ const v=d&&d.v; if(!v||v<=this.APP_VERSION) return; try{ const key='mpVer_'+v; if(sessionStorage.getItem(key)){ this.setState({ newVer:true }); return; } sessionStorage.setItem(key,'1'); }catch(e){} this._safeReload(); }
   _safeReload(){ if(this.state.modal || (this._pend||0)>0){ this._reloadWhenIdle=true; this.setState({ newVer:true }); return; } location.reload(); } // don't yank someone mid-form/mid-save; reload when idle
@@ -1640,6 +1684,52 @@ class Component extends DCLogic {
   csShift(dir){ const S=this.state; const today=S.today||this.iso(new Date()); const ref=S.csRef||today; const period=S.csPeriod||'week'; if(period==='week'){ this.setState({ csRef:this.addDays(ref, dir*7) }); } else if(period==='month'){ const d=this.parse(ref); this.setState({ csRef:this.iso(new Date(d.getFullYear(), d.getMonth()+dir, 1)) }); } }
   openCsDetail(id){ this.setState({ csDetail:id }); }
   closeCsDetail(){ this.setState({ csDetail:null }); }
+  // ===== External data sync (KOL=Airtable · Doctor=Google Sheet) =====
+  _extKolLS(){ try{ return JSON.parse(localStorage.getItem('mp.ext.kol')||'{}')||{}; }catch(e){ return {}; } }
+  _extKolSave(cfg){ try{ localStorage.setItem('mp.ext.kol', JSON.stringify(cfg||{})); }catch(e){} }
+  _extNow(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+  _extStat(kind,msg){ this.setState(s=>({ extStatus:Object.assign({},s.extStatus,{[kind]:msg}) })); }
+  _extBusy(kind,on){ this.setState(s=>({ extBusy:Object.assign({},s.extBusy,{[kind]:on}) })); }
+  setExtKol(k,v){ this.setState(s=>({ extKolCfg:Object.assign({}, s.extKolCfg||this._extKolLS(), {[k]:v}) })); }
+  setExtDoc(k,v){ this.setState(s=>({ extDocCfg:Object.assign({}, s.extDocCfg||((s.extSync&&s.extSync.doc)||{}), {[k]:v}) })); }
+  _csvParse(text){ const rows=[]; let row=[], cur='', q=false; for(let i=0;i<text.length;i++){ const ch=text[i]; if(q){ if(ch==='"'){ if(text[i+1]==='"'){ cur+='"'; i++; } else q=false; } else cur+=ch; } else { if(ch==='"') q=true; else if(ch===','){ row.push(cur); cur=''; } else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; } else if(ch==='\r'){} else cur+=ch; } } if(cur!==''||row.length){ row.push(cur); rows.push(row); } return rows; }
+  _mergeExt(kind, names){ const key=(kind==='kols')?'kols':'doctors'; const list=(this.state[key]||[]).slice(); const by={}; list.forEach(x=>{ if(x&&x.name) by[String(x.name).trim().toLowerCase()]=x; }); let added=0; const pfx=(kind==='kols')?'kol':'doc'; (names||[]).forEach((nm,ix)=>{ const name=String(nm||'').trim(); if(!name||name==='ไม่มี') return; const k=name.toLowerCase(); if(by[k]){ by[k].ext=true; } else { const o={ id:pfx+Date.now()+'_'+ix+'_'+Math.floor(Math.random()*1000), name:name, color:'#4F46E5', ext:true }; list.push(o); by[k]=o; added++; } }); return { list:list, added:added }; }
+  syncDoctor(){ const S=this.state; const cfg=S.extDocCfg||((S.extSync&&S.extSync.doc)||{}); const url=(cfg.url||'').trim();
+    if(!url){ this._extStat('doctor','กรุณาใส่ลิงก์ Google Sheet (เผยแพร่เป็น CSV) ก่อน'); return; }
+    this._extBusy('doctor',true); this._extStat('doctor','กำลังดึงข้อมูล…');
+    fetch(url).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }).then(text=>{
+      const rows=this._csvParse(text); if(rows.length<2) throw new Error('ไม่พบข้อมูลในชีท');
+      const head=rows[0].map(h=>(h||'').trim());
+      const findCol=(want,fb)=>{ if(want&&want.trim()){ const i=head.findIndex(h=>h.toLowerCase()===want.trim().toLowerCase()); if(i>=0) return i; } return fb; };
+      const nameI=findCol(cfg.nameCol,0);
+      const dutyI=findCol(cfg.dutyCol, head.findIndex(h=>/เวร|duty|วัน/i.test(h)));
+      const items=[]; for(let r=1;r<rows.length;r++){ const name=(rows[r][nameI]||'').trim(); if(!name) continue; let duty=0; if(dutyI>=0){ duty=parseFloat((rows[r][dutyI]||'').replace(/[^0-9.]/g,''))||0; } items.push({name:name,duty:duty}); }
+      const shown=items.filter(x=> dutyI<0 || x.duty>=3 ); const hidden=items.length-shown.length;
+      const mg=this._mergeExt('doctors', shown.map(x=>x.name));
+      const last=this._extNow(); const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({}, ex.doc, { url:cfg.url, nameCol:cfg.nameCol||'', dutyCol:cfg.dutyCol||'', auto:(ex.doc&&ex.doc.auto)!==false }); ex.last=Object.assign({},ex.last,{doctor:last});
+      try{ localStorage.setItem('mp.ext.day.doctor', this.iso(new Date())); }catch(e){}
+      this.commit({ doctors:mg.list, extSync:ex }, 'แก้ไข', 'ซิงค์ Doctor จาก Google Sheet (+'+mg.added+')');
+      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · ใช้ได้ '+shown.length+' คน (เพิ่มใหม่ '+mg.added+')'+(hidden>0?(' · ซ่อน '+hidden+' คนเข้าเวร <3 วัน'):''));
+    }).catch(e=>{ this._extBusy('doctor',false); this._extStat('doctor','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจว่าทำ "เผยแพร่ไปยังเว็บ (CSV)" แล้ว'); });
+  }
+  syncKol(){ const S=this.state; const cfg=S.extKolCfg||this._extKolLS(); const token=(cfg.token||'').trim(), base=(cfg.baseId||'').trim(), table=(cfg.table||'').trim(), field=(cfg.field||'Name').trim();
+    if(!token||!base||!table){ this._extStat('kol','กรุณาใส่ Token + Base ID + ชื่อตาราง'); return; }
+    this._extKolSave({ token:token, baseId:base, table:table, field:field, auto:(cfg.auto!==false) });
+    this._extBusy('kol',true); this._extStat('kol','กำลังดึงข้อมูล…');
+    const self=this; const out=[];
+    (function loop(offset){ const u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(field?('&fields%5B%5D='+encodeURIComponent(field)):'')+(offset?('&offset='+encodeURIComponent(offset)):'');
+      fetch(u,{headers:{Authorization:'Bearer '+token}}).then(r=>{ if(!r.ok) return r.text().then(t=>{ throw new Error('HTTP '+r.status+' '+t.slice(0,100)); }); return r.json(); }).then(j=>{
+        (j.records||[]).forEach(rec=>{ const f=rec.fields||{}; let v=f[field]; if(v==null){ const ks=Object.keys(f); v=ks.length?f[ks[0]]:''; } if(Array.isArray(v)) v=v.join(', '); if(v!=null&&String(v).trim()) out.push(String(v).trim()); });
+        if(j.offset){ loop(j.offset); }
+        else { const mg=self._mergeExt('kols', out); const last=self._extNow(); const ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){} self.commit({ kols:mg.list, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (+'+mg.added+')'); self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · ทั้งหมด '+out.length+' รายชื่อ (เพิ่มใหม่ '+mg.added+')'); }
+      }).catch(e=>{ self._extBusy('kol',false); self._extStat('kol','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจ Token/Base ID/ชื่อตาราง'); });
+    })('');
+  }
+  toggleExtAuto(kind){ if(kind==='kol'){ const cfg=this.state.extKolCfg||this._extKolLS(); const nc=Object.assign({},cfg,{auto:!(cfg.auto!==false)}); this._extKolSave(nc); this.setState({ extKolCfg:nc }); } else { const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({},ex.doc,{auto:!((ex.doc&&ex.doc.auto)!==false)}); this.commit({ extSync:ex }, 'แก้ไข', 'ตั้งค่าซิงค์อัตโนมัติ Doctor'); } }
+  _extAuto(){ try{ const today=this.iso(new Date());
+    const ex=this.state.extSync||{}; const dcfg=ex.doc||{}; if(dcfg.url && (dcfg.auto!==false)){ let last=''; try{ last=localStorage.getItem('mp.ext.day.doctor')||''; }catch(e){} if(last!==today) this.syncDoctor(); }
+    const kcfg=this._extKolLS(); if(kcfg.token && kcfg.baseId && kcfg.table && (kcfg.auto!==false)){ let last=''; try{ last=localStorage.getItem('mp.ext.day.kol')||''; }catch(e){} if(last!==today){ this.setState({ extKolCfg:kcfg }, ()=>this.syncKol()); } }
+  }catch(e){} }
   _csView(){
     const S=this.state; if(S.view!=='csview') return { isCsview:false };
     const today=S.today||this.iso(new Date());
@@ -2188,10 +2278,33 @@ class Component extends DCLogic {
     const sizeRows=S.sizes.map(c=>({ name:c.name, color:c.color, scope:this.scopeLabel(c.scope||'both'), scopeStyle:scopeChip(c.scope), taskCount:T.filter(t=>t.size===c.id).length, onEdit:()=>this.openEditTag('size',c), onDelete:()=>this.askDeleteTag('size',c) }));
     const statusRows=S.statuses.map(s=>({ name:s.label, color:s.color, taskCount:T.filter(t=>t.status===s.id).length, onEdit:()=>this.openEditTag('status',{id:s.id,name:s.label,color:s.color}), onDelete:()=>this.askDeleteTag('status',s) }));
     const adsView=this.adsMeta()[S.view];
-    const adsRows=adsView?(S[adsView.key]||[]).map(it=>{ const dt=adsView.dated?((it.start||it.expiry)?((it.start||'เริ่มได้เลย')+' → '+(it.expiry||'ไม่มีหมดอายุ')):'ใช้ได้ตลอด'):''; return { name:it.name, color:it.color||'#94A3B8', dateText:dt, hasDate:!!dt, onEdit:()=>this.openEditTag(S.view,it), onDelete:()=>this.askDeleteTag(S.view,it) }; }):[];
+    const adsRows=adsView?(S[adsView.key]||[]).map(it=>{ const dt=adsView.dated?((it.start||it.expiry)?((it.start||'เริ่มได้เลย')+' → '+(it.expiry||'ไม่มีหมดอายุ')):'ใช้ได้ตลอด'):''; return { name:it.name, color:it.color||'#94A3B8', dateText:dt, hasDate:!!dt, ext:!!it.ext, onEdit:()=>this.openEditTag(S.view,it), onDelete:()=>this.askDeleteTag(S.view,it) }; }):[];
     const adsCanEdit=can(S.view,'edit'), adsCanDel=can(S.view,'del');
     const adsAddLabel='+ เพิ่ม '+(adsView?adsView.label:'');
     const adsEmpty=!!adsView&&adsRows.length===0;
+    // external sync card (KOL=Airtable · Doctor=Google Sheet)
+    const extKind=(S.view==='kol')?'kol':((S.view==='doctor')?'doctor':null);
+    const extCfgK=S.extKolCfg||this._extKolLS();
+    const extCfgD=S.extDocCfg||((S.extSync&&S.extSync.doc)||{});
+    const extLastK=(S.extSync&&S.extSync.last&&S.extSync.last.kol)||'';
+    const extLastD=(S.extSync&&S.extSync.last&&S.extSync.last.doctor)||'';
+    const EXT={
+      extShow: !!extKind, extKolView: extKind==='kol', extDocView: extKind==='doctor',
+      extCanEdit: adsCanEdit, extStatusMsg:(S.extStatus&&S.extStatus[extKind])||'', extHasStatus:!!(S.extStatus&&S.extStatus[extKind]),
+      extBusyNow:!!(S.extBusy&&S.extBusy[extKind]),
+      extLast: extKind==='kol'?extLastK:extLastD, extHasLast:!!(extKind==='kol'?extLastK:extLastD),
+      extKolToken:extCfgK.token||'', extKolBase:extCfgK.baseId||'', extKolTable:extCfgK.table||'', extKolField:extCfgK.field||'',
+      onExtKolToken:e=>this.setExtKol('token',e.target.value), onExtKolBase:e=>this.setExtKol('baseId',e.target.value), onExtKolTable:e=>this.setExtKol('table',e.target.value), onExtKolField:e=>this.setExtKol('field',e.target.value),
+      extKolConnected:!!(extCfgK.token&&extCfgK.baseId&&extCfgK.table),
+      extDocUrl:extCfgD.url||'', extDocNameCol:extCfgD.nameCol||'', extDocDutyCol:extCfgD.dutyCol||'',
+      onExtDocUrl:e=>this.setExtDoc('url',e.target.value), onExtDocNameCol:e=>this.setExtDoc('nameCol',e.target.value), onExtDocDutyCol:e=>this.setExtDoc('dutyCol',e.target.value),
+      extDocConnected:!!extCfgD.url,
+      onExtConnect:()=>{ extKind==='kol'?this.syncKol():this.syncDoctor(); },
+      onExtToggleAuto:()=>this.toggleExtAuto(extKind),
+      extAutoOn: extKind==='kol'?(extCfgK.auto!==false):(extCfgD.auto!==false),
+      extAutoStyle: (extKind==='kol'?(extCfgK.auto!==false):(extCfgD.auto!==false))?'border:1px solid #059669; background:#ECFDF5; color:#059669;':'border:1px solid #E2E8F0; background:#fff; color:#64748B;',
+      extConnected: extKind==='kol'?!!(extCfgK.token&&extCfgK.baseId&&extCfgK.table):!!extCfgD.url
+    };
 
     const actClr={ 'เพิ่ม':'#22C55E','แก้ไข':'#F97316','ลบ':'#EF4444' };
     const clip=v=>{ const s=String(v==null?'':v); return s.length>60?s.slice(0,60)+'…':s; };
@@ -2386,7 +2499,7 @@ class Component extends DCLogic {
       reportSections, reportTotal:rep.length,
       teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, onRowDragOver:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); }, openAddChannel:()=>this.openAddChannel(),
       contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
-      isAdsMaster:viewAllowed&&!!adsView, adsRows, adsCanEdit, adsCanDel, adsAddLabel, adsEmpty, adsOnAdd:()=>this.openAddTag(S.view),
+      isAdsMaster:viewAllowed&&!!adsView, adsRows, adsCanEdit, adsCanDel, adsAddLabel, adsEmpty, adsOnAdd:()=>this.openAddTag(S.view), ...EXT,
       historyRows, historyEmpty:logFiltered.length===0,
       histAreaOpts, histActionOpts, histPersonOpts, histMediumOpts, histChannelOpts,
       hArea, hAction, hFrom, hTo, hPerson, hMedium, hChannel, hSearch:S.hSearch||'',
