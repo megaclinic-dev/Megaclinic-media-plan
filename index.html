@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20p';
+    this.APP_VERSION='2026-08-20q';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1736,11 +1736,11 @@ class Component extends DCLogic {
         starts.forEach(function(d){ if(d&&(!map[kolId].start||d<map[kolId].start)) map[kolId].start=d; });
         exps.forEach(function(d){ if(d&&(!map[kolId].expiry||d>map[kolId].expiry)) map[kolId].expiry=d; });
       });
-      var dated=[], noName=0; Object.keys(map).forEach(function(id){ var o=map[id]; if(!(o.start||o.expiry)) return; var nm=nameById[id]||''; if(!nm){ noName++; return; } dated.push({ name:nm, start:o.start, expiry:o.expiry }); });
+      var today=self.iso(new Date()); var dated=[], noName=0, expiredCnt=0; Object.keys(map).forEach(function(id){ var o=map[id]; if(!(o.expiry && o.expiry>today)){ expiredCnt++; return; } var nm=nameById[id]||''; if(!nm){ noName++; return; } dated.push({ name:nm, start:o.start, expiry:o.expiry }); });
       var newList=self._rebuildKols(dated);
       var last=self._extNow(); var ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); delete ex.kolDebug; delete ex.dbDebug; try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){}
-      self.commit({ kols:newList, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (มีสัญญา '+dated.length+')');
-      self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · KOL มีสัญญา '+dated.length+' คน (จาก '+caseRecs.length+' เคส · รายชื่อทั้งหมด '+nameRecs.length+')'+(noName?(' · ข้ามไม่พบชื่อ '+noName):''));
+      self.commit({ kols:newList, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (ยังไม่หมดสัญญา '+dated.length+')');
+      self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · KOL ยังไม่หมดสัญญา '+dated.length+' คน (จาก '+caseRecs.length+' เคส · ข้ามหมดสัญญา/ไม่มีวันหมด '+expiredCnt+')'+(noName?(' · ข้ามไม่พบชื่อ '+noName):''));
     }).catch(function(e){ self._extBusy('kol',false); self._extStat('kol','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจ Token / Base ID (ต้องมีตาราง Name + '+casesTable+')'); });
   }
   toggleExtAuto(kind){ if(kind==='kol'){ const cfg=this.state.extKolCfg||this._extKolLS(); const nc=Object.assign({},cfg,{auto:!(cfg.auto!==false)}); this._extKolSave(nc); this.setState({ extKolCfg:nc }); } else { const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({},ex.doc,{auto:!((ex.doc&&ex.doc.auto)!==false)}); this.commit({ extSync:ex }, 'แก้ไข', 'ตั้งค่าซิงค์อัตโนมัติ Doctor'); } }
