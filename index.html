@@ -795,7 +795,7 @@
                 <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="width:42px; height:42px; border-radius:11px; background:#EEF2FF; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">📊</div></sc-if>
                 <div style="flex:1; min-width:160px;">
                   <sc-if value="{{ extKolView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Airtable (ดึงรายชื่อ KOL อัตโนมัติ)</div></sc-if>
-                  <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Google Sheet (ดึงรายชื่อหมอ · กรองเฉพาะหมอถ่ายคอนเท้นได้)</div></sc-if>
+                  <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Google Sheet (ดึงรายชื่อหมอ · กรองเฉพาะหมอเข้าเวร ≥ 3 วัน)</div></sc-if>
                   <sc-if value="{{ extHasLast }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#64748B; margin-top:2px;">อัพเดตข้อมูลล่าสุด {{ extLast }}</div></sc-if>
                 </div>
                 <sc-if value="{{ extConnected }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; background:#ECFDF5; color:#059669;">● เชื่อมแล้ว</span></sc-if>
@@ -805,7 +805,7 @@
               <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
                   <div><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">ลิงก์ Google Sheet (เผยแพร่ไปยังเว็บ เป็น CSV · แท็บรายชื่อหมอ)</div><input value="{{ extDocUrl }}" onChange="{{ onExtDocUrl }}" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?gid=...&output=csv" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
-                  <div style="font-size:11px; color:#94A3B8; line-height:1.5;">อ่านชื่อเล่น + ชื่อ รวมเป็น Doctor Name · ขึ้นเฉพาะหมอที่ช่อง "ใช้รูปได้" = <b>ถ่ายคอนเท้นได้</b> (ข้ามหมอติดสัญญาที่อื่น/ช่องว่าง และหยุดที่ท้ายตารางอัตโนมัติ)</div>
+                  <div style="font-size:11px; color:#94A3B8; line-height:1.5;">อ่านชื่อเล่น + ชื่อ รวมเป็น Doctor Name · ขึ้นเฉพาะหมอที่ <b>เข้าเวร ≥ 3 วัน</b> (คอลัมน์จำนวนวันที่เข้าเวร) และหยุดที่ท้ายตารางอัตโนมัติ</div>
                 </div>
               </sc-if>
               <sc-if value="{{ extKolView }}" hint-placeholder-val="{{ false }}">
@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20q';
+    this.APP_VERSION='2026-08-20r';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1711,12 +1711,12 @@ class Component extends DCLogic {
       const rows=this._csvParse(text); if(rows.length<4) throw new Error('ไม่พบข้อมูลในชีท (โครงสร้างไม่ตรง)');
       // Fixed layout: row1 heading, rows2-3 headers, row4+ data. Cols: C(2)=เลข ว. (row-is-doctor; empty=stop), D(3)=ชื่อเล่น, F(5)=ชื่อ, L(11)=ใช้รูปได้
       const names=[]; let scanned=0;
-      for(let i=3;i<rows.length;i++){ const row=rows[i]||[]; const C=(row[2]||'').trim(); if(!C) break; scanned++; const L=(row[11]||''); if(L.indexOf('ถ่ายคอนเท้นได้')>=0){ const nm=((row[3]||'').trim()+' '+(row[5]||'').trim()).replace(/\s+/g,' ').trim(); if(nm) names.push(nm); } }
+      for(let i=3;i<rows.length;i++){ const row=rows[i]||[]; const C=(row[2]||'').trim(); if(!C) break; scanned++; const duty=parseFloat((row[1]||'').replace(/[^0-9.]/g,''))||0; if(duty>=3){ const nm=((row[3]||'').trim()+' '+(row[5]||'').trim()).replace(/\s+/g,' ').trim(); if(nm) names.push(nm); } }
       const mg=this._mergeExt('doctors', names);
       const last=this._extNow(); const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({}, ex.doc, { url:cfg.url, auto:(ex.doc&&ex.doc.auto)!==false }); ex.last=Object.assign({},ex.last,{doctor:last});
       try{ localStorage.setItem('mp.ext.day.doctor', this.iso(new Date())); }catch(e){}
       this.commit({ doctors:mg.list, extSync:ex }, 'แก้ไข', 'ซิงค์ Doctor จาก Google Sheet (+'+mg.added+')');
-      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอถ่ายคอนเท้นได้ '+names.length+' คน (เพิ่มใหม่ '+mg.added+') จากหมอทั้งหมด '+scanned+' คน');
+      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอเข้าเวร ≥ 3 วัน '+names.length+' คน (เพิ่มใหม่ '+mg.added+') จากหมอทั้งหมด '+scanned+' คน');
     }).catch(e=>{ this._extBusy('doctor',false); this._extStat('doctor','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจว่าทำ "เผยแพร่ไปยังเว็บ (CSV)" แล้ว'); });
   }
   _airFetchAll(base, table, token){ return new Promise(function(resolve,reject){ var out=[]; (function loop(offset){ var u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(offset?('&offset='+encodeURIComponent(offset)):''); fetch(u,{headers:{Authorization:'Bearer '+token}}).then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error('HTTP '+r.status+' ('+table+') '+t.slice(0,80)); }); return r.json(); }).then(function(j){ (j.records||[]).forEach(function(rec){ out.push(rec); }); if(j.offset) loop(j.offset); else resolve(out); }).catch(reject); })(''); }); }
