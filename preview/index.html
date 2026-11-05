@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20m';
+    this.APP_VERSION='2026-08-20n';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1728,7 +1728,7 @@ class Component extends DCLogic {
     (function loop(offset){ const u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(offset?('&offset='+encodeURIComponent(offset)):'');
       fetch(u,{headers:{Authorization:'Bearer '+token}}).then(r=>{ if(!r.ok) return r.text().then(t=>{ throw new Error('HTTP '+r.status+' '+t.slice(0,100)); }); return r.json(); }).then(j=>{
         (j.records||[]).forEach(rec=>{ const f=rec.fields||{}; if(!sampleRec&&Object.keys(f).length) sampleRec=f; Object.keys(f).forEach(k=>{ fieldKeys[k]=1; }); let nm=f[field]; if(nm==null){ const ks=Object.keys(f); nm=ks.length?f[ks[0]]:''; } if(Array.isArray(nm)) nm=nm.join(', '); nm=String(nm||'').trim(); if(!nm) return;
-          let starts=[], exps=[]; Object.keys(f).forEach(k=>{ if(/ทำหัตถการ/.test(k)) starts=starts.concat(self._airDates(f[k])); else if(/สิ้นสุดสัญญา/.test(k)) exps=exps.concat(self._airDates(f[k])); });
+          let starts=[], exps=[]; Object.keys(f).forEach(k=>{ if(/เริ่มสัญญา|เริ่มใช้|วันทำหัตถการ|เริ่มสัญญ/.test(k)) starts=starts.concat(self._airDates(f[k])); else if(/สิ้นสุดสัญญา|หมดอายุ|สิ้นสุดสัญญ/.test(k)) exps=exps.concat(self._airDates(f[k])); });
           const key=nm.toLowerCase(); if(!map[key]) map[key]={ name:nm, start:'', expiry:'' };
           starts.forEach(d=>{ if(d&&(!map[key].start||d<map[key].start)) map[key].start=d; });
           exps.forEach(d=>{ if(d&&(!map[key].expiry||d>map[key].expiry)) map[key].expiry=d; });
