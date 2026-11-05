@@ -987,7 +987,7 @@
                         <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="2">
                           <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
                             <sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}">
-                              <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" preload="metadata" style="width:100%; height:58px; object-fit:cover; border-radius:4px; display:block; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:58px; object-fit:cover; border-radius:4px; display:block;"></sc-if></sc-if>
+                              <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" controls="controls" preload="metadata" style="width:100%; height:auto; max-height:200px; border-radius:4px; display:block; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:auto; border-radius:4px; display:block;"></sc-if></sc-if>
                               <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ true }}"></sc-if>
                             </sc-if>
                             <div style="display:flex; align-items:center; gap:5px; margin-top:2px;"><span style="width:7px; height:7px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; color:#0F172A;">{{ t.title }}</span><sc-if value="{{ t.hasTime }}" hint-placeholder-val="{{ false }}"><span style="font-size:9px; font-weight:800; color:#4F46E5; flex-shrink:0;">{{ t.time }}</span></sc-if></div>
@@ -1315,7 +1315,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20f';
+    this.APP_VERSION='2026-08-20g';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
