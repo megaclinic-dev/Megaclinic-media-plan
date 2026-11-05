@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20o';
+    this.APP_VERSION='2026-08-20p';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1719,29 +1719,29 @@ class Component extends DCLogic {
       this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอถ่ายคอนเท้นได้ '+names.length+' คน (เพิ่มใหม่ '+mg.added+') จากหมอทั้งหมด '+scanned+' คน');
     }).catch(e=>{ this._extBusy('doctor',false); this._extStat('doctor','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจว่าทำ "เผยแพร่ไปยังเว็บ (CSV)" แล้ว'); });
   }
-  syncKol(){ const S=this.state; const cfg=S.extKolCfg||this._extKolLS(); const token=(cfg.token||'').trim(), base=(cfg.baseId||'').trim(), table=(cfg.table||'').trim(), field=(cfg.field||'Name').trim();
-    if(!token||!base||!table){ this._extStat('kol','กรุณาใส่ Token + Base ID + ชื่อตาราง'); return; }
-    this._extKolSave({ token:token, baseId:base, table:table, field:field, auto:(cfg.auto!==false) });
-    this._extBusy('kol',true); this._extStat('kol','กำลังดึงข้อมูล…');
-    // Group by name across rows: start = earliest "วันทำหัตถการ", expiry = latest "วันสิ้นสุดสัญญา (หัตถการ)". Skip names with no date.
-    const self=this; const map={}; const fieldKeys={}; let sampleRec=null;
-    (function loop(offset){ const u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(offset?('&offset='+encodeURIComponent(offset)):'');
-      fetch(u,{headers:{Authorization:'Bearer '+token}}).then(r=>{ if(!r.ok) return r.text().then(t=>{ throw new Error('HTTP '+r.status+' '+t.slice(0,100)); }); return r.json(); }).then(j=>{
-        (j.records||[]).forEach(rec=>{ const f=rec.fields||{}; if(!sampleRec&&Object.keys(f).length) sampleRec=f; Object.keys(f).forEach(k=>{ fieldKeys[k]=1; }); let nm=f[field]; if(nm==null){ const ks=Object.keys(f); nm=ks.length?f[ks[0]]:''; } if(Array.isArray(nm)) nm=nm.join(', '); nm=String(nm||'').trim(); if(!nm) return;
-          let starts=[], exps=[]; Object.keys(f).forEach(k=>{ if(/เริ่มสัญญา|เริ่มใช้|วันทำหัตถการ|เริ่มสัญญ/.test(k)) starts=starts.concat(self._airDates(f[k])); else if(/สิ้นสุดสัญญา|หมดอายุ|สิ้นสุดสัญญ/.test(k)) exps=exps.concat(self._airDates(f[k])); });
-          const key=nm.toLowerCase(); if(!map[key]) map[key]={ name:nm, start:'', expiry:'' };
-          starts.forEach(d=>{ if(d&&(!map[key].start||d<map[key].start)) map[key].start=d; });
-          exps.forEach(d=>{ if(d&&(!map[key].expiry||d>map[key].expiry)) map[key].expiry=d; });
-        });
-        if(j.offset){ loop(j.offset); }
-        else { const totalNames=Object.keys(map).length; const dated=[]; Object.keys(map).forEach(k=>{ const o=map[k]; if(o.start||o.expiry) dated.push(o); });
-          const newList=self._rebuildKols(dated); const skipped=totalNames-dated.length;
-          const last=self._extNow(); const ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); ex.kolDebug={ keys:Object.keys(fieldKeys), sample:sampleRec, withStart:dated.filter(d=>d.start).length, withExpiry:dated.filter(d=>d.expiry).length };
-          const finish=()=>{ try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){} self.commit({ kols:newList, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (มีสัญญา '+dated.length+')'); self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · KOL มีสัญญา '+dated.length+' คน (ข้ามคนไม่มีวันที่ '+skipped+' คน) จากทั้งหมด '+totalNames); };
-          // diagnostic: probe "Database" table structure (does not change the KOL list)
-          fetch('https://api.airtable.com/v0/'+base+'/'+encodeURIComponent('Database')+'?pageSize=3',{headers:{Authorization:'Bearer '+token}}).then(r=>r.json()).then(dbj=>{ const dk={}; const ds=[]; (dbj.records||[]).forEach(rec=>{ const f=rec.fields||{}; Object.keys(f).forEach(k=>{ dk[k]=1; }); if(ds.length<2) ds.push(f); }); ex.dbDebug={ keys:Object.keys(dk), samples:ds, err:(dbj&&dbj.error)||null }; finish(); }).catch(e=>{ ex.dbDebug={ err:String(e) }; finish(); }); }
-      }).catch(e=>{ self._extBusy('kol',false); self._extStat('kol','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจ Token/Base ID/ชื่อตาราง'); });
-    })('');
+  _airFetchAll(base, table, token){ return new Promise(function(resolve,reject){ var out=[]; (function loop(offset){ var u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(offset?('&offset='+encodeURIComponent(offset)):''); fetch(u,{headers:{Authorization:'Bearer '+token}}).then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error('HTTP '+r.status+' ('+table+') '+t.slice(0,80)); }); return r.json(); }).then(function(j){ (j.records||[]).forEach(function(rec){ out.push(rec); }); if(j.offset) loop(j.offset); else resolve(out); }).catch(reject); })(''); }); }
+  syncKol(){ const S=this.state; const cfg=S.extKolCfg||this._extKolLS(); const token=(cfg.token||'').trim(), base=(cfg.baseId||'').trim(), field=(cfg.field||'ชื่อเรียก').trim()||'ชื่อเรียก'; const casesTable=(cfg.table||'Database').trim()||'Database';
+    if(!token||!base){ this._extStat('kol','กรุณาใส่ Token + Base ID'); return; }
+    this._extKolSave({ token:token, baseId:base, table:(cfg.table||'Database'), field:field, auto:(cfg.auto!==false) });
+    this._extBusy('kol',true); this._extStat('kol','กำลังดึงข้อมูล… (Name + '+casesTable+')');
+    const self=this;
+    // JOIN: names (ชื่อเรียก) from "Name" table by recId · dates from cases table ("Database"), linked via its "Name" field. Per KOL: start=earliest วันทำหัตถการ, expiry=latest วันสิ้นสุดสัญญา.
+    Promise.all([ this._airFetchAll(base,'Name',token), this._airFetchAll(base,casesTable,token) ]).then(function(res){
+      const nameRecs=res[0], caseRecs=res[1];
+      const nameById={}; nameRecs.forEach(function(rec){ var v=rec.fields[field]; if(v==null) v=rec.fields['ชื่อเรียก']; if(v==null) v=rec.fields['ชื่อเล่น']; if(Array.isArray(v)) v=v.join(' '); nameById[rec.id]=String(v||'').trim(); });
+      const map={};
+      caseRecs.forEach(function(rec){ var f=rec.fields||{}; var link=f['Name']; var kolId=Array.isArray(link)?link[0]:link; if(!kolId) return;
+        var starts=[], exps=[]; Object.keys(f).forEach(function(k){ if(/วันทำหัตถการ|เริ่มสัญญา/.test(k)) starts=starts.concat(self._airDates(f[k])); else if(/สิ้นสุดสัญญา/.test(k)) exps=exps.concat(self._airDates(f[k])); });
+        if(!map[kolId]) map[kolId]={ start:'', expiry:'' };
+        starts.forEach(function(d){ if(d&&(!map[kolId].start||d<map[kolId].start)) map[kolId].start=d; });
+        exps.forEach(function(d){ if(d&&(!map[kolId].expiry||d>map[kolId].expiry)) map[kolId].expiry=d; });
+      });
+      var dated=[], noName=0; Object.keys(map).forEach(function(id){ var o=map[id]; if(!(o.start||o.expiry)) return; var nm=nameById[id]||''; if(!nm){ noName++; return; } dated.push({ name:nm, start:o.start, expiry:o.expiry }); });
+      var newList=self._rebuildKols(dated);
+      var last=self._extNow(); var ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); delete ex.kolDebug; delete ex.dbDebug; try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){}
+      self.commit({ kols:newList, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (มีสัญญา '+dated.length+')');
+      self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · KOL มีสัญญา '+dated.length+' คน (จาก '+caseRecs.length+' เคส · รายชื่อทั้งหมด '+nameRecs.length+')'+(noName?(' · ข้ามไม่พบชื่อ '+noName):''));
+    }).catch(function(e){ self._extBusy('kol',false); self._extStat('kol','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจ Token / Base ID (ต้องมีตาราง Name + '+casesTable+')'); });
   }
   toggleExtAuto(kind){ if(kind==='kol'){ const cfg=this.state.extKolCfg||this._extKolLS(); const nc=Object.assign({},cfg,{auto:!(cfg.auto!==false)}); this._extKolSave(nc); this.setState({ extKolCfg:nc }); } else { const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({},ex.doc,{auto:!((ex.doc&&ex.doc.auto)!==false)}); this.commit({ extSync:ex }, 'แก้ไข', 'ตั้งค่าซิงค์อัตโนมัติ Doctor'); } }
   _extAuto(){ try{ const today=this.iso(new Date());
