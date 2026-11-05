@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20l';
+    this.APP_VERSION='2026-08-20m';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1689,7 +1689,12 @@ class Component extends DCLogic {
   setExtKol(k,v){ this.setState(s=>({ extKolCfg:Object.assign({}, s.extKolCfg||this._extKolLS(), {[k]:v}) })); }
   setExtDoc(k,v){ this.setState(s=>({ extDocCfg:Object.assign({}, s.extDocCfg||((s.extSync&&s.extSync.doc)||{}), {[k]:v}) })); }
   _csvParse(text){ const rows=[]; let row=[], cur='', q=false; for(let i=0;i<text.length;i++){ const ch=text[i]; if(q){ if(ch==='"'){ if(text[i+1]==='"'){ cur+='"'; i++; } else q=false; } else cur+=ch; } else { if(ch==='"') q=true; else if(ch===','){ row.push(cur); cur=''; } else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; } else if(ch==='\r'){} else cur+=ch; } } if(cur!==''||row.length){ row.push(cur); rows.push(row); } return rows; }
-  _airDates(v){ if(v==null||v==='') return []; const arr=Array.isArray(v)?v:[v]; const out=[]; arr.forEach(x=>{ if(x==null) return; const s=String(x).trim(); if(!s) return; const m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m){ out.push(m[1]+'-'+m[2]+'-'+m[3]); return; } const d=new Date(s); if(!isNaN(d.getTime())) out.push(this.iso(d)); }); return out; }
+  _airDates(v){ if(v==null||v==='') return []; const arr=Array.isArray(v)?v:[v]; const out=[]; arr.forEach(x=>{ if(x==null) return; let s=String(x).trim(); if(!s) return;
+    const iso=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(iso){ out.push(iso[1]+'-'+iso[2]+'-'+iso[3]); return; } // ISO / ISO-with-time
+    const s2=s.replace(/[\s,]+\d{1,2}:\d{2}(:\d{2})?\s*([AaPp]\.?[Mm]\.?)?\s*$/,'').trim(); // strip trailing time e.g. "August 7, 2026 09:00"
+    let d=new Date(s2); if(!isNaN(d.getTime())){ out.push(this.iso(d)); return; }
+    d=new Date(s); if(!isNaN(d.getTime())) out.push(this.iso(d));
+  }); return out; }
   _rebuildKols(dated){ const S=this.state; const old=S.kols||[];
     const refIds={}; (S.tasks||[]).forEach(t=>{ const b=t&&t.brief; if(b&&Array.isArray(b.kols)) b.kols.forEach(id=>{ refIds[id]=1; }); });
     const byNameOld={}; old.forEach(k=>{ if(k&&k.name) byNameOld[String(k.name).trim().toLowerCase()]=k; });
