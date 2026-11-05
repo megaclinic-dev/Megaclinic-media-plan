@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20n';
+    this.APP_VERSION='2026-08-20o';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1736,9 +1736,10 @@ class Component extends DCLogic {
         if(j.offset){ loop(j.offset); }
         else { const totalNames=Object.keys(map).length; const dated=[]; Object.keys(map).forEach(k=>{ const o=map[k]; if(o.start||o.expiry) dated.push(o); });
           const newList=self._rebuildKols(dated); const skipped=totalNames-dated.length;
-          const last=self._extNow(); const ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); ex.kolDebug={ keys:Object.keys(fieldKeys), sample:sampleRec, withStart:dated.filter(d=>d.start).length, withExpiry:dated.filter(d=>d.expiry).length }; try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){}
-          self.commit({ kols:newList, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (มีสัญญา '+dated.length+')');
-          self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · KOL มีสัญญา '+dated.length+' คน (ข้ามคนไม่มีวันที่ '+skipped+' คน) จากทั้งหมด '+totalNames); }
+          const last=self._extNow(); const ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); ex.kolDebug={ keys:Object.keys(fieldKeys), sample:sampleRec, withStart:dated.filter(d=>d.start).length, withExpiry:dated.filter(d=>d.expiry).length };
+          const finish=()=>{ try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){} self.commit({ kols:newList, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (มีสัญญา '+dated.length+')'); self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · KOL มีสัญญา '+dated.length+' คน (ข้ามคนไม่มีวันที่ '+skipped+' คน) จากทั้งหมด '+totalNames); };
+          // diagnostic: probe "Database" table structure (does not change the KOL list)
+          fetch('https://api.airtable.com/v0/'+base+'/'+encodeURIComponent('Database')+'?pageSize=3',{headers:{Authorization:'Bearer '+token}}).then(r=>r.json()).then(dbj=>{ const dk={}; const ds=[]; (dbj.records||[]).forEach(rec=>{ const f=rec.fields||{}; Object.keys(f).forEach(k=>{ dk[k]=1; }); if(ds.length<2) ds.push(f); }); ex.dbDebug={ keys:Object.keys(dk), samples:ds, err:(dbj&&dbj.error)||null }; finish(); }).catch(e=>{ ex.dbDebug={ err:String(e) }; finish(); }); }
       }).catch(e=>{ self._extBusy('kol',false); self._extStat('kol','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจ Token/Base ID/ชื่อตาราง'); });
     })('');
   }
