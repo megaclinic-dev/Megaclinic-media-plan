@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20j';
+    this.APP_VERSION='2026-08-20k';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1689,6 +1689,15 @@ class Component extends DCLogic {
   setExtKol(k,v){ this.setState(s=>({ extKolCfg:Object.assign({}, s.extKolCfg||this._extKolLS(), {[k]:v}) })); }
   setExtDoc(k,v){ this.setState(s=>({ extDocCfg:Object.assign({}, s.extDocCfg||((s.extSync&&s.extSync.doc)||{}), {[k]:v}) })); }
   _csvParse(text){ const rows=[]; let row=[], cur='', q=false; for(let i=0;i<text.length;i++){ const ch=text[i]; if(q){ if(ch==='"'){ if(text[i+1]==='"'){ cur+='"'; i++; } else q=false; } else cur+=ch; } else { if(ch==='"') q=true; else if(ch===','){ row.push(cur); cur=''; } else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; } else if(ch==='\r'){} else cur+=ch; } } if(cur!==''||row.length){ row.push(cur); rows.push(row); } return rows; }
+  _airDates(v){ if(v==null||v==='') return []; const arr=Array.isArray(v)?v:[v]; const out=[]; arr.forEach(x=>{ if(x==null) return; const s=String(x).trim(); if(!s) return; const m=s.match(/^(\d{4})-(\d{2})-(\d{2})/); if(m){ out.push(m[1]+'-'+m[2]+'-'+m[3]); return; } const d=new Date(s); if(!isNaN(d.getTime())) out.push(this.iso(d)); }); return out; }
+  _rebuildKols(dated){ const S=this.state; const old=S.kols||[];
+    const refIds={}; (S.tasks||[]).forEach(t=>{ const b=t&&t.brief; if(b&&Array.isArray(b.kols)) b.kols.forEach(id=>{ refIds[id]=1; }); });
+    const byNameOld={}; old.forEach(k=>{ if(k&&k.name) byNameOld[String(k.name).trim().toLowerCase()]=k; });
+    const result=[]; const used={};
+    old.forEach(k=>{ if(k&&!k.ext){ result.push(k); used[String(k.name||'').trim().toLowerCase()]=1; } }); // keep manual
+    dated.forEach(d=>{ const key=String(d.name).trim().toLowerCase(); if(!key||used[key]) return; const o=byNameOld[key]; result.push({ id:(o&&o.id)||('kol'+Date.now()+'_'+Math.floor(Math.random()*1000000)), name:d.name, color:(o&&o.color)||'#4F46E5', ext:true, start:d.start||'', expiry:d.expiry||'' }); used[key]=1; });
+    old.forEach(k=>{ if(k&&k.ext&&refIds[k.id]){ const key=String(k.name||'').trim().toLowerCase(); if(!used[key]){ result.push(k); used[key]=1; } } }); // keep synced that a task still uses
+    return result; }
   _mergeExt(kind, names){ const key=(kind==='kols')?'kols':'doctors'; const list=(this.state[key]||[]).slice(); const by={}; list.forEach(x=>{ if(x&&x.name) by[String(x.name).trim().toLowerCase()]=x; }); let added=0; const pfx=(kind==='kols')?'kol':'doc'; (names||[]).forEach((nm,ix)=>{ const name=String(nm||'').trim(); if(!name||name==='ไม่มี') return; const k=name.toLowerCase(); if(by[k]){ by[k].ext=true; } else { const o={ id:pfx+Date.now()+'_'+ix+'_'+Math.floor(Math.random()*1000), name:name, color:'#4F46E5', ext:true }; list.push(o); by[k]=o; added++; } }); return { list:list, added:added }; }
   syncDoctor(){ const S=this.state; const cfg=S.extDocCfg||((S.extSync&&S.extSync.doc)||{}); const url=(cfg.url||'').trim();
     if(!url){ this._extStat('doctor','กรุณาใส่ลิงก์ Google Sheet (เผยแพร่เป็น CSV) ก่อน'); return; }
@@ -1709,12 +1718,22 @@ class Component extends DCLogic {
     if(!token||!base||!table){ this._extStat('kol','กรุณาใส่ Token + Base ID + ชื่อตาราง'); return; }
     this._extKolSave({ token:token, baseId:base, table:table, field:field, auto:(cfg.auto!==false) });
     this._extBusy('kol',true); this._extStat('kol','กำลังดึงข้อมูล…');
-    const self=this; const out=[];
-    (function loop(offset){ const u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(field?('&fields%5B%5D='+encodeURIComponent(field)):'')+(offset?('&offset='+encodeURIComponent(offset)):'');
+    // Group by name across rows: start = earliest "วันทำหัตถการ", expiry = latest "วันสิ้นสุดสัญญา (หัตถการ)". Skip names with no date.
+    const self=this; const map={};
+    (function loop(offset){ const u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(offset?('&offset='+encodeURIComponent(offset)):'');
       fetch(u,{headers:{Authorization:'Bearer '+token}}).then(r=>{ if(!r.ok) return r.text().then(t=>{ throw new Error('HTTP '+r.status+' '+t.slice(0,100)); }); return r.json(); }).then(j=>{
-        (j.records||[]).forEach(rec=>{ const f=rec.fields||{}; let v=f[field]; if(v==null){ const ks=Object.keys(f); v=ks.length?f[ks[0]]:''; } if(Array.isArray(v)) v=v.join(', '); if(v!=null&&String(v).trim()) out.push(String(v).trim()); });
+        (j.records||[]).forEach(rec=>{ const f=rec.fields||{}; let nm=f[field]; if(nm==null){ const ks=Object.keys(f); nm=ks.length?f[ks[0]]:''; } if(Array.isArray(nm)) nm=nm.join(', '); nm=String(nm||'').trim(); if(!nm) return;
+          let starts=[], exps=[]; Object.keys(f).forEach(k=>{ if(/ทำหัตถการ/.test(k)) starts=starts.concat(self._airDates(f[k])); else if(/สิ้นสุดสัญญา/.test(k)) exps=exps.concat(self._airDates(f[k])); });
+          const key=nm.toLowerCase(); if(!map[key]) map[key]={ name:nm, start:'', expiry:'' };
+          starts.forEach(d=>{ if(d&&(!map[key].start||d<map[key].start)) map[key].start=d; });
+          exps.forEach(d=>{ if(d&&(!map[key].expiry||d>map[key].expiry)) map[key].expiry=d; });
+        });
         if(j.offset){ loop(j.offset); }
-        else { const mg=self._mergeExt('kols', out); const last=self._extNow(); const ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){} self.commit({ kols:mg.list, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (+'+mg.added+')'); self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · ทั้งหมด '+out.length+' รายชื่อ (เพิ่มใหม่ '+mg.added+')'); }
+        else { const totalNames=Object.keys(map).length; const dated=[]; Object.keys(map).forEach(k=>{ const o=map[k]; if(o.start||o.expiry) dated.push(o); });
+          const newList=self._rebuildKols(dated); const skipped=totalNames-dated.length;
+          const last=self._extNow(); const ex=JSON.parse(JSON.stringify(self.state.extSync||{})); ex.last=Object.assign({},ex.last,{kol:last}); try{ localStorage.setItem('mp.ext.day.kol', self.iso(new Date())); }catch(e){}
+          self.commit({ kols:newList, extSync:ex }, 'แก้ไข', 'ซิงค์ KOL จาก Airtable (มีสัญญา '+dated.length+')');
+          self._extBusy('kol',false); self._extStat('kol','✓ ซิงค์แล้ว '+last+' · KOL มีสัญญา '+dated.length+' คน (ข้ามคนไม่มีวันที่ '+skipped+' คน) จากทั้งหมด '+totalNames); }
       }).catch(e=>{ self._extBusy('kol',false); self._extStat('kol','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจ Token/Base ID/ชื่อตาราง'); });
     })('');
   }
