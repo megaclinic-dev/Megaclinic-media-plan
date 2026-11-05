@@ -795,20 +795,17 @@
                 <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="width:42px; height:42px; border-radius:11px; background:#EEF2FF; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;">📊</div></sc-if>
                 <div style="flex:1; min-width:160px;">
                   <sc-if value="{{ extKolView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Airtable (ดึงรายชื่อ KOL อัตโนมัติ)</div></sc-if>
-                  <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Google Sheet (ดึงรายชื่อหมอ · กรองเข้าเวร ≥ 3 วัน)</div></sc-if>
+                  <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}"><div style="font-size:14px; font-weight:800;">เชื่อม Google Sheet (ดึงรายชื่อหมอ · กรองเฉพาะหมอถ่ายคอนเท้นได้)</div></sc-if>
                   <sc-if value="{{ extHasLast }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#64748B; margin-top:2px;">ซิงค์ล่าสุด {{ extLast }}</div></sc-if>
                 </div>
                 <sc-if value="{{ extConnected }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; background:#ECFDF5; color:#059669;">● เชื่อมแล้ว</span></sc-if>
-                <sc-if value="{{ extConnected }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; background:#FFF7ED; color:#C2410C;">○ ยังไม่เชื่อม</span></sc-if>
+                <sc-if value="{{ extNotConnected }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px; font-weight:800; padding:4px 11px; border-radius:99px; background:#FFF7ED; color:#C2410C;">○ ยังไม่เชื่อม</span></sc-if>
               </div>
               <sc-if value="{{ extCanEdit }}" hint-placeholder-val="{{ true }}">
               <sc-if value="{{ extDocView }}" hint-placeholder-val="{{ false }}">
                 <div style="display:flex; flex-direction:column; gap:9px; margin-top:14px;">
-                  <div><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">ลิงก์ Google Sheet (เผยแพร่เป็น CSV)</div><input value="{{ extDocUrl }}" onChange="{{ onExtDocUrl }}" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?output=csv" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
-                  <div style="display:flex; gap:9px; flex-wrap:wrap;">
-                    <div style="flex:1; min-width:130px;"><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">คอลัมน์ชื่อหมอ <span style="color:#94A3B8; font-weight:500;">(เว้นว่าง = คอลัมน์แรก)</span></div><input value="{{ extDocNameCol }}" onChange="{{ onExtDocNameCol }}" placeholder="เช่น ชื่อเล่น" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
-                    <div style="flex:1; min-width:130px;"><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">คอลัมน์วันเข้าเวร <span style="color:#94A3B8; font-weight:500;">(เว้นว่าง = ไม่กรอง)</span></div><input value="{{ extDocDutyCol }}" onChange="{{ onExtDocDutyCol }}" placeholder="เช่น วันเข้าเวร" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
-                  </div>
+                  <div><div style="font-size:11px; font-weight:700; color:#64748B; margin-bottom:4px;">ลิงก์ Google Sheet (เผยแพร่ไปยังเว็บ เป็น CSV · แท็บรายชื่อหมอ)</div><input value="{{ extDocUrl }}" onChange="{{ onExtDocUrl }}" placeholder="https://docs.google.com/spreadsheets/d/e/.../pub?gid=...&output=csv" style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #E2E8F0; border-radius:9px;"></div>
+                  <div style="font-size:11px; color:#94A3B8; line-height:1.5;">อ่านชื่อเล่น + ชื่อ รวมเป็น Doctor Name · ขึ้นเฉพาะหมอที่ช่อง "ใช้รูปได้" = <b>ถ่ายคอนเท้นได้</b> (ข้ามหมอติดสัญญาที่อื่น/ช่องว่าง และหยุดที่ท้ายตารางอัตโนมัติ)</div>
                 </div>
               </sc-if>
               <sc-if value="{{ extKolView }}" hint-placeholder-val="{{ false }}">
@@ -824,7 +821,7 @@
               </sc-if>
               <div style="display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-top:14px;">
                 <button onClick="{{ onExtConnect }}" style="font-size:13px; font-weight:700; color:#fff; background:#4F46E5; border:none; padding:9px 16px; border-radius:9px; cursor:pointer;">🔄 เชื่อม / รีเฟรชเดี๋ยวนี้</button>
-                <button onClick="{{ onExtToggleAuto }}" style="font-size:12px; font-weight:700; padding:8px 13px; border-radius:9px; cursor:pointer; {{ extAutoStyle }}"><sc-if value="{{ extAutoOn }}" hint-placeholder-val="{{ true }}">🔁 ซิงค์อัตโนมัติทุกเช้า: เปิด</sc-if><sc-if value="{{ extAutoOn }}" hint-placeholder-val="{{ false }}">🔁 ซิงค์อัตโนมัติทุกเช้า: ปิด</sc-if></button>
+                <button onClick="{{ onExtToggleAuto }}" style="font-size:12px; font-weight:700; padding:8px 13px; border-radius:9px; cursor:pointer; {{ extAutoStyle }}"><sc-if value="{{ extAutoOn }}" hint-placeholder-val="{{ true }}">🔁 ซิงค์อัตโนมัติทุกเช้า: เปิด</sc-if><sc-if value="{{ extAutoOff }}" hint-placeholder-val="{{ false }}">🔁 ซิงค์อัตโนมัติทุกเช้า: ปิด</sc-if></button>
                 <sc-if value="{{ extBusyNow }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px; color:#4F46E5; font-weight:700;">⏳ กำลังดึง…</span></sc-if>
               </div>
               <sc-if value="{{ extHasStatus }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#334155; margin-top:10px; line-height:1.5;">{{ extStatusMsg }}</div></sc-if>
@@ -1032,7 +1029,6 @@
                           <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
                             <sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}">
                               <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" controls="controls" preload="metadata" style="width:100%; height:auto; max-height:200px; border-radius:4px; display:block; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:auto; border-radius:4px; display:block;"></sc-if></sc-if>
-                              <sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ true }}"></sc-if>
                             </sc-if>
                             <div style="display:flex; align-items:center; gap:5px; margin-top:2px;"><span style="width:7px; height:7px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; color:#0F172A;">{{ t.title }}</span><sc-if value="{{ t.hasTime }}" hint-placeholder-val="{{ false }}"><span style="font-size:9px; font-weight:800; color:#4F46E5; flex-shrink:0;">{{ t.time }}</span></sc-if></div>
                           </button>
@@ -1085,7 +1081,7 @@
                 <sc-if value="{{ csDetail.hasProcs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">หัตถการ</div><div><sc-for list="{{ csDetail.procs }}" as="x" hint-placeholder-count="2"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#EEF2FF; color:#4338CA;">{{ x }}</span></sc-for></div></div></sc-if>
                 <sc-if value="{{ csDetail.hasKols }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">KOL / KOC</div><div><sc-for list="{{ csDetail.kols }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#FBEAF0; color:#BE1D56;">{{ x }}</span></sc-for></div></div></sc-if>
                 <sc-if value="{{ csDetail.hasDocs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Doctor Name</div><div><sc-for list="{{ csDetail.docs }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#E1F5EE; color:#0F6E56;">{{ x }}</span></sc-for></div></div></sc-if>
-                <div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Link ที่ลงงาน</div><sc-if value="{{ csDetail.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ csDetail.link }}" target="_blank" style="font-size:13px; font-weight:700; color:#4F46E5; word-break:break-all;">↗ {{ csDetail.link }}</a></sc-if><sc-if value="{{ csDetail.hasLink }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px; color:#94A3B8;">—</span></sc-if></div>
+                <div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Link ที่ลงงาน</div><sc-if value="{{ csDetail.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ csDetail.link }}" target="_blank" style="font-size:13px; font-weight:700; color:#4F46E5; word-break:break-all;">↗ {{ csDetail.link }}</a></sc-if><sc-if value="{{ csDetail.noLink }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px; color:#94A3B8;">—</span></sc-if></div>
               </div>
             </div>
           </div>
@@ -1359,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20h';
+    this.APP_VERSION='2026-08-20i';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1698,18 +1694,15 @@ class Component extends DCLogic {
     if(!url){ this._extStat('doctor','กรุณาใส่ลิงก์ Google Sheet (เผยแพร่เป็น CSV) ก่อน'); return; }
     this._extBusy('doctor',true); this._extStat('doctor','กำลังดึงข้อมูล…');
     fetch(url).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }).then(text=>{
-      const rows=this._csvParse(text); if(rows.length<2) throw new Error('ไม่พบข้อมูลในชีท');
-      const head=rows[0].map(h=>(h||'').trim());
-      const findCol=(want,fb)=>{ if(want&&want.trim()){ const i=head.findIndex(h=>h.toLowerCase()===want.trim().toLowerCase()); if(i>=0) return i; } return fb; };
-      const nameI=findCol(cfg.nameCol,0);
-      const dutyI=findCol(cfg.dutyCol, head.findIndex(h=>/เวร|duty|วัน/i.test(h)));
-      const items=[]; for(let r=1;r<rows.length;r++){ const name=(rows[r][nameI]||'').trim(); if(!name) continue; let duty=0; if(dutyI>=0){ duty=parseFloat((rows[r][dutyI]||'').replace(/[^0-9.]/g,''))||0; } items.push({name:name,duty:duty}); }
-      const shown=items.filter(x=> dutyI<0 || x.duty>=3 ); const hidden=items.length-shown.length;
-      const mg=this._mergeExt('doctors', shown.map(x=>x.name));
-      const last=this._extNow(); const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({}, ex.doc, { url:cfg.url, nameCol:cfg.nameCol||'', dutyCol:cfg.dutyCol||'', auto:(ex.doc&&ex.doc.auto)!==false }); ex.last=Object.assign({},ex.last,{doctor:last});
+      const rows=this._csvParse(text); if(rows.length<4) throw new Error('ไม่พบข้อมูลในชีท (โครงสร้างไม่ตรง)');
+      // Fixed layout: row1 heading, rows2-3 headers, row4+ data. Cols: C(2)=เลข ว. (row-is-doctor; empty=stop), D(3)=ชื่อเล่น, F(5)=ชื่อ, L(11)=ใช้รูปได้
+      const names=[]; let scanned=0;
+      for(let i=3;i<rows.length;i++){ const row=rows[i]||[]; const C=(row[2]||'').trim(); if(!C) break; scanned++; const L=(row[11]||''); if(L.indexOf('ถ่ายคอนเท้นได้')>=0){ const nm=((row[3]||'').trim()+' '+(row[5]||'').trim()).replace(/\s+/g,' ').trim(); if(nm) names.push(nm); } }
+      const mg=this._mergeExt('doctors', names);
+      const last=this._extNow(); const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({}, ex.doc, { url:cfg.url, auto:(ex.doc&&ex.doc.auto)!==false }); ex.last=Object.assign({},ex.last,{doctor:last});
       try{ localStorage.setItem('mp.ext.day.doctor', this.iso(new Date())); }catch(e){}
       this.commit({ doctors:mg.list, extSync:ex }, 'แก้ไข', 'ซิงค์ Doctor จาก Google Sheet (+'+mg.added+')');
-      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · ใช้ได้ '+shown.length+' คน (เพิ่มใหม่ '+mg.added+')'+(hidden>0?(' · ซ่อน '+hidden+' คนเข้าเวร <3 วัน'):''));
+      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอถ่ายคอนเท้นได้ '+names.length+' คน (เพิ่มใหม่ '+mg.added+') จากหมอทั้งหมด '+scanned+' คน');
     }).catch(e=>{ this._extBusy('doctor',false); this._extStat('doctor','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจว่าทำ "เผยแพร่ไปยังเว็บ (CSV)" แล้ว'); });
   }
   syncKol(){ const S=this.state; const cfg=S.extKolCfg||this._extKolLS(); const token=(cfg.token||'').trim(), base=(cfg.baseId||'').trim(), table=(cfg.table||'').trim(), field=(cfg.field||'Name').trim();
@@ -1787,7 +1780,7 @@ class Component extends DCLogic {
         bounce:(dt.lineBounce||'').trim(), hasBounce:!!(dt.lineBounce&&dt.lineBounce.trim()),
         caption:(dt.caption||'').trim()||'—',
         procs:names(this.procIds(dt),procMap), kols:names(b.kols,kolMap), docs:names(b.doctors,docMap),
-        link:(dt.postLink||'').trim(), hasLink:!!(dt.postLink&&dt.postLink.trim()),
+        link:(dt.postLink||'').trim(), hasLink:!!(dt.postLink&&dt.postLink.trim()), noLink:!(dt.postLink&&dt.postLink.trim()),
         onClose:()=>this.closeCsDetail() };
       out.csDetail.hasProcs=out.csDetail.procs.length>0; out.csDetail.hasKols=out.csDetail.kols.length>0; out.csDetail.hasDocs=out.csDetail.docs.length>0;
     } else { out.csDetailOpen=false; out.csDetail=null; }
@@ -2302,8 +2295,10 @@ class Component extends DCLogic {
       onExtConnect:()=>{ extKind==='kol'?this.syncKol():this.syncDoctor(); },
       onExtToggleAuto:()=>this.toggleExtAuto(extKind),
       extAutoOn: extKind==='kol'?(extCfgK.auto!==false):(extCfgD.auto!==false),
+      extAutoOff: !(extKind==='kol'?(extCfgK.auto!==false):(extCfgD.auto!==false)),
       extAutoStyle: (extKind==='kol'?(extCfgK.auto!==false):(extCfgD.auto!==false))?'border:1px solid #059669; background:#ECFDF5; color:#059669;':'border:1px solid #E2E8F0; background:#fff; color:#64748B;',
-      extConnected: extKind==='kol'?!!(extCfgK.token&&extCfgK.baseId&&extCfgK.table):!!extCfgD.url
+      extConnected: extKind==='kol'?!!(extCfgK.token&&extCfgK.baseId&&extCfgK.table):!!extCfgD.url,
+      extNotConnected: !(extKind==='kol'?!!(extCfgK.token&&extCfgK.baseId&&extCfgK.table):!!extCfgD.url)
     };
 
     const actClr={ 'เพิ่ม':'#22C55E','แก้ไข':'#F97316','ลบ':'#EF4444' };
