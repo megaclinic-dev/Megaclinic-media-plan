@@ -222,6 +222,7 @@
             <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">สถานะ ADS</div><div class="mp-fchips"><sc-for list="{{ adStatusChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">สถานะการลงโพส</div><div class="mp-fchips"><sc-for list="{{ postStatusChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง</div>
               <button onClick="{{ onToggleChanFilter }}" style="{{ chanToggleStyle }}"><span>📡</span><span style="flex:1; text-align:left;">{{ chanSummary }}</span><span style="font-size:10px;">{{ chanCaret }}</span></button>
               <sc-if value="{{ chanFilterOpen }}" hint-placeholder-val="{{ false }}">
@@ -452,6 +453,7 @@
             <div class="mp-fbox"><div class="mp-flabel">ประเภทงาน</div><div class="mp-fchips"><sc-for list="{{ jobChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">สถานะ</div><div class="mp-fchips"><sc-for list="{{ statusChips }}" as="c" hint-placeholder-count="4"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox"><div class="mp-flabel">สถานะ ADS</div><div class="mp-fchips"><sc-for list="{{ adStatusChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
+            <div class="mp-fbox"><div class="mp-flabel">สถานะการลงโพส</div><div class="mp-fchips"><sc-for list="{{ postStatusChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button></sc-for></div></div>
             <div class="mp-fbox" style="flex:1 1 100%;"><div class="mp-flabel">ช่องทาง</div>
               <button onClick="{{ onToggleChanFilter }}" style="{{ chanToggleStyle }}"><span>📡</span><span style="flex:1; text-align:left;">{{ chanSummary }}</span><span style="font-size:10px;">{{ chanCaret }}</span></button>
               <sc-if value="{{ chanFilterOpen }}" hint-placeholder-val="{{ false }}">
@@ -1253,6 +1255,9 @@
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Link ที่เก็บงาน <span style="color:#94A3B8; font-weight:500;">· สำหรับ Graphic</span></span>
                 <input value="{{ form.link }}" onChange="{{ onFLink }}" placeholder="วางลิงก์ Google Drive / ที่เก็บไฟล์งาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
                 <sc-if value="{{ form.link }}" hint-placeholder-val=""><a href="{{ form.link }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิด Link ที่เก็บงาน</a></sc-if></div>
+              <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะการลงโพส</span>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ postStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
             </div>
           </sc-if>
           <sc-if value="{{ tabBrief }}" hint-placeholder-val="{{ false }}">
@@ -1373,7 +1378,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-21e';
+    this.APP_VERSION='2026-08-21f';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1407,7 +1412,7 @@ class Component extends DCLogic {
       kols: seed.kols || [], doctors: seed.doctors || [], prices: seed.prices || [],
       fMedium:'all',
       dateMode:'week', weekStart:_ws, calMonth:_today.slice(0,7), rangeStart:_ws, rangeEnd:_we, today:_today,
-      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fJob:'all', selDate:_today, adsDateMode:'post',
+      fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fPostStatus:'all', fJob:'all', selDate:_today, adsDateMode:'post',
       fnFrom:_ws, fnTo:_we, fnChan:'all', fnProc:'all', fnMode:'week',
       adfStatus:[], adfKol:[], adfDoctor:[], adfPrice:[], adfPost:[], adfFunnel:[], adfCamp:[], adfAud:[], adfObj:[], adfProc:[], adfFormat:[], adfSearch:'', adfOpen:'',
       loading:true, loadErr:false, newVer:false, chipView:'name',
@@ -1644,7 +1649,7 @@ class Component extends DCLogic {
 
   setJobType(v){ this.setState(s=>{ const form={ ...s.form, jobType:v, _err:'' }; const k=(form.medium==='offline')?'offline':'online'; if(!s.channels.some(c=>c.id===form.ch&&(c.kind||'online')===k&&(c.jobcat||'online')===v)){ const fc=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===v); form.ch=fc?fc.id:''; } return { form }; }); }
   blankTask(over){ const S=this.state; const jt=(S.fJob!=='all'?S.fJob:'online'); const firstCh=(S.channels.find(c=>(c.kind||'online')==='online'&&(c.jobcat||'online')===jt)||{}).id||'';
-    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', time:'', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', resize:false, ctype:'', proc:'', procs:[], imgDesc:'', imgComment:'', caption:'', details:'', link:'', postLink:'', lineBounce:'', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), funres:this.blankFunnel(), tab:'detail' };
+    const base={ title:'', ch:firstCh, date:S.selDate||'2026-07-08', time:'', creative:'', graphic:'', jobType:jt, status:(S.statuses[0]||{}).id||'todo', medium:'online', delivery:'', branchQty:{}, format:'', size:'', resize:false, ctype:'', proc:'', procs:[], imgDesc:'', imgComment:'', caption:'', details:'', link:'', postLink:'', lineBounce:'', postStatus:'notset', images:[], aw:[], start:(S.selDate||'2026-07-08'), brief:this.blankBrief(), funres:this.blankFunnel(), tab:'detail' };
     base.brief.adStatus=((S.adStatuses.find(s=>this.isNoAds(s))||S.adStatuses[0]||{}).id)||'';
     const o=Object.assign(base, over||{});
     const chObj=S.channels.find(c=>c.id===o.ch);
@@ -1679,7 +1684,7 @@ class Component extends DCLogic {
     else if(mode==='all'){ from=(S.tasks||[]).reduce((m,t)=>(t.date&&t.date<m)?t.date:m, td); to=td; }
     this.setState({ fnMode:mode, fnFrom:from, fnTo:to }); }
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
-  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, brief:this.normalizeBrief(t.brief), funres:Object.assign(this.blankFunnel(), t.funres||{}), tab:'detail' }); }
+  openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, postStatus:t.postStatus||'notset', brief:this.normalizeBrief(t.brief), funres:Object.assign(this.blankFunnel(), t.funres||{}), tab:'detail' }); }
   copyTask(t){ const S=this.state; const todo=((S.statuses.find(s=>s.label==='ยังไม่เริ่ม')||S.statuses[0]||{}).id)||'todo';
     this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:this.normalizeBrief(t.brief) })); }
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
@@ -1858,6 +1863,7 @@ class Component extends DCLogic {
     cmp('ประเภท',ctn(o.ctype),ctn(n.ctype)); cmp('หัตถการ',pjoin(o),pjoin(n)); cmp('Creative',pn(o.creative),pn(n.creative)); cmp('Graphic',pn(o.graphic),pn(n.graphic));
     const fmn=id=>id?((S.formats.find(x=>x.id===id)||{}).name||id):'—'; const szn=id=>id?((S.sizes.find(x=>x.id===id)||{}).name||id):'—';
     cmp('รูปแบบ',fmn(o.format),fmn(n.format)); cmp('Size',szn(o.size),szn(n.size)); cmp('สถานะ',sn(o.status),sn(n.status));
+    const psn=v=>((v||'notset')==='done')?'ตั้ง/ลงแล้ว':'ยังไม่ได้ตั้ง/ลง'; cmp('สถานะการลงโพส',psn(o.postStatus),psn(n.postStatus));
     const txt=(label,a,b)=>{ if((a||'')!==(b||'')) out.push({ f:label, from:(a||'—'), to:(b||'—'), long:true }); };
     txt('ชื่อ Link Draft',o.imgDesc,n.imgDesc); txt('คอมเมนต์',o.imgComment,n.imgComment); txt('แคปชั่น',o.caption,n.caption); txt('รายละเอียดอื่นๆ',o.details,n.details); txt('Link ที่เก็บงาน',o.link,n.link); txt('Link ลงงาน',o.postLink,n.postLink); txt('ก้อนเด้ง',o.lineBounce,n.lineBounce);
     if((o.images||[]).length!==(n.images||[]).length) out.push({ f:'รูปภาพ', from:(o.images||[]).length+' ไฟล์', to:(n.images||[]).length+' ไฟล์' });
@@ -1886,7 +1892,7 @@ class Component extends DCLogic {
         if(!brief.postType) adReq.push('Post Type'); if(!brief.funnel) adReq.push('Funnel'); if(!brief.campaign) adReq.push('Campaign'); if(!brief.adEnd) adReq.push('วันปิดแอด');
         if(adReq.length){ this.setState({ form:{ ...f, tab:'brief', _err:'สถานะ "'+(selAdStatus.name||'')+'" ต้องกรอก Brief Ads ให้ครบ: '+adReq.join(', ') } }); return; } }
       const procs=Array.isArray(f.procs)?f.procs:[];
-      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, time:timeN, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', resize:!!f.resize, ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', imgComment:f.imgComment||'', caption:f.caption||'', details:f.details||'', link:f.link||'', postLink:f.postLink||'', lineBounce:f.lineBounce||'', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief, funres:f.funres||this.blankFunnel() };
+      const rec={ title:f.title.trim(), ch:f.ch, date:f.date, time:timeN, creative:f.creative||'', graphic:f.graphic||'', jobType:f.jobType||'online', status:f.status, medium:f.medium||'online', delivery:f.delivery||'', branchQty:Object.assign({}, f.branchQty||{}), format:f.format||'', size:f.size||'', resize:!!f.resize, ctype:f.ctype||'', proc:procs[0]||'', procs:procs, imgDesc:f.imgDesc||'', imgComment:f.imgComment||'', caption:f.caption||'', details:f.details||'', link:f.link||'', postLink:f.postLink||'', lineBounce:f.lineBounce||'', postStatus:f.postStatus||'notset', images:f.images||[], aw:f.aw||[], start:f.start||f.date, brief:brief, funres:f.funres||this.blankFunnel() };
       if (m.mode==='add'){ const t={ id:f.id||('t'+Date.now()), ...rec };
         this.commit({ tasks:[...S.tasks,t], modal:null, form:{} }, 'เพิ่ม', 'งาน "'+t.title+'" ('+chName(t.ch)+')', this.taskDiff({}, rec), { medium:rec.medium, ch:rec.ch }); }
       else { const old=S.tasks.find(t=>t.id===f.id)||{}; const diffs=this.taskDiff(old, rec); const tasks=S.tasks.map(t=>t.id===f.id?{ ...t, ...rec }:t);
@@ -2062,6 +2068,7 @@ class Component extends DCLogic {
     const fp=t=>S.fPerson==='all'||t.creative===S.fPerson||t.graphic===S.fPerson;
     const fs=t=>S.fStatus==='all'||t.status===S.fStatus;
     const fas=t=>S.fAdStatus==='all'||((t.brief&&t.brief.adStatus)||'')===S.fAdStatus;
+    const fpst=t=>S.fPostStatus==='all'||((t.postStatus||'notset')===S.fPostStatus);
     const fj=t=>S.fJob==='all'||t.jobType===S.fJob;
     const fm=t=>S.fMedium==='all'||(t.medium||'online')===S.fMedium;
     const fSearchQ=(S.fSearch||'').trim().toLowerCase();
@@ -2088,7 +2095,7 @@ class Component extends DCLogic {
     const hasOther=T.some(t=>daySet.has(t.date)&&!realIds.has(t.ch));
     const rowChannels=(fChans.length===0&&hasOther)?[...baseRowChannels, otherCh]:baseRowChannels;
     const matrixRows=rowChannels.map(c=>{ let total=0; const isOther=c.id==='other';
-      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t)).sort(tcmp); total+=ct.length;
+      const cells=dayObjs.map(d=>{ const ct=T.filter(t=>t.date===d.iso&&(isOther?!realIds.has(t.ch):t.ch===c.id)&&fp(t)&&fs(t)&&fas(t)&&fpst(t)&&fj(t)&&fm(t)&&ftxt(t)).sort(tcmp); total+=ct.length;
         const dots=[...new Set(ct.map(t=>st(t.status).color))].slice(0,3);
         const ckey=c.id+'|'+d.iso; const expanded=!!((S.expandedCells||{})[ckey]); const lim=compact?(expanded?ct.length:0):(expanded?ct.length:3);
         const shown=ct.slice(0,lim).map(t=>{ const p=pMap[t.creative]||pMap[t.graphic]||{}, s=st(t.status); const md=(chipView==='image')?taskMedia(t):null; const img=md?md.src:null; const useName=true;
@@ -2139,7 +2146,7 @@ class Component extends DCLogic {
         items:(d[2]||[]).map(it=>({ label:it.name||it.label, checked:sel.indexOf(it.id)>=0, boxStyle:'width:15px;height:15px;border-radius:4px;flex-shrink:0;border:1px solid '+(sel.indexOf(it.id)>=0?'#4F46E5;background:#4F46E5;':'#CBD5E1;background:#fff;'), onClick:()=>this.toggleAdf(key,it.id) })) };
     }.bind(this));
 
-    const scopedAll=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
+    const scopedAll=T.filter(t=>daySet.has(t.date)&&fc(t)&&fp(t)&&fs(t)&&fas(t)&&fpst(t)&&fj(t)&&fm(t)&&ftxt(t));
     const scoped=scopedAll.filter(t=>!t.resize); const resized=scopedAll.filter(t=>t.resize); const resizeN=resized.length;
     const cntBy=id=>scoped.filter(t=>t.status===id).length; const rCntBy=id=>resized.filter(t=>t.status===id).length;
     const statCards=[
@@ -2155,7 +2162,7 @@ class Component extends DCLogic {
       { label:'ยังไม่เริ่ม', value:rCntBy('todo'), color:'#94A3B8' },
     ];
 
-    const wlPoolAll=T.filter(t=>daySet.has(t.date)&&fc(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t));
+    const wlPoolAll=T.filter(t=>daySet.has(t.date)&&fc(t)&&fs(t)&&fas(t)&&fpst(t)&&fj(t)&&fm(t)&&ftxt(t));
     const wlPool=wlPoolAll.filter(t=>!t.resize); const wlResizePool=wlPoolAll.filter(t=>t.resize);
     const wlTab=(['creative','graphic','other'].indexOf(S.wlTab)>=0)?S.wlTab:'creative';
     const wlKey=(wlTab==='creative')?'cN':((wlTab==='graphic')?'gN':'oN');
@@ -2191,6 +2198,7 @@ class Component extends DCLogic {
     const channelChips=[{ id:'all', name:'ทุกช่องทาง', color:'#94A3B8' }, ...channelsSorted].map(c=>({ label:c.name, color:c.color, style:chipBtn(S.fChannel===c.id), onClick:()=> c.id==='all'?this.setState({fChannel:'all'}):this.setChannel(c.id) }));
     const statusChips=[{ id:'all', label:'ทุกสถานะ' }, ...S.statuses].map(s=>({ label:s.label, style:chipBtn(S.fStatus===s.id), onClick:()=> s.id==='all'?this.setState({fStatus:'all'}):this.setStatus(s.id) }));
     const adStatusChips=[{ id:'all', name:'ทุกสถานะ' }, ...S.adStatuses].map(s=>({ label:s.name, style:chipBtn(S.fAdStatus===s.id), onClick:()=>this.setState({ fAdStatus:(S.fAdStatus===s.id&&s.id!=='all')?'all':s.id }) }));
+    const postStatusChips=[{ id:'all', label:'ทุกสถานะ' },{ id:'notset', label:'ยังไม่ได้ตั้ง/ลง' },{ id:'done', label:'ตั้ง/ลงแล้ว' }].map(s=>({ label:s.label, style:chipBtn(S.fPostStatus===s.id), onClick:()=>this.setState({ fPostStatus:(S.fPostStatus===s.id&&s.id!=='all')?'all':s.id }) }));
     const mediumChips=[{ id:'all', label:'Online + Offline' }, ...this.mediums].map(x=>({ label:x.label, style:chipBtn(S.fMedium===x.id), onClick:()=>this.setState(s=>{ const fMedium=s.fMedium===x.id?'all':x.id; let fJob=s.fJob; if(fMedium==='offline' && fJob!=='all' && fJob!=='central') fJob='all'; return { fMedium, fJob, fChans:[] }; }) }));
     const jobTypesForFilter=(S.fMedium==='offline')?this.jobTypes.filter(j=>j.id==='central'):this.jobTypes;
     const jobChips=[{ id:'all', label:'ทุกประเภทงาน' }, ...jobTypesForFilter].map(j=>({ label:j.label, style:chipBtn(S.fJob===j.id), onClick:()=> j.id==='all'?this.setState({fJob:'all'}):this.setJob(j.id) }));
@@ -2208,7 +2216,7 @@ class Component extends DCLogic {
     const gridCols='176px repeat('+days.length+', minmax('+(compact?'48px':'112px')+',1fr))';
 
     // content calendar
-    const calFilter=t=>fc(t)&&fp(t)&&fs(t)&&fas(t)&&fj(t)&&fm(t)&&ftxt(t);
+    const calFilter=t=>fc(t)&&fp(t)&&fs(t)&&fas(t)&&fpst(t)&&fj(t)&&fm(t)&&ftxt(t);
     let calS, calE;
     if (S.dateMode==='week'){ calS=S.weekStart; calE=this.addDays(S.weekStart,6); }
     else if (S.dateMode==='custom'){ let s=S.rangeStart,e=S.rangeEnd; if(s>e){ const _t=s; s=e; e=_t; } calS=s; calE=e; }
@@ -2436,6 +2444,7 @@ class Component extends DCLogic {
     const chipSelP=on=>'display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#334155;');
     const procChips=procForForm.map(c=>({ label:c.name, color:c.color||'#94A3B8', style:chipSelP((f.procs||[]).indexOf(c.id)>=0), onClick:()=>this.toggleProc(c.id) }));
     const statusPick=S.statuses.map(s=>({ label:s.label, onClick:()=>this.setF('status',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid '+(f.status===s.id?s.color+';background:'+s.color+'1A;color:'+s.color:'#E2E8F0;background:#fff;color:#64748B') }));
+    const _psCur=f.postStatus||'notset'; const postStatusPick=[{id:'notset',label:'ยังไม่ได้ตั้ง/ลง',color:'#C2410C'},{id:'done',label:'ตั้ง/ลงแล้ว',color:'#059669'}].map(s=>({ label:s.label, onClick:()=>this.setF('postStatus',s.id), style:'font-size:13px;font-weight:600;padding:8px 14px;border-radius:9px;cursor:pointer;border:1px solid '+(_psCur===s.id?s.color+';background:'+s.color+'1A;color:'+s.color:'#E2E8F0;background:#fff;color:#64748B') }));
     const palette=this.PAL.map(hex=>({ onClick:()=>this.setF('color',hex), style:'width:30px;height:30px;border-radius:9px;cursor:pointer;background:'+hex+';border:3px solid '+(f.color===hex?'#0F172A':'transparent')+';box-shadow:0 0 0 1px #E2E8F0;' }));
     const groupOpts=[...new Set(S.channels.map(c=>c.group))];
     const mediumPick=this.mediums.map(x=>({ label:x.label, onClick:()=>this.setState(s=>{ const form={ ...s.form, medium:x.id, _err:'' }; const k=(x.id==='offline')?'offline':'online'; form.jobType=(x.id==='offline')?'central':'online'; const fch=s.channels.find(c=>(c.kind||'online')===k&&(c.jobcat||'online')===form.jobType); form.ch=fch?fch.id:''; return { form }; }),
@@ -2549,7 +2558,7 @@ class Component extends DCLogic {
       modeTabs, showNav:S.dateMode!=='custom', showRange:S.dateMode==='custom', periodLabel,
       prevPeriod:()=>this.shiftPeriod(-1), nextPeriod:()=>this.shiftPeriod(1),
       rangeStart:S.rangeStart, rangeEnd:S.rangeEnd, onRangeStart:e=>this.setState({rangeStart:e.target.value}), onRangeEnd:e=>this.setState({rangeEnd:e.target.value}),
-      statCards, resizeStatCards, channelChips, statusChips, adStatusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
+      statCards, resizeStatCards, channelChips, statusChips, adStatusChips, postStatusChips, peopleOpts, channelSelOpts, chanSelGroups, chanFilterGroups, chanMultiGroups, chanFilterOpen, chanSummary, chanCaret, chanToggleStyle, onToggleChanFilter, chansAllActive, chansAllStyle:chipBtn(chansAllActive), onClearChans:()=>this.clearChans(), fPerson:S.fPerson, fChannel:S.fChannel, onPerson:e=>this.setState({fPerson:e.target.value}), onChannelSel:e=>this.setState({fChannel:e.target.value}),
       personSelStyle:'font-size:13px;padding:7px 11px;border-radius:9px;cursor:pointer;'+((S.fPerson&&S.fPerson!=='all')?'border:2px solid #4F46E5;background:#EEF2FF;color:#4F46E5;font-weight:700;':'border:1px solid #E2E8F0;background:#fff;'),
       fSearch:S.fSearch||'', onFSearch:e=>this.setState({fSearch:e.target.value}), fTeamSearch:S.fTeamSearch||'', onFTeamSearch:e=>this.setState({fTeamSearch:e.target.value}),
       days:dayObjs, matrixRows, gridCols, matrixMinW, workload, openAddTask:()=>this.openAddTask(),
@@ -2576,7 +2585,7 @@ class Component extends DCLogic {
       form:f, saveModal:()=>this.saveModal(),
       canDeleteTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can(curArea,'del'), deleteTaskFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.askDeleteTask(t); },
       canCopyTask:!!m&&m.kind==='task'&&m.mode==='edit'&&can(curArea,'edit'), copyFromForm:()=>{ const t=S.tasks.find(x=>x.id===f.id); if(t) this.copyTask(t); },
-      channelOpts, formatOpts, contentOpts, statusPick, palette, positionOpts:positionsUsed, groupOpts,
+      channelOpts, formatOpts, contentOpts, statusPick, postStatusPick, palette, positionOpts:positionsUsed, groupOpts,
       cbChannel:this._mkCb('form.ch', f.ch, channelOpts, v=>this.setF('ch',v)), cbCtype:this._mkCb('form.ctype', f.ctype, contentOpts, v=>this.setF('ctype',v)), cbCreative:this._mkCb('form.creative', f.creative, personPick, v=>this.setF('creative',v)), cbGraphic:this._mkCb('form.graphic', f.graphic, personPick, v=>this.setF('graphic',v)), cbFormat:this._mkCb('form.format', f.format, formatOpts, v=>this.setF('format',v)), cbSize:this._mkCb('form.size', f.size, sizeOpts, v=>this.setF('size',v)),
       onFTitle:e=>this.setF('title',e.target.value), onFChannel:e=>this.setF('ch',e.target.value), onFDate:e=>this.setF('date',e.target.value),
       tpOpen:!!S.tpOpen, onTpToggle:()=>this.setState({tpOpen:!this.state.tpOpen}), onTpClose:()=>this.setState({tpOpen:false}), onTpFocus:()=>{ if(!this.state.tpOpen) this.setState({tpOpen:true}); },
