@@ -1119,13 +1119,11 @@
         </sc-if>
 
         <sc-if value="{{ isTaskForm }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex; gap:2px; padding:0 20px; border-bottom:1px solid #EEF2F6; overflow-x:auto; flex-shrink:0;">
-            <sc-for list="{{ taskTabs }}" as="tb" hint-placeholder-count="4"><button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}</button></sc-for>
+          <div style="display:flex; gap:4px; padding:7px 14px 0; border-bottom:1px solid #EEF2F6; overflow-x:auto; flex-shrink:0;">
+            <sc-for list="{{ taskTabs }}" as="tb" hint-placeholder-count="5"><button onClick="{{ tb.onClick }}" style="{{ tb.style }}">{{ tb.label }}<sc-if value="{{ tb.hasNew }}" hint-placeholder-val="{{ false }}"><span style="position:absolute; top:3px; right:4px; width:8px; height:8px; border-radius:50%; background:#EF4444; box-shadow:0 0 0 2px #fff;"></span></sc-if></button></sc-for>
           </div>
           <sc-if value="{{ tabDetail }}" hint-placeholder-val="{{ true }}">
           <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
-            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะ <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">(Graphic ใส่)</span></span><div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ statusPick }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
-            <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ชื่องาน <span style="color:#EF4444;">*</span></span><input value="{{ form.title }}" onChange="{{ onFTitle }}" placeholder="เช่น โปรโมชั่นกลางเดือน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">งาน Online / Offline <span style="color:#EF4444;">*</span></span>
               <div style="display:flex; gap:8px;"><sc-for list="{{ mediumPick }}" as="x" hint-placeholder-count="2"><button onClick="{{ x.onClick }}" style="{{ x.style }}">{{ x.label }}</button></sc-for></div>
@@ -1221,28 +1219,19 @@
                   </div>
                 </sc-for>
               </div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">คอมเมนต์ (ใต้รูป)</span>
-                <textarea value="{{ form.imgComment }}" onChange="{{ onFImgComment }}" rows="3" placeholder="คอมเมนต์/ฟีดแบ็กเกี่ยวกับรูป Draft..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <div style="border:1.5px solid #FBCFE8; background:#FDF2F8; border-radius:12px; padding:12px 13px; display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:12.5px; font-weight:700; color:#DB2777;">💬 คอมเมนต์</span><sc-if value="{{ cmtNew }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px; font-weight:800; color:#fff; background:#DB2777; padding:3px 9px; border-radius:99px;">● มีคอมเมนต์ใหม่</span></sc-if></div>
+                <textarea value="{{ form.imgComment }}" onChange="{{ onFImgComment }}" rows="3" placeholder="คอมเมนต์/ฟีดแบ็กเกี่ยวกับรูป Draft..." style="width:100%; font-size:14px; padding:12px; border:1px solid #FBCFE8; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A; background:#fff;"></textarea></div>
               <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">รายละเอียดอื่นๆ</span>
                 <textarea value="{{ form.details }}" onChange="{{ onFDetails }}" rows="4" placeholder="โน้ต / รายละเอียดเพิ่มเติม / สิ่งที่ต้องระวัง..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
             </div>
           </sc-if>
-          <sc-if value="{{ tabAW }}" hint-placeholder-val="{{ false }}">
+          <sc-if value="{{ tabStatus }}" hint-placeholder-val="{{ false }}">
             <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะการลงโพส <span style="color:#94A3B8; font-weight:500;">(Creative ใส่)</span></span>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ postStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะงาน <span style="color:#EF4444;">*</span></span><div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ statusPick }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
               <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
-              <sc-if value="{{ showBounce }}" hint-placeholder-val="{{ false }}">
-                <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ก้อนเด้ง <span style="color:#94A3B8; font-weight:500;">· เฉพาะ LINE BC</span></span>
-                  <textarea value="{{ form.lineBounce }}" onChange="{{ onFLineBounce }}" rows="3" placeholder="ข้อความ/รายละเอียดก้อนเด้ง (LINE Broadcast)..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
-              </sc-if>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">แคปชั่น (สำหรับโพสต์จริง)</span>
-                <textarea value="{{ form.caption }}" onChange="{{ onFCaption }}" rows="5" placeholder="แคปชั่นที่จะใช้โพสต์จริง #แฮชแท็ก..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Link ลงงาน <span style="color:#94A3B8; font-weight:500;">· ช่องทางที่โพสต์ (IG/FB/TikTok ฯลฯ)</span></span>
-                <input value="{{ form.postLink }}" onChange="{{ onFPostLink }}" placeholder="วางลิงก์โพสต์ที่ลงจริง" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
-                <sc-if value="{{ form.postLink }}" hint-placeholder-val=""><a href="{{ form.postLink }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิด Link ลงงาน</a></sc-if></div>
-              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดรูป / ไฟล์ AW / VDO<input type="file" accept="image/*,video/*" multiple onChange="{{ onUploadAW }}" style="display:none;"></label>
+              <label style="display:inline-flex; align-items:center; gap:7px; font-size:13px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px dashed #C7D2FE; border-radius:10px; padding:11px 16px; cursor:pointer; align-self:flex-start; white-space:nowrap; width:auto; flex-shrink:0;">＋ อัปโหลดรูปงาน (AW / VDO)<input type="file" accept="image/*,video/*" multiple onChange="{{ onUploadAW }}" style="display:none;"></label>
               <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือ <b>ลากไฟล์มาวาง</b> ในหน้านี้ได้เลย (รูป/วิดีโอ)</div>
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <sc-for list="{{ awList }}" as="im" hint-placeholder-count="0">
@@ -1256,9 +1245,25 @@
                 </sc-for>
               </div>
               <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Link ที่เก็บงาน <span style="color:#94A3B8; font-weight:500;">· สำหรับ Graphic</span></span>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Link เก็บงาน <span style="color:#94A3B8; font-weight:500;">· Google Drive / ที่เก็บไฟล์งาน</span></span>
                 <input value="{{ form.link }}" onChange="{{ onFLink }}" placeholder="วางลิงก์ Google Drive / ที่เก็บไฟล์งาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
-                <sc-if value="{{ form.link }}" hint-placeholder-val=""><a href="{{ form.link }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิด Link ที่เก็บงาน</a></sc-if></div>
+                <sc-if value="{{ form.link }}" hint-placeholder-val=""><a href="{{ form.link }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิด Link เก็บงาน</a></sc-if></div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ tabAW }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะการลงโพส</span>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ postStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
+              <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
+              <sc-if value="{{ showBounce }}" hint-placeholder-val="{{ false }}">
+                <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">ก้อนเด้ง <span style="color:#94A3B8; font-weight:500;">· เฉพาะ BC</span></span>
+                  <textarea value="{{ form.lineBounce }}" onChange="{{ onFLineBounce }}" rows="3" placeholder="ข้อความ/รายละเอียดก้อนเด้ง (LINE Broadcast)..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              </sc-if>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">แคปชั่น</span>
+                <textarea value="{{ form.caption }}" onChange="{{ onFCaption }}" rows="5" placeholder="แคปชั่น #แฮชแท็ก..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Link ลงงาน <span style="color:#94A3B8; font-weight:500;">· ช่องทางที่โพสต์ (IG/FB/TikTok ฯลฯ)</span></span>
+                <input value="{{ form.postLink }}" onChange="{{ onFPostLink }}" placeholder="วางลิงก์โพสต์ที่ลงจริง" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;">
+                <sc-if value="{{ form.postLink }}" hint-placeholder-val=""><a href="{{ form.postLink }}" target="_blank" style="font-size:12px; font-weight:600; display:inline-block; margin-top:8px;">↗ เปิด Link ลงงาน</a></sc-if></div>
             </div>
           </sc-if>
           <sc-if value="{{ tabBrief }}" hint-placeholder-val="{{ false }}">
@@ -1379,7 +1384,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-21i';
+    this.APP_VERSION='2026-08-22a';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1591,9 +1596,9 @@ class Component extends DCLogic {
       for(var i=0;i<items.length;i++){ if(items[i].type&&items[i].type.indexOf('image')===0){ var f=items[i].getAsFile(); if(f) files.push(f); } }
       if(files.length){ e.preventDefault(); this.addFiles('images', files); } };
     window.addEventListener('paste', this._onPaste);
-    const _dropOK=()=>{ const S=this.state; const tab=(S.form||{}).tab||'detail'; return S.modal&&S.modal.kind==='task'&&(tab==='images'||tab==='aw')?tab:null; };
+    const _dropOK=()=>{ const S=this.state; const tab=(S.form||{}).tab||'detail'; return S.modal&&S.modal.kind==='task'&&(tab==='images'||tab==='status')?tab:null; };
     this._onDragOver=(e)=>{ if(_dropOK()){ e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='copy'; } };
-    this._onDrop=(e)=>{ const tab=_dropOK(); if(!tab) return; const files=(e.dataTransfer&&e.dataTransfer.files)||[]; if(files.length){ e.preventDefault(); this.addFiles(tab==='aw'?'aw':'images', files); } };
+    this._onDrop=(e)=>{ const tab=_dropOK(); if(!tab) return; const files=(e.dataTransfer&&e.dataTransfer.files)||[]; if(files.length){ e.preventDefault(); this.addFiles(tab==='status'?'aw':'images', files); } };
     window.addEventListener('dragover', this._onDragOver);
     window.addEventListener('drop', this._onDrop);
     this._onBeforeUnload=(e)=>{ if((this._pend||0)>0 || this.state.syncStatus==='saving' || this.state.syncStatus==='error'){ e.preventDefault(); e.returnValue='ยังบันทึกไม่เสร็จ ถ้าปิดตอนนี้งานล่าสุดอาจหาย'; return e.returnValue; } };
@@ -1634,7 +1639,7 @@ class Component extends DCLogic {
   openModal(kind, mode, form){ this.setState({ modal:{ kind, mode }, form:form||{}, tpOpen:false }); }
   closeModal(){ this.setState({ modal:null, form:{} }); }
   setF(field, val){ this.setState(s=>({ form:{ ...s.form, [field]:val } })); }
-  setTab(t){ this.setF('tab', t); }
+  setTab(t){ if(t==='images'){ try{ const f=this.state.form||{}; if(f.id) localStorage.setItem('mp.cmtseen.'+f.id,(f.imgComment||'').trim()); }catch(e){} } this.setF('tab', t); }
   doLogin(){ const S=this.state; const p=S.people.find(x=>x.id===S.loginId)||S.people.find(x=>x.name===(S.loginName||'').trim()); if(!p){ this.setState({ loginErr:'ไม่พบผู้ใช้งานนี้ — พิมพ์ชื่อให้ตรง' }); return; } if(p.left){ this.setState({ loginErr:'บัญชีนี้ปิดใช้งาน (ลาออกแล้ว)' }); return; } if((p.pass||'1234')!==S.loginPw){ this.setState({ loginErr:'รหัสผ่านไม่ถูกต้อง' }); return; } try{ localStorage.setItem('mp.lastUserId', p.id); localStorage.setItem('mp.session', JSON.stringify({ id:p.id, exp:Date.now()+604800000 })); }catch(e){} this.setState({ authed:true, actor:p.id, loginId:p.id, loginName:p.name, loginPw:'', loginErr:'', loginOpen:false, view:this.firstPermittedView(p.position) }); }
   logout(){ try{ localStorage.removeItem('mp.session'); }catch(e){} this.setState({ authed:false, loginPw:'', loginErr:'', navOpen:false }); }
   _compressDataUrl(dataUrl){ return new Promise(res=>{ const img=new Image(); img.onload=()=>{ let w=img.width, h=img.height; const M=1400; if(w>M||h>M){ const s=Math.min(M/w,M/h); w=Math.round(w*s); h=Math.round(h*s); } try{ const cv=document.createElement('canvas'); cv.width=w; cv.height=h; cv.getContext('2d').drawImage(img,0,0,w,h); const out=cv.toDataURL('image/jpeg',0.82); res((out&&out.length<dataUrl.length)?out:dataUrl); }catch(e){ res(dataUrl); } }; img.onerror=()=>res(dataUrl); img.src=dataUrl; }); }
@@ -1687,7 +1692,9 @@ class Component extends DCLogic {
   normalizeBrief(b){ const n=Object.assign(this.blankBrief(), b||{}); ['platforms','kols','doctors','prices'].forEach(k=>{ if(!Array.isArray(n[k]) ) n[k]=n[k]?[n[k]]:[]; }); if(b && b.price && !(b.prices&&b.prices.length)) n.prices=Array.isArray(b.price)?b.price:[b.price]; return n; }
   openEditTask(t){ this.openModal('task','edit',{ id:t.id, title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:t.status, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', resize:!!t.resize, ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:t.images||[], aw:t.aw||[], start:t.start||t.date, postStatus:t.postStatus||'notset', brief:this.normalizeBrief(t.brief), funres:Object.assign(this.blankFunnel(), t.funres||{}), tab:'detail' }); }
   copyTask(t){ const S=this.state; const todo=((S.statuses.find(s=>s.label==='ยังไม่เริ่ม')||S.statuses[0]||{}).id)||'todo';
-    this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:this.normalizeBrief(t.brief) })); }
+    const brf=this.normalizeBrief(t.brief); const curAds=S.adStatuses.find(s=>s.id===brf.adStatus)||{};
+    if(!this.isNoAds(curAds)){ const pend=S.adStatuses.find(s=>!this.isNoAds(s)&&/ยัง/.test(s.name||''))||S.adStatuses.find(s=>!this.isNoAds(s)); if(pend) brf.adStatus=pend.id; }
+    this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:brf })); }
   toggleProc(id){ this.setState(s=>{ const arr=Array.isArray(s.form.procs)?s.form.procs.slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { form:{ ...s.form, procs:arr } }; }); }
   toggleAdf(key,id){ this.setState(s=>{ const arr=Array.isArray(s[key])?s[key].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); return { [key]:arr }; }); }
   toggleChannelPA(c){ const S=this.state; const on=!c.platformAd; const channels=S.channels.map(x=>x.id===c.id?{ ...x, platformAd:on }:x); this.commit({ channels }, 'แก้ไข', 'ช่องทาง "'+c.name+'"', [{ f:'Platform Ads', from:(c.platformAd?'ใช่':'ไม่'), to:(on?'ใช่':'ไม่') }]); }
@@ -2473,8 +2480,10 @@ class Component extends DCLogic {
     const showTagDates=tagIsDated;
 
     const formTab=f.tab||'detail';
-    const ttab=active=>'font-size:13px;font-weight:600;padding:11px 12px;border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid '+(active?'#4F46E5;color:#4F46E5;':'transparent;color:#94A3B8;');
-    const taskTabs=[['detail','รายละเอียด'],['images','Draft / แคปชั่น'+((f.images||[]).length?' ('+f.images.length+')':'')],['aw','AW / ลงโพสต์'+((f.aw||[]).length?' ('+f.aw.length+')':'')],['brief','Brief Ads']].map(([k,l])=>({ label:l, onClick:()=>this.setTab(k), style:ttab(formTab===k) }));
+    const ROLEC={cre:{c:'#DB2777',bg:'#FDF2F8'},gra:{c:'#2563EB',bg:'#EFF6FF'}};
+    const ttab=(active,role)=>{ const r=ROLEC[role]||ROLEC.cre; return 'position:relative;font-size:13px;font-weight:700;padding:9px 13px;border:none;cursor:pointer;white-space:nowrap;border-radius:10px 10px 0 0;font-family:inherit;'+(active?('background:'+r.c+';color:#fff;'):('background:'+r.bg+';color:'+r.c+';')); };
+    let _cmtNew=false; try{ const _cid=f.id, _cv=(f.imgComment||'').trim(); if(_cid&&_cv) _cmtNew=(localStorage.getItem('mp.cmtseen.'+_cid)!==_cv); }catch(e){}
+    const taskTabs=[['detail','รายละเอียดงาน','cre'],['images','Draft'+((f.images||[]).length?' ('+f.images.length+')':''),'cre'],['status','สถานะงาน'+((f.aw||[]).length?' ('+f.aw.length+')':''),'gra'],['aw','ลงโพส','cre'],['brief','Brief Ads','cre']].map(([k,l,role])=>({ label:l, onClick:()=>this.setTab(k), style:ttab(formTab===k,role), hasNew:(k==='images'&&_cmtNew) }));
     const brf=f.brief||this.blankBrief();
     const briefDate=f.date||'';
     const chipSel=on=>'display:inline-flex;align-items:center;gap:7px;white-space:nowrap;font-size:13px;font-weight:600;padding:7px 13px;border-radius:99px;cursor:pointer;border:1px solid '+(on?'#4F46E5;background:#4F46E5;color:#fff;':'#E2E8F0;background:#fff;color:#334155;');
@@ -2522,7 +2531,7 @@ class Component extends DCLogic {
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(),
-      taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabAW:formTab==='aw', tabBrief:formTab==='brief',
+      taskTabs, cmtNew:_cmtNew, tabDetail:formTab==='detail', tabImages:formTab==='images', tabStatus:formTab==='status', tabAW:formTab==='aw', tabBrief:formTab==='brief',
       briefPlatformChips, briefPlatformGroups, briefKolTags:kolS.tags, briefKolOpts:kolS.opts, onBriefKolAdd:kolS.onAdd, briefDoctorTags:docS.tags, briefDoctorOpts:docS.opts, onBriefDoctorAdd:docS.onAdd,
       cbKol:this._mkMultiCb('form.kol', brf.kols, kolsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('kols',id)), cbDoctor:this._mkMultiCb('form.doctor', brf.doctors, doctorsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('doctors',id)),
       dtLocked:_dtLock, dtUnlocked:!_dtLock, dtDateLabel:_dtDateLabel, dtTimeLabel:_dtTimeLabel, briefPriceTags:priceS.tags, briefPriceOpts:priceS.opts, onBriefPriceAdd:priceS.onAdd, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
@@ -2534,7 +2543,7 @@ class Component extends DCLogic {
       onBriefAdStart:e=>this.setBrief('adStart',e.target.value), onBriefAdEnd:e=>this.setBrief('adEnd',e.target.value),
       taskErr:(m&&m.kind==='task')?(f._err||''):'',
       onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
-      onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFImgComment:e=>this.setF('imgComment',e.target.value), onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFPostLink:e=>this.setF('postLink',e.target.value), onFLineBounce:e=>this.setF('lineBounce',e.target.value), showBounce:/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), notBounce:!/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), onFStart:e=>this.setF('start',e.target.value), durationLabel,
+      onFImgDesc:e=>this.setF('imgDesc',e.target.value), onFImgComment:e=>{ const v=e.target.value; try{ const ff=this.state.form||{}; if(ff.id) localStorage.setItem('mp.cmtseen.'+ff.id,(v||'').trim()); }catch(_){} this.setF('imgComment',v); }, onFCaption:e=>this.setF('caption',e.target.value), onFDetails:e=>this.setF('details',e.target.value), onFLink:e=>this.setF('link',e.target.value), onFPostLink:e=>this.setF('postLink',e.target.value), onFLineBounce:e=>this.setF('lineBounce',e.target.value), showBounce:/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), notBounce:!/line/i.test(((S.channels.find(c=>c.id===((S.form||{}).ch))||{}).name)||''), onFStart:e=>this.setF('start',e.target.value), durationLabel,
       onFCreative:e=>this.setF('creative',e.target.value), onFGraphic:e=>this.setF('graphic',e.target.value), onFJob:e=>this.setJobType(e.target.value), onFColorInput:e=>this.setF('color',e.target.value),
       ...this._csView(),
       isCsview: viewAllowed&&S.view==='csview',
