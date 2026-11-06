@@ -1192,7 +1192,7 @@
               <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือ <b>ลากไฟล์มาวาง</b> ในหน้านี้ · หรือกด <b>Ctrl + V</b> วางรูปจากคลิปบอร์ด</div>
               <div style="display:flex; flex-direction:column; gap:12px;">
                 <sc-for list="{{ imgList }}" as="im" hint-placeholder-count="0">
-                  <div draggable="true" onDragStart="{{ im.onDragStart }}" onDragOver="{{ onRowDragOver }}" onDrop="{{ im.onRowDrop }}" style="position:relative; border-radius:10px; overflow:hidden; border:1px solid #E2E8F0; background:#F8FAFC; cursor:grab;">
+                  <div draggable="true" onDragStart="{{ im.onDragStart }}" onDragOver="{{ onMediaDragOver }}" onDrop="{{ im.onRowDrop }}" style="position:relative; border-radius:10px; overflow:hidden; border:1px solid #E2E8F0; background:#F8FAFC; cursor:grab;">
                     <img src="{{ im.data }}" draggable="false" style="width:100%; height:auto; display:block;">
                     <span title="ลากเพื่อสลับลำดับ" style="position:absolute; top:4px; left:4px; width:22px; height:22px; border-radius:6px; background:rgba(15,23,42,.65); color:#fff; font-size:12px; display:flex; align-items:center; justify-content:center;">⠿</span>
                     <button onClick="{{ im.onDownload }}" title="ดาวน์โหลดรูปนี้" style="position:absolute; bottom:4px; left:4px; width:22px; height:22px; border:none; border-radius:6px; background:rgba(15,23,42,.65); color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; cursor:pointer;">⬇</button>
@@ -1222,7 +1222,7 @@
               <div style="font-size:11px; color:#94A3B8; margin-top:-6px;">หรือ <b>ลากไฟล์มาวาง</b> ในหน้านี้ได้เลย (รูป/วิดีโอ)</div>
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <sc-for list="{{ awList }}" as="im" hint-placeholder-count="0">
-                  <div draggable="true" onDragStart="{{ im.onDragStart }}" onDragOver="{{ onRowDragOver }}" onDrop="{{ im.onRowDrop }}" style="display:flex; align-items:center; gap:11px; padding:9px 11px; border:1px solid #EEF2F6; border-radius:10px; cursor:grab;">
+                  <div draggable="true" onDragStart="{{ im.onDragStart }}" onDragOver="{{ onMediaDragOver }}" onDrop="{{ im.onRowDrop }}" style="display:flex; align-items:center; gap:11px; padding:9px 11px; border:1px solid #EEF2F6; border-radius:10px; cursor:grab;">
                     <span title="ลากเพื่อสลับลำดับ" style="color:#CBD5E1; font-size:15px; flex-shrink:0; cursor:grab;">⠿</span>
                     {{ im.awThumb }}
                     <span style="flex:1; font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ im.name }}</span>
@@ -1355,7 +1355,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20u';
+    this.APP_VERSION='2026-08-20v';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -2466,7 +2466,7 @@ class Component extends DCLogic {
     const mkAtt=field=>(f[field]||[]).map((im,i)=>{ const isImg=(im.data||'').startsWith('data:image');
       const thumb=isImg?React.createElement('img',{src:im.data,style:{width:'100%',height:'88px',objectFit:'cover',display:'block'}}):null;
       const awThumb=isImg?React.createElement('img',{src:im.data,style:{width:'40px',height:'40px',objectFit:'cover',borderRadius:'7px',flexShrink:0}}):React.createElement('span',{style:{width:'40px',height:'40px',borderRadius:'7px',background:'#F1F5F9',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}},'📄');
-      return { data:im.data, name:im.name, isImg, notImg:!isImg, thumb, awThumb, onDownload:()=>this.downloadAttach(im), onRemove:()=>this.removeAttach(field,i), onDragStart:(e)=>{ this._dragMedia={field:field,i:i}; if(e&&e.dataTransfer){ e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', field+':'+i); }catch(_){} } }, onRowDrop:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); this.dropMedia(field,i); } }; });
+      return { data:im.data, name:im.name, isImg, notImg:!isImg, thumb, awThumb, onDownload:()=>this.downloadAttach(im), onRemove:()=>this.removeAttach(field,i), onDragStart:(e)=>{ this._dragMedia={field:field,i:i}; if(e&&e.dataTransfer){ e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', field+':'+i); }catch(_){} } }, onRowDrop:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); if(e&&e.stopPropagation) e.stopPropagation(); this.dropMedia(field,i); } }; });
     const imgList=mkAtt('images'), awList=mkAtt('aw');
     const actorP=pMap[S.actor]||{};
 
@@ -2524,7 +2524,7 @@ class Component extends DCLogic {
       wlTabCreativeStyle:wlTabBtn(wlTab==='creative','#4F46E5'), wlTabGraphicStyle:wlTabBtn(wlTab==='graphic','#EC4899'), wlTabOtherStyle:wlTabBtn(wlTab==='other','#0EA5E9'),
       onWlCreative:()=>this.setState({wlTab:'creative'}), onWlGraphic:()=>this.setState({wlTab:'graphic'}), onWlOther:()=>this.setState({wlTab:'other'}),
       reportSections, reportTotal:rep.length,
-      teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, onRowDragOver:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); }, openAddChannel:()=>this.openAddChannel(),
+      teamRows, openAddPerson:()=>this.openAddPerson(), channelGroups:groups, onRowDragOver:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); }, onMediaDragOver:(e)=>{ if(!e) return; if(e.preventDefault) e.preventDefault(); if(e.stopPropagation) e.stopPropagation(); try{ if(e.dataTransfer) e.dataTransfer.dropEffect='move'; }catch(_){} }, openAddChannel:()=>this.openAddChannel(),
       contentRows, procedureRows, statusRows, openAddContent:()=>this.openAddTag('contentType'), openAddProcedure:()=>this.openAddTag('procedure'), openAddStatus:()=>this.openAddTag('status'),
       isAdsMaster:viewAllowed&&!!adsView, adsRows, adsCanEdit, adsCanDel, adsAddLabel, adsEmpty, adsOnAdd:()=>this.openAddTag(S.view), ...EXT,
       historyRows, historyEmpty:logFiltered.length===0,
