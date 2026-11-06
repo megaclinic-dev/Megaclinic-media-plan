@@ -1373,7 +1373,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-21b';
+    this.APP_VERSION='2026-08-21c';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1792,7 +1792,9 @@ class Component extends DCLogic {
     const dowTh=['อา','จ','อ','พ','พฤ','ศ','ส'];
     const mkChip=t=>{ const c=chMap[t.ch]||{color:'#94A3B8',name:'อื่นๆ'}; const st=stMap[t.status]||{}; const fin=this._csFinImg(t);
       return { id:t.id, title:t.title||'(ไม่มีชื่อ)', time:(t.time||'').replace(':','.'), hasTime:!!(t.time&&t.time.trim&&t.time.trim()), chName:c.name||'อื่นๆ', chColor:c.color||'#94A3B8', color:c.color||'#94A3B8', tint:(c.color||'#94A3B8')+'1A', statusColor:st.color||'#CBD5E1', useImg:chip==='image', useName:chip!=='image', hasImg:!!fin.url, img:fin.url, isVid:!!fin.vid, notVid:!fin.vid, onClick:()=>this.openCsDetail(t.id) }; };
-    const dayChips=d=>tasks.filter(t=>t.date===d).map(mkChip);
+    const _tmin=t=>{ const m=/^(\d{1,2})[:.](\d{2})/.exec((t&&t.time)||''); return m?(+m[1]*60+ +m[2]):99999; };
+    const _tcmp=(a,b)=>(_tmin(a)-_tmin(b))||((a.title||'')<(b.title||'')?-1:1);
+    const dayChips=d=>tasks.filter(t=>t.date===d).slice().sort(_tcmp).map(mkChip);
     // calendar cells
     const out={ isCsview:true };
     const seg=on=>'border:none; font-family:inherit; font-size:13px; font-weight:700; padding:7px 13px; border-radius:8px; cursor:pointer; white-space:nowrap; '+(on?'background:#fff; color:#4F46E5; box-shadow:0 1px 2px rgba(15,23,42,.12);':'background:transparent; color:#64748B;');
@@ -1817,7 +1819,7 @@ class Component extends DCLogic {
     const chans=(S.channels||[]).filter(c=>c&&c.id!=='other'&&(chan==='all'||c.id===chan)&&tasks.some(t=>t.ch===c.id));
     out.csMatStyle='grid-template-columns:150px repeat('+days.length+',minmax(118px,1fr));';
     out.csDayHeads=days.map(d=>{ const dt=this.parse(d); return dowTh[dt.getDay()]+' '+dt.getDate(); });
-    out.csRows=chans.map(c=>({ name:c.name, color:c.color||'#94A3B8', cells:days.map(d=>({ items:tasks.filter(t=>t.ch===c.id&&t.date===d).map(mkChip) })) }));
+    out.csRows=chans.map(c=>({ name:c.name, color:c.color||'#94A3B8', cells:days.map(d=>({ items:tasks.filter(t=>t.ch===c.id&&t.date===d).slice().sort(_tcmp).map(mkChip) })) }));
     out.csRowsEmpty=out.csRows.length===0;
     // DETAIL popup
     const dt=(S.csDetail!=null)?(S.tasks||[]).find(t=>t&&t.id===S.csDetail):null;
