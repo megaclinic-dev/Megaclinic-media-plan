@@ -1124,7 +1124,7 @@
           </div>
           <sc-if value="{{ tabDetail }}" hint-placeholder-val="{{ true }}">
           <div style="padding:20px 22px; display:flex; flex-direction:column; gap:14px; overflow-y:auto;">
-            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะ <span style="color:#EF4444;">*</span></span><div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ statusPick }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
+            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะ <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">(Graphic ใส่)</span></span><div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ statusPick }}" as="s" hint-placeholder-count="3"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
             <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ชื่องาน <span style="color:#EF4444;">*</span></span><input value="{{ form.title }}" onChange="{{ onFTitle }}" placeholder="เช่น โปรโมชั่นกลางเดือน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">งาน Online / Offline <span style="color:#EF4444;">*</span></span>
@@ -1230,7 +1230,7 @@
           </sc-if>
           <sc-if value="{{ tabAW }}" hint-placeholder-val="{{ false }}">
             <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:14px;">
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะการลงโพส</span>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สถานะการลงโพส <span style="color:#94A3B8; font-weight:500;">(Creative ใส่)</span></span>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;"><sc-for list="{{ postStatusPick }}" as="s" hint-placeholder-count="2"><button onClick="{{ s.onClick }}" style="{{ s.style }}">{{ s.label }}</button></sc-for></div></div>
               <div style="height:1px; background:#EEF2F6; margin:4px 0;"></div>
               <sc-if value="{{ showBounce }}" hint-placeholder-val="{{ false }}">
@@ -1379,7 +1379,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-21h';
+    this.APP_VERSION='2026-08-21i';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
