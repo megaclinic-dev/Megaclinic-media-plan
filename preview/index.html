@@ -1023,7 +1023,7 @@
                   <sc-for list="{{ csCells }}" as="c" hint-placeholder-count="14">
                     <sc-if value="{{ c.blank }}" hint-placeholder-val="{{ false }}"><div style="min-height:104px; background:#FAFBFC; border-left:1px solid #F1F5F9; border-bottom:1px solid #F1F5F9;"></div></sc-if>
                     <sc-if value="{{ c.day }}" hint-placeholder-val="{{ true }}">
-                      <div style="min-height:104px; padding:6px; border-left:1px solid #F1F5F9; border-bottom:1px solid #F1F5F9; display:flex; flex-direction:column; gap:4px; background:{{ c.cellBg }};">
+                      <div style="min-height:104px; padding:6px; border-left:1px solid #F1F5F9; border-bottom:1px solid #F1F5F9; display:flex; flex-direction:column; gap:4px; background:{{ c.cellBg }}; {{ c.cellLine }}">
                         <span style="font-size:11px; font-weight:700; color:{{ c.dnumColor }};">{{ c.dnum }}</span>
                         <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="2">
                           <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;">
@@ -1050,7 +1050,7 @@
                   <div style="display:grid; {{ csMatStyle }} border-bottom:1px solid #F1F5F9;">
                     <div style="padding:10px 12px; display:flex; align-items:center; gap:8px; font-size:12px; font-weight:600;"><span style="width:9px; height:9px; border-radius:3px; background:{{ r.color }}; flex-shrink:0;"></span>{{ r.name }}</div>
                     <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="7">
-                      <div style="min-height:46px; padding:5px; border-left:1px solid #F1F5F9; display:flex; flex-direction:column; gap:3px; background:{{ c.todayBg }};">
+                      <div style="min-height:46px; padding:5px; border-left:1px solid #F1F5F9; display:flex; flex-direction:column; gap:3px; background:{{ c.todayBg }}; {{ c.todayLine }}">
                         <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="1">
                           <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;"><sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" preload="metadata" style="width:100%; height:auto; max-height:200px; border-radius:4px; display:block; margin-bottom:3px; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:auto; border-radius:4px; display:block; margin-bottom:3px;"></sc-if></sc-if></sc-if><div style="display:flex; align-items:center; gap:5px; margin-top:2px;"><span style="width:9px; height:9px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:12.5px; font-weight:800; color:{{ t.chColor }}; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1;">{{ t.chName }}</span><sc-if value="{{ t.hasTime }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:800; color:#4F46E5; flex-shrink:0;">{{ t.time }}</span></sc-if></div><div style="font-size:14px; font-weight:700; line-height:1.3; color:#0F172A; margin-top:2px; word-break:break-word;">{{ t.title }}</div></button>
                         </sc-for>
@@ -1373,7 +1373,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-21d';
+    this.APP_VERSION='2026-08-21e';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1815,14 +1815,15 @@ class Component extends DCLogic {
     // CAL layout
     const isTd=d=>d===today;
     const hBase='padding:9px 6px; text-align:center; font-size:11px; font-weight:700; border-left:1px solid #F1F5F9; ';
-    const hStyle=td=>hBase+(td?'background:#FEF2F2; color:#EF4444;':'color:#94A3B8;');
-    if(period==='month'){ out.csCalStyle='grid-template-columns:repeat(7,minmax(118px,1fr));'; out.csHeads=['จ','อ','พ','พฤ','ศ','ส','อา'].map(l=>({ label:l, style:hStyle(false) })); const lead=(this.parse(days[0]).getDay()+6)%7; const cells=[]; for(let i=0;i<lead;i++) cells.push({ blank:true, day:false }); days.forEach(d=>{ const td=isTd(d); cells.push({ blank:false, day:true, dnum:String(this.parse(d).getDate()), items:dayChips(d), cellBg:td?'#FEF2F2':'#fff', dnumColor:td?'#EF4444':'#334155' }); }); out.csCells=cells; }
-    else { out.csCalStyle='grid-template-columns:repeat('+days.length+',minmax(128px,1fr));'; out.csHeads=days.map(d=>{ const dt=this.parse(d); return { label:dowTh[dt.getDay()]+' '+dt.getDate(), style:hStyle(isTd(d)) }; }); out.csCells=days.map(d=>{ const td=isTd(d); return { blank:false, day:true, dnum:'', items:dayChips(d), cellBg:td?'#FEF2F2':'#fff', dnumColor:td?'#EF4444':'#334155' }; }); }
+    const hStyle=td=>hBase+(td?'background:#FEF2F2; color:#EF4444; box-shadow:inset 2px 0 0 #EF4444, inset -2px 0 0 #EF4444, inset 0 2px 0 #EF4444;':'color:#94A3B8;');
+    const tdLine='box-shadow:inset 2px 0 0 #EF4444, inset -2px 0 0 #EF4444;';
+    if(period==='month'){ out.csCalStyle='grid-template-columns:repeat(7,minmax(118px,1fr));'; out.csHeads=['จ','อ','พ','พฤ','ศ','ส','อา'].map(l=>({ label:l, style:hStyle(false) })); const lead=(this.parse(days[0]).getDay()+6)%7; const cells=[]; for(let i=0;i<lead;i++) cells.push({ blank:true, day:false }); days.forEach(d=>{ const td=isTd(d); cells.push({ blank:false, day:true, dnum:String(this.parse(d).getDate()), items:dayChips(d), cellBg:td?'#FEF2F2':'#fff', dnumColor:td?'#EF4444':'#334155', cellLine:td?'box-shadow:inset 0 0 0 2px #EF4444;':'' }); }); out.csCells=cells; }
+    else { out.csCalStyle='grid-template-columns:repeat('+days.length+',minmax(128px,1fr));'; out.csHeads=days.map(d=>{ const dt=this.parse(d); return { label:dowTh[dt.getDay()]+' '+dt.getDate(), style:hStyle(isTd(d)) }; }); out.csCells=days.map(d=>{ const td=isTd(d); return { blank:false, day:true, dnum:'', items:dayChips(d), cellBg:td?'#FEF2F2':'#fff', dnumColor:td?'#EF4444':'#334155', cellLine:td?'box-shadow:inset 2px 0 0 #EF4444, inset -2px 0 0 #EF4444, inset 0 -2px 0 #EF4444;':'' }; }); }
     // CHAN matrix
     const chans=(S.channels||[]).filter(c=>c&&c.id!=='other'&&(chan==='all'||c.id===chan)&&tasks.some(t=>t.ch===c.id));
     out.csMatStyle='grid-template-columns:150px repeat('+days.length+',minmax(118px,1fr));';
     out.csDayHeads=days.map(d=>{ const dt=this.parse(d); return { label:dowTh[dt.getDay()]+' '+dt.getDate(), style:hStyle(isTd(d)) }; });
-    out.csRows=chans.map(c=>({ name:c.name, color:c.color||'#94A3B8', cells:days.map(d=>({ items:tasks.filter(t=>t.ch===c.id&&t.date===d).slice().sort(_tcmp).map(mkChip), todayBg:(isTd(d)?'#FEF2F2':'transparent') })) }));
+    out.csRows=chans.map(c=>({ name:c.name, color:c.color||'#94A3B8', cells:days.map(d=>({ items:tasks.filter(t=>t.ch===c.id&&t.date===d).slice().sort(_tcmp).map(mkChip), todayBg:(isTd(d)?'#FEF2F2':'transparent'), todayLine:(isTd(d)?tdLine:'') })) }));
     out.csRowsEmpty=out.csRows.length===0;
     // DETAIL popup
     const dt=(S.csDetail!=null)?(S.tasks||[]).find(t=>t&&t.id===S.csDetail):null;
