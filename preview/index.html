@@ -1052,7 +1052,7 @@
                     <sc-for list="{{ r.cells }}" as="c" hint-placeholder-count="7">
                       <div style="min-height:46px; padding:5px; border-left:1px solid #F1F5F9; display:flex; flex-direction:column; gap:3px;">
                         <sc-for list="{{ c.items }}" as="t" hint-placeholder-count="1">
-                          <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;"><div style="display:flex; align-items:center; gap:5px;"><span style="width:7px; height:7px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; color:#0F172A;">{{ t.title }}</span><sc-if value="{{ t.hasTime }}" hint-placeholder-val="{{ false }}"><span style="font-size:9px; font-weight:800; color:#4F46E5; flex-shrink:0;">{{ t.time }}</span></sc-if></div></button>
+                          <button onClick="{{ t.onClick }}" title="{{ t.title }}" style="background:{{ t.tint }}; border:none; border-left:3px solid {{ t.color }}; border-radius:5px; padding:3px 5px; cursor:pointer; text-align:left; width:100%; display:block;"><sc-if value="{{ t.useImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.hasImg }}" hint-placeholder-val="{{ false }}"><sc-if value="{{ t.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ t.img }}" preload="metadata" style="width:100%; height:auto; max-height:200px; border-radius:4px; display:block; margin-bottom:3px; background:#000;"></video></sc-if><sc-if value="{{ t.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ t.img }}" style="width:100%; height:auto; border-radius:4px; display:block; margin-bottom:3px;"></sc-if></sc-if></sc-if><div style="display:flex; align-items:center; gap:5px;"><span style="width:7px; height:7px; border-radius:50%; background:{{ t.statusColor }}; flex-shrink:0;"></span><span style="font-size:11px; line-height:1.2; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; color:#0F172A;">{{ t.title }}</span><sc-if value="{{ t.hasTime }}" hint-placeholder-val="{{ false }}"><span style="font-size:9px; font-weight:800; color:#4F46E5; flex-shrink:0;">{{ t.time }}</span></sc-if></div></button>
                         </sc-for>
                       </div>
                     </sc-for>
@@ -1366,7 +1366,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20x';
+    this.APP_VERSION='2026-08-20y';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1515,10 +1515,10 @@ class Component extends DCLogic {
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return false; return p[area].view!==false; }
   navArea(v){ return v; }
-  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', csview:'🎧 CS View', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
-  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report','funnelres','csview']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
+  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', csview:'🎧 CS View', taskdate:'🕒 แก้วัน/เวลาลงงาน (ใช้ช่อง "แก้")', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
+  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report','funnelres','csview']],['สิทธิ์พิเศษในฟอร์มงาน',['taskdate']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
   togglePermGroup(pos, keys){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; const allOn=keys.every(k=>{ const pk=perms[pos][k]; return pk?pk.view!==false:true; }); const nv=!allOn; keys.forEach(k=>{ perms[pos][k]={ view:nv, edit:nv, del:nv }; }); return { perms }; }, ()=>this.persist()); }
-  firstPermittedView(pos,perms){ const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
+  firstPermittedView(pos,perms){ if(pos==='CS' && this.permView(pos,'csview',perms)) return 'csview'; const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
   defaultSeed(){
     const channels = [
@@ -1768,7 +1768,7 @@ class Component extends DCLogic {
   _csView(){
     const S=this.state; if(S.view!=='csview') return { isCsview:false };
     const today=S.today||this.iso(new Date());
-    const mode=S.csMode||'cal', period=S.csPeriod||'week', ref=S.csRef||today, chip=S.csChip||'name', chan=S.csChan||'all';
+    const mode=S.csMode||'cal', period=S.csPeriod||'week', ref=S.csRef||today, chip=S.csChip||'image', chan=S.csChan||'all';
     const chMap={}; (S.channels||[]).forEach(c=>{ chMap[c.id]=c; });
     const stMap={}; (S.statuses||[]).forEach(s=>{ stMap[s.id]=s; });
     const kolMap={}; (S.kols||[]).forEach(k=>{ kolMap[k.id]=k; });
@@ -2397,7 +2397,8 @@ class Component extends DCLogic {
     const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], funnelres:['ผลโพสต์ตาม Funnel','กรอกผลแต่ละขั้น Awareness → Interest → Consideration → Confirmation'], csview:['CS View','ดูงานทั้งหมดแบบอ่านอย่างเดียว · เลือกช่วงเวลา/มุมมอง · คลิกงานเพื่อดูรายละเอียด'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
 
     const m=S.modal, f=S.form||{};
-    const _dtLock = (actorPos==='Creative') && !!m && m.kind==='task' && m.mode==='edit';
+    const _tdPerm = (S.perms&&S.perms[actorPos]&&S.perms[actorPos].taskdate)||null;
+    const _dtLock = !!m && m.kind==='task' && m.mode==='edit' && !!(_tdPerm && _tdPerm.edit===false);
     const _dtDateLabel = (f.date && f.date.indexOf('-')>0) ? ((+f.date.split('-')[2])+' '+this.thMon((+f.date.split('-')[1])-1)+' '+f.date.split('-')[0]) : '—';
     const _dtTimeLabel = ((f.time||'').replace(':','.'))||'—';
     let modalTitle='';
