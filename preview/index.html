@@ -1145,6 +1145,7 @@
               </div>
             </sc-if>
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันส่งมอบงาน</span><input type="date" value="{{ form.delivery }}" onChange="{{ onFDelivery }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            <sc-if value="{{ dtUnlocked }}" hint-placeholder-val="{{ true }}">
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
               <label style="flex:2; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันลงงาน <span style="color:#EF4444;">*</span></span><input type="date" value="{{ form.date }}" onChange="{{ onFDate }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
               <label style="flex:1; min-width:130px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เวลาลงงาน <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">· 24 ชม.</span></span>
@@ -1163,6 +1164,14 @@
                 </div>
               </label>
             </div>
+            </sc-if>
+            <sc-if value="{{ dtLocked }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <label style="flex:2; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันลงงาน <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">· 🔒 แก้ไม่ได้</span></span><div style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#F1F5F9; color:#64748B;">{{ dtDateLabel }}</div></label>
+              <label style="flex:1; min-width:130px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เวลาลงงาน <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">· 🔒</span></span><div style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#F1F5F9; color:#64748B;">{{ dtTimeLabel }} น.</div></label>
+            </div>
+            <div style="font-size:11px; color:#94A3B8; margin-top:-6px; line-height:1.5;">🔒 ตำแหน่ง Creative แก้วันลงงาน/เวลาของงานเดิมไม่ได้ · ถ้าต้องเปลี่ยน ใช้ปุ่ม "คัดลอกงาน" แล้วแก้ในงานใหม่</div>
+            </sc-if>
             <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทคอนเทนต์</span><div style="position:relative;"><input value="{{ cbCtype.value }}" onInput="{{ cbCtype.onInput }}" onFocus="{{ cbCtype.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbCtype.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbCtype.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbCtype.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">หัตถการ <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน (ใช้เป็น Product ในชื่อ Ad)</span></span>
               <sc-if value="{{ procEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:4px 0;">ยังไม่มีหัตถการของงานประเภทนี้ · เพิ่มที่เมนู DATA › หัตถการ</div></sc-if>
@@ -1357,7 +1366,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20w';
+    this.APP_VERSION='2026-08-20x';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -2388,6 +2397,9 @@ class Component extends DCLogic {
     const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], funnelres:['ผลโพสต์ตาม Funnel','กรอกผลแต่ละขั้น Awareness → Interest → Consideration → Confirmation'], csview:['CS View','ดูงานทั้งหมดแบบอ่านอย่างเดียว · เลือกช่วงเวลา/มุมมอง · คลิกงานเพื่อดูรายละเอียด'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
 
     const m=S.modal, f=S.form||{};
+    const _dtLock = (actorPos==='Creative') && !!m && m.kind==='task' && m.mode==='edit';
+    const _dtDateLabel = (f.date && f.date.indexOf('-')>0) ? ((+f.date.split('-')[2])+' '+this.thMon((+f.date.split('-')[1])-1)+' '+f.date.split('-')[0]) : '—';
+    const _dtTimeLabel = ((f.time||'').replace(':','.'))||'—';
     let modalTitle='';
     if (m){ if(m.kind==='confirm') modalTitle=m.title||'ยืนยันการลบ';
       else if(m.kind==='tag') modalTitle=(m.mode==='edit'?'แก้ไข ':'เพิ่ม ')+({ contentType:'ประเภทคอนเทนต์', status:'สถานะ', procedure:'หัตถการ', format:'รูปแบบงาน', size:'Size งาน', branch:'สาขา' }[m.entity]||((this.adsMeta()[m.entity]||{}).label)||'');
@@ -2484,7 +2496,8 @@ class Component extends DCLogic {
       isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(),
       taskTabs, tabDetail:formTab==='detail', tabImages:formTab==='images', tabAW:formTab==='aw', tabBrief:formTab==='brief',
       briefPlatformChips, briefPlatformGroups, briefKolTags:kolS.tags, briefKolOpts:kolS.opts, onBriefKolAdd:kolS.onAdd, briefDoctorTags:docS.tags, briefDoctorOpts:docS.opts, onBriefDoctorAdd:docS.onAdd,
-      cbKol:this._mkMultiCb('form.kol', brf.kols, kolsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('kols',id)), cbDoctor:this._mkMultiCb('form.doctor', brf.doctors, doctorsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('doctors',id)), briefPriceTags:priceS.tags, briefPriceOpts:priceS.opts, onBriefPriceAdd:priceS.onAdd, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
+      cbKol:this._mkMultiCb('form.kol', brf.kols, kolsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('kols',id)), cbDoctor:this._mkMultiCb('form.doctor', brf.doctors, doctorsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('doctors',id)),
+      dtLocked:_dtLock, dtUnlocked:!_dtLock, dtDateLabel:_dtDateLabel, dtTimeLabel:_dtTimeLabel, briefPriceTags:priceS.tags, briefPriceOpts:priceS.opts, onBriefPriceAdd:priceS.onAdd, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
       briefPostType:brf.postType||'', briefFunnel:brf.funnel||'', briefCampaign:brf.campaign||'', briefAudience:brf.audience||'', briefObjective:brf.objective||'', briefAdStatus:brf.adStatus||'',
       briefNote:brf.note||'', briefRemark:brf.remark||'', onBriefNote:e=>this.setBrief('note',e.target.value), onBriefRemark:e=>this.setBrief('remark',e.target.value),
       metaAdName, procChips, procEmpty:procChips.length===0, adsReq:adsFieldsReq, adsNoAds:!adsFieldsReq,
