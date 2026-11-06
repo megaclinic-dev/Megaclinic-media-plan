@@ -1072,15 +1072,17 @@
               </div>
               <div style="padding:16px 18px; display:flex; flex-direction:column; gap:13px;">
                 <div><span style="font-size:11px; font-weight:800; color:#fff; background:{{ csDetail.chColor }}; padding:3px 10px; border-radius:7px;">{{ csDetail.chName }}</span></div>
-                <sc-if value="{{ csDetail.hasImg }}" hint-placeholder-val="{{ false }}">
-                  <sc-if value="{{ csDetail.isVid }}" hint-placeholder-val="{{ false }}"><video src="{{ csDetail.img }}" controls="controls" preload="metadata" style="width:100%; border-radius:10px; max-height:300px; background:#000;"></video></sc-if>
-                  <sc-if value="{{ csDetail.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ csDetail.img }}" style="width:100%; border-radius:10px; display:block;"></sc-if>
+                <sc-if value="{{ csDetail.hasImgs }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex; flex-direction:column; gap:8px;"><sc-for list="{{ csDetail.images }}" as="im" hint-placeholder-count="1">
+                    <sc-if value="{{ im.vid }}" hint-placeholder-val="{{ false }}"><video src="{{ im.url }}" controls="controls" preload="metadata" style="width:100%; border-radius:10px; max-height:360px; background:#000;"></video></sc-if>
+                    <sc-if value="{{ im.notVid }}" hint-placeholder-val="{{ true }}"><img src="{{ im.url }}" style="width:100%; border-radius:10px; display:block;"></sc-if>
+                  </sc-for></div>
                 </sc-if>
                 <sc-if value="{{ csDetail.hasBounce }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px; font-weight:700; color:#C2410C; background:#FFF7ED; border-radius:8px; padding:9px 12px;">⚠️ ก้อนเด้ง (LINE BC)<div style="font-size:12px; font-weight:500; color:#9A3412; margin-top:4px; white-space:pre-wrap;">{{ csDetail.bounce }}</div></div></sc-if>
                 <div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">แคปชั่น</div><div style="font-size:14px; color:#0F172A; line-height:1.5; white-space:pre-wrap;">{{ csDetail.caption }}</div></div>
                 <sc-if value="{{ csDetail.hasProcs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">หัตถการ</div><div><sc-for list="{{ csDetail.procs }}" as="x" hint-placeholder-count="2"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#EEF2FF; color:#4338CA;">{{ x }}</span></sc-for></div></div></sc-if>
                 <sc-if value="{{ csDetail.hasKols }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">KOL / KOC</div><div><sc-for list="{{ csDetail.kols }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#FBEAF0; color:#BE1D56;">{{ x.name }}<sc-if value="{{ x.hasHn }}" hint-placeholder-val="{{ false }}"> · HN {{ x.hn }}</sc-if></span></sc-for></div></div></sc-if>
-                <sc-if value="{{ csDetail.hasDocs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Doctor Name</div><div><sc-for list="{{ csDetail.docs }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#E1F5EE; color:#0F6E56;">{{ x }}</span></sc-for></div></div></sc-if>
+                <sc-if value="{{ csDetail.hasDocs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Doctor Name</div><div><sc-for list="{{ csDetail.docs }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#E1F5EE; color:#0F6E56;">{{ x.name }}<sc-if value="{{ x.hasWno }}" hint-placeholder-val="{{ false }}"> · {{ x.wno }}</sc-if></span></sc-for></div></div></sc-if>
                 <div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Link ที่ลงงาน</div><sc-if value="{{ csDetail.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ csDetail.link }}" target="_blank" style="font-size:13px; font-weight:700; color:#4F46E5; word-break:break-all;">↗ {{ csDetail.link }}</a></sc-if><sc-if value="{{ csDetail.noLink }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px; color:#94A3B8;">—</span></sc-if></div>
               </div>
             </div>
@@ -1355,7 +1357,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20v';
+    this.APP_VERSION='2026-08-20w';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1706,7 +1708,7 @@ class Component extends DCLogic {
     const byNameOld={}; old.forEach(k=>{ if(k&&k.name) byNameOld[String(k.name).trim().toLowerCase()]=k; });
     const result=[]; const used={};
     old.forEach(k=>{ if(k&&!k.ext){ result.push(k); used[String(k.name||'').trim().toLowerCase()]=1; } }); // keep manual
-    (items||[]).forEach(d=>{ const kk=String(d.name).trim().toLowerCase(); if(!kk||used[kk]) return; const o=byNameOld[kk]; const it={ id:(o&&o.id)||(pfx+Date.now()+'_'+Math.floor(Math.random()*1000000)), name:d.name, color:(o&&o.color)||'#4F46E5', ext:true }; if(d.start!==undefined) it.start=d.start||''; if(d.expiry!==undefined) it.expiry=d.expiry||''; if(d.hn!==undefined) it.hn=d.hn||''; result.push(it); used[kk]=1; });
+    (items||[]).forEach(d=>{ const kk=String(d.name).trim().toLowerCase(); if(!kk||used[kk]) return; const o=byNameOld[kk]; const it={ id:(o&&o.id)||(pfx+Date.now()+'_'+Math.floor(Math.random()*1000000)), name:d.name, color:(o&&o.color)||'#4F46E5', ext:true }; if(d.start!==undefined) it.start=d.start||''; if(d.expiry!==undefined) it.expiry=d.expiry||''; if(d.hn!==undefined) it.hn=d.hn||''; if(d.wno!==undefined) it.wno=d.wno||''; result.push(it); used[kk]=1; });
     old.forEach(k=>{ if(k&&k.ext&&refIds[k.id]){ const kk=String(k.name||'').trim().toLowerCase(); if(!used[kk]){ result.push(k); used[kk]=1; } } }); // keep synced that a task still uses
     return result; }
   _mergeExt(kind, names){ const key=(kind==='kols')?'kols':'doctors'; const list=(this.state[key]||[]).slice(); const by={}; list.forEach(x=>{ if(x&&x.name) by[String(x.name).trim().toLowerCase()]=x; }); let added=0; const pfx=(kind==='kols')?'kol':'doc'; (names||[]).forEach((nm,ix)=>{ const name=String(nm||'').trim(); if(!name||name==='ไม่มี') return; const k=name.toLowerCase(); if(by[k]){ by[k].ext=true; } else { const o={ id:pfx+Date.now()+'_'+ix+'_'+Math.floor(Math.random()*1000), name:name, color:'#4F46E5', ext:true }; list.push(o); by[k]=o; added++; } }); return { list:list, added:added }; }
@@ -1716,13 +1718,13 @@ class Component extends DCLogic {
     fetch(url).then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.text(); }).then(text=>{
       const rows=this._csvParse(text); if(rows.length<4) throw new Error('ไม่พบข้อมูลในชีท (โครงสร้างไม่ตรง)');
       // Fixed layout: row1 heading, rows2-3 headers, row4+ data. Cols: C(2)=เลข ว. (row-is-doctor; empty=stop), D(3)=ชื่อเล่น, F(5)=ชื่อ, L(11)=ใช้รูปได้
-      const names=[]; let scanned=0;
-      for(let i=3;i<rows.length;i++){ const row=rows[i]||[]; const C=(row[2]||'').trim(); if(!C) break; scanned++; const duty=parseFloat((row[1]||'').replace(/[^0-9.]/g,''))||0; if(duty>=3){ const nm=((row[3]||'').trim()+' '+(row[5]||'').trim()).replace(/\s+/g,' ').trim(); if(nm) names.push(nm); } }
-      const newDocs=this._rebuildExt('doctors', names.map(function(n){ return { name:n }; }));
+      const items=[]; let scanned=0;
+      for(let i=3;i<rows.length;i++){ const row=rows[i]||[]; const C=(row[2]||'').trim(); if(!C) break; scanned++; const duty=parseFloat((row[1]||'').replace(/[^0-9.]/g,''))||0; if(duty>=3){ const nm=((row[3]||'').trim()+' '+(row[5]||'').trim()).replace(/\s+/g,' ').trim(); if(nm) items.push({ name:nm, wno:C }); } }
+      const newDocs=this._rebuildExt('doctors', items);
       const last=this._extNow(); const ex=JSON.parse(JSON.stringify(this.state.extSync||{})); ex.doc=Object.assign({}, ex.doc, { url:cfg.url, auto:(ex.doc&&ex.doc.auto)!==false }); ex.last=Object.assign({},ex.last,{doctor:last});
       try{ localStorage.setItem('mp.ext.day.doctor', this.iso(new Date())); }catch(e){}
-      this.commit({ doctors:newDocs, extSync:ex }, 'แก้ไข', 'ซิงค์ Doctor จาก Google Sheet (เข้าเวร ≥3 วัน '+names.length+')');
-      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอเข้าเวร ≥ 3 วัน '+names.length+' คน จากหมอทั้งหมด '+scanned+' คน');
+      this.commit({ doctors:newDocs, extSync:ex }, 'แก้ไข', 'ซิงค์ Doctor จาก Google Sheet (เข้าเวร ≥3 วัน '+items.length+')');
+      this._extBusy('doctor',false); this._extStat('doctor','✓ ซิงค์แล้ว '+last+' · หมอเข้าเวร ≥ 3 วัน '+items.length+' คน จากหมอทั้งหมด '+scanned+' คน');
     }).catch(e=>{ this._extBusy('doctor',false); this._extStat('doctor','❌ '+((e&&e.message)||'ดึงไม่สำเร็จ')+' — ตรวจว่าทำ "เผยแพร่ไปยังเว็บ (CSV)" แล้ว'); });
   }
   _airFetchAll(base, table, token){ return new Promise(function(resolve,reject){ var out=[]; (function loop(offset){ var u='https://api.airtable.com/v0/'+base+'/'+encodeURIComponent(table)+'?pageSize=100'+(offset?('&offset='+encodeURIComponent(offset)):''); fetch(u,{headers:{Authorization:'Bearer '+token}}).then(function(r){ if(!r.ok) return r.text().then(function(t){ throw new Error('HTTP '+r.status+' ('+table+') '+t.slice(0,80)); }); return r.json(); }).then(function(j){ (j.records||[]).forEach(function(rec){ out.push(rec); }); if(j.offset) loop(j.offset); else resolve(out); }).catch(reject); })(''); }); }
@@ -1802,15 +1804,15 @@ class Component extends DCLogic {
     out.csRowsEmpty=out.csRows.length===0;
     // DETAIL popup
     const dt=(S.csDetail!=null)?(S.tasks||[]).find(t=>t&&t.id===S.csDetail):null;
-    if(dt){ const c=chMap[dt.ch]||{color:'#94A3B8',name:'อื่นๆ'}; const fin=this._csFinImg(dt); const d=this.parse(dt.date);
+    if(dt){ const c=chMap[dt.ch]||{color:'#94A3B8',name:'อื่นๆ'}; const d=this.parse(dt.date); const mkImgs=(arr)=>{ var o2=[]; (Array.isArray(arr)?arr:[]).forEach(function(im){ if(im&&im.data){ var vid=!!im.vid||/\.(mp4|mov|webm|m4v)(\?|$)/i.test(im.data); o2.push({ url:im.data, vid:vid, notVid:!vid }); } }); return o2; }; const allImgs=(dt.aw&&dt.aw.length)?mkImgs(dt.aw):mkImgs(dt.images);
       const names=(ids,map)=>(Array.isArray(ids)?ids:[]).map(id=>(map[id]||{}).name).filter(Boolean);
       const b=dt.brief||{};
       out.csDetailOpen=true;
       out.csDetail={ title:dt.title||'(ไม่มีชื่อ)', dateLabel:d.getDate()+' '+this.thMon(d.getMonth())+' '+d.getFullYear(), time:(dt.time||'').replace(':','.'), hasTime:!!(dt.time&&dt.time.trim&&dt.time.trim()),
-        chName:c.name, chColor:c.color||'#94A3B8', hasImg:!!fin.url, img:fin.url, isVid:!!fin.vid, notVid:!fin.vid,
+        chName:c.name, chColor:c.color||'#94A3B8', images:allImgs, hasImgs:allImgs.length>0, imgCount:allImgs.length,
         bounce:(dt.lineBounce||'').trim(), hasBounce:!!(dt.lineBounce&&dt.lineBounce.trim()),
         caption:(dt.caption||'').trim()||'—',
-        procs:names(this.procIds(dt),procMap), kols:(Array.isArray(b.kols)?b.kols:[]).map(id=>kolMap[id]).filter(Boolean).map(k=>({ name:k.name, hn:k.hn||'', hasHn:!!(k.hn&&String(k.hn).trim()) })), docs:names(b.doctors,docMap),
+        procs:names(this.procIds(dt),procMap), kols:(Array.isArray(b.kols)?b.kols:[]).map(id=>kolMap[id]).filter(Boolean).map(k=>({ name:k.name, hn:k.hn||'', hasHn:!!(k.hn&&String(k.hn).trim()) })), docs:(Array.isArray(b.doctors)?b.doctors:[]).map(id=>docMap[id]).filter(Boolean).map(k=>({ name:k.name, wno:k.wno||'', hasWno:!!(k.wno&&String(k.wno).trim()) })),
         link:(dt.postLink||'').trim(), hasLink:!!(dt.postLink&&dt.postLink.trim()), noLink:!(dt.postLink&&dt.postLink.trim()),
         onClose:()=>this.closeCsDetail() };
       out.csDetail.hasProcs=out.csDetail.procs.length>0; out.csDetail.hasKols=out.csDetail.kols.length>0; out.csDetail.hasDocs=out.csDetail.docs.length>0;
