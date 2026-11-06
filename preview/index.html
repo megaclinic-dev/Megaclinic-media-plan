@@ -1084,6 +1084,13 @@
                 <sc-if value="{{ csDetail.hasKols }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">KOL / KOC</div><div><sc-for list="{{ csDetail.kols }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#FBEAF0; color:#BE1D56;">{{ x.name }}<sc-if value="{{ x.hasHn }}" hint-placeholder-val="{{ false }}"> · HN {{ x.hn }}</sc-if></span></sc-for></div></div></sc-if>
                 <sc-if value="{{ csDetail.hasDocs }}" hint-placeholder-val="{{ false }}"><div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Doctor Name</div><div><sc-for list="{{ csDetail.docs }}" as="x" hint-placeholder-count="1"><span style="display:inline-block; font-size:12px; font-weight:700; padding:3px 10px; border-radius:7px; margin:0 4px 4px 0; background:#E1F5EE; color:#0F6E56;">{{ x.name }}<sc-if value="{{ x.hasWno }}" hint-placeholder-val="{{ false }}"> · {{ x.wno }}</sc-if></span></sc-for></div></div></sc-if>
                 <div><div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.03em; margin-bottom:4px;">Link ที่ลงงาน</div><sc-if value="{{ csDetail.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ csDetail.link }}" target="_blank" style="font-size:13px; font-weight:700; color:#4F46E5; word-break:break-all;">↗ {{ csDetail.link }}</a></sc-if><sc-if value="{{ csDetail.noLink }}" hint-placeholder-val="{{ true }}"><span style="font-size:13px; color:#94A3B8;">—</span></sc-if></div>
+                <div style="border-top:1px dashed #E2E8F0; padding-top:13px; margin-top:3px;">
+                  <div style="font-size:11px; font-weight:800; color:#4F46E5; margin-bottom:8px;">💬 ก้อนตอบ <span style="color:#94A3B8; font-weight:500;">· CS กรอกได้ · บันทึกอัตโนมัติ</span></div>
+                  <div style="font-size:10px; font-weight:800; color:#94A3B8; margin-bottom:4px;">ก้อนตอบ 1</div>
+                  <textarea id="csReply1" value="{{ csDetail.reply1 }}" onChange="{{ csDetail.onReply1 }}" rows="3" placeholder="พิมพ์ก้อนตอบสำหรับลูกค้า..." style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #C7D2FE; border-radius:9px; resize:vertical; line-height:1.6; color:#0F172A; margin-bottom:10px; background:#FBFCFF;"></textarea>
+                  <div style="font-size:10px; font-weight:800; color:#94A3B8; margin-bottom:4px;">ก้อนตอบ 2</div>
+                  <textarea id="csReply2" value="{{ csDetail.reply2 }}" onChange="{{ csDetail.onReply2 }}" rows="3" placeholder="พิมพ์ก้อนตอบสำรอง / เพิ่มเติม..." style="width:100%; font-size:13px; padding:9px 11px; border:1px solid #C7D2FE; border-radius:9px; resize:vertical; line-height:1.6; color:#0F172A; background:#FBFCFF;"></textarea>
+                </div>
               </div>
             </div>
           </div>
@@ -1366,7 +1373,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-20y';
+    this.APP_VERSION='2026-08-20z';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1696,6 +1703,7 @@ class Component extends DCLogic {
   csShift(dir){ const S=this.state; const today=S.today||this.iso(new Date()); const ref=S.csRef||today; const period=S.csPeriod||'week'; if(period==='week'){ this.setState({ csRef:this.addDays(ref, dir*7) }); } else if(period==='month'){ const d=this.parse(ref); this.setState({ csRef:this.iso(new Date(d.getFullYear(), d.getMonth()+dir, 1)) }); } }
   openCsDetail(id){ this.setState({ csDetail:id }); }
   closeCsDetail(){ this.setState({ csDetail:null }); }
+  setCsReply(id, field, val){ this.setState(s=>({ tasks:(s.tasks||[]).map(t=>(t&&t.id===id)?Object.assign({},t,{[field]:val}):t) })); clearTimeout(this._csReplyT); this._csReplyT=setTimeout(()=>{ try{ this.persist(); }catch(e){} }, 700); }
   // ===== External data sync (KOL=Airtable · Doctor=Google Sheet) =====
   _extKolLS(){ try{ return JSON.parse(localStorage.getItem('mp.ext.kol')||'{}')||{}; }catch(e){ return {}; } }
   _extKolSave(cfg){ try{ localStorage.setItem('mp.ext.kol', JSON.stringify(cfg||{})); }catch(e){} }
@@ -1823,6 +1831,7 @@ class Component extends DCLogic {
         caption:(dt.caption||'').trim()||'—',
         procs:names(this.procIds(dt),procMap), kols:(Array.isArray(b.kols)?b.kols:[]).map(id=>kolMap[id]).filter(Boolean).map(k=>({ name:k.name, hn:k.hn||'', hasHn:!!(k.hn&&String(k.hn).trim()) })), docs:(Array.isArray(b.doctors)?b.doctors:[]).map(id=>docMap[id]).filter(Boolean).map(k=>({ name:k.name, wno:k.wno||'', hasWno:!!(k.wno&&String(k.wno).trim()) })),
         link:(dt.postLink||'').trim(), hasLink:!!(dt.postLink&&dt.postLink.trim()), noLink:!(dt.postLink&&dt.postLink.trim()),
+        reply1:(dt.csReply1||''), reply2:(dt.csReply2||''), onReply1:(e)=>this.setCsReply(dt.id,'csReply1',e.target.value), onReply2:(e)=>this.setCsReply(dt.id,'csReply2',e.target.value),
         onClose:()=>this.closeCsDetail() };
       out.csDetail.hasProcs=out.csDetail.procs.length>0; out.csDetail.hasKols=out.csDetail.kols.length>0; out.csDetail.hasDocs=out.csDetail.docs.length>0;
     } else { out.csDetailOpen=false; out.csDetail=null; }
