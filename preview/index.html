@@ -892,7 +892,19 @@
       </sc-if>
 
       <sc-if value="{{ isAdsTable }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex; flex-direction:column; gap:14px;">
+        <style>
+          .atWrap table td{ padding:3px 5px !important; border-bottom:1px solid #F1F5F9; }
+          .atE{ width:100%; min-width:72px; border:1px solid transparent; background:transparent; font-size:12px; padding:5px 6px; border-radius:6px; font-family:inherit; color:#0F172A; }
+          .atE:hover{ border-color:#E2E8F0; background:#fff; }
+          .atE:focus{ border-color:#4F46E5; background:#fff; outline:none; }
+          .atSw{ display:inline-block; width:38px; height:21px; border-radius:99px; background:#CBD5E1; position:relative; cursor:pointer; vertical-align:middle; }
+          .atSw.on{ background:#059669; }
+          .atSw::after{ content:''; position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; transition:.15s; }
+          .atSw.on::after{ left:19px; }
+          .atPin{ position:sticky; left:0; z-index:2; background:#fff; box-shadow:1px 0 0 #E2E8F0; }
+          thead .atPin{ z-index:4; background:#EAEEF4; }
+        </style>
+        <div class="atWrap" style="display:flex; flex-direction:column; gap:14px;">
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;">
             <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;"><sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for></div>
             <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px;"><button onClick="{{ prevPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; color:#475569;">‹</button><div style="font-size:13px; font-weight:600; min-width:150px; text-align:center;">{{ periodLabel }}</div><button onClick="{{ nextPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; color:#475569;">›</button></div></sc-if>
@@ -920,7 +932,7 @@
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Post Type</th>
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ad Type</th>
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ad Name</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:800; color:#4F46E5; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">ชื่องาน</th>
+                <th class="atPin" style="padding:8px 10px; text-align:left; font-size:11px; font-weight:800; color:#4F46E5; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">ชื่องาน</th>
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">หัตถการ</th>
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Price</th>
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Objective</th>
@@ -948,45 +960,45 @@
                 <sc-if value="{{ atRowsEmpty }}" hint-placeholder-val="{{ false }}"><tr><td colspan="33" style="padding:28px; text-align:center; color:#94A3B8; font-size:13px;">ไม่มีงานยิงแอดในช่วงนี้ · กด "รวมไม่ยิงแอด" เพื่อดูทั้งหมด</td></tr></sc-if>
                 <sc-for list="{{ atRows }}" as="r" hint-placeholder-count="6">
                   <tr>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#64748B;">{{ r.month }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.team }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A; font-weight:600;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:{{ r.platColor }}; margin-right:6px;"></span>{{ r.plat }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9;"><span style="font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:99px; color:{{ r.stColor }}; background:{{ r.stBg }};">{{ r.status }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.date }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#64748B;">{{ r.adStart }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#64748B;">{{ r.adEnd }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.postType }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.adType }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.adName }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; background:#FAFBFF;"><button onClick="{{ r.onOpen }}" style="border:none; background:transparent; color:#4F46E5; font-weight:700; font-size:12px; cursor:pointer; text-align:left; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;">{{ r.title }}</button></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;"><span style="display:inline-block; max-width:160px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.procs }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.price }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.objective }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.funnel }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.campaign }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.audience }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;"><span style="display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.audienceDetail }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.age }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#475569;"><span style="display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.greeting }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#475569;"><span style="display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.question }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#475569;"><span style="display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.followup }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#475569;"><span style="display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.headline }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#475569;"><span style="display:inline-block; max-width:170px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.commentAds }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#475569;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.note }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#475569;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.remark }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9;"><sc-if value="{{ r.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ r.postLink }}" target="_blank" style="color:#4F46E5; font-weight:600; font-size:12px;">↗ เปิด</a></sc-if></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.creative }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.graphic }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;">{{ r.channel }}</td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.kols }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.docs }}</span></td>
-                    <td style="padding:7px 10px; border-bottom:1px solid #F1F5F9; color:#94A3B8;"><span style="display:inline-block; max-width:220px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.meta }}</span></td>
+                    <td style="color:#64748B; white-space:nowrap;">{{ r.month }}</td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.team }}</td>
+                    <td style="color:#0F172A; font-weight:600; white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:{{ r.platColor }}; margin-right:6px;"></span>{{ r.plat }}</td>
+                    <td style="white-space:nowrap; text-align:center;"><button onClick="{{ r.onToggleOn }}" class="atSw {{ r.onClass }}" title="สลับ ยิง/ไม่ยิง"></button></td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.date }}</td>
+                    <td><input type="date" value="{{ r.vAdStart }}" onChange="{{ r.eAdStart }}" class="atE" style="min-width:130px;"></td>
+                    <td><input type="date" value="{{ r.vAdEnd }}" onChange="{{ r.eAdEnd }}" class="atE" style="min-width:130px;"></td>
+                    <td><select value="{{ r.vPostType }}" onChange="{{ r.ePostType }}" class="atE" style="min-width:100px;"><sc-for list="{{ atPostTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><select value="{{ r.vFormat }}" onChange="{{ r.eFormat }}" class="atE" style="min-width:110px;"><sc-for list="{{ atAdTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><input value="{{ r.vAdName }}" onChange="{{ r.eAdName }}" class="atE" style="min-width:120px;" placeholder="ตั้งชื่อ Ad"></td>
+                    <td class="atPin" style="background:#FAFBFF;"><button onClick="{{ r.onOpen }}" style="border:none; background:transparent; color:#4F46E5; font-weight:700; font-size:12px; cursor:pointer; text-align:left; max-width:190px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;">{{ r.title }}</button></td>
+                    <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.procs }}</span></td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.price }}</td>
+                    <td><select value="{{ r.vObjective }}" onChange="{{ r.eObjective }}" class="atE" style="min-width:100px;"><sc-for list="{{ atObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><select value="{{ r.vFunnel }}" onChange="{{ r.eFunnel }}" class="atE" style="min-width:90px;"><sc-for list="{{ atFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><select value="{{ r.vCampaign }}" onChange="{{ r.eCampaign }}" class="atE" style="min-width:110px;"><sc-for list="{{ atCampaignOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><select value="{{ r.vAudience }}" onChange="{{ r.eAudience }}" class="atE" style="min-width:120px;"><sc-for list="{{ atAudienceOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><input value="{{ r.vAudienceDetail }}" onChange="{{ r.eAudienceDetail }}" class="atE" style="min-width:150px;" placeholder="รายละเอียด"></td>
+                    <td><input value="{{ r.vAge }}" onChange="{{ r.eAge }}" class="atE" style="min-width:80px;" placeholder="เช่น 20-25"></td>
+                    <td><input value="{{ r.vGreeting }}" onChange="{{ r.eGreeting }}" class="atE" style="min-width:160px;"></td>
+                    <td><input value="{{ r.vQuestion }}" onChange="{{ r.eQuestion }}" class="atE" style="min-width:160px;"></td>
+                    <td><input value="{{ r.vFollowup }}" onChange="{{ r.eFollowup }}" class="atE" style="min-width:160px;"></td>
+                    <td><input value="{{ r.vHeadline }}" onChange="{{ r.eHeadline }}" class="atE" style="min-width:150px;"></td>
+                    <td><input value="{{ r.vCommentAds }}" onChange="{{ r.eCommentAds }}" class="atE" style="min-width:160px;"></td>
+                    <td><input value="{{ r.vNote }}" onChange="{{ r.eNote }}" class="atE" style="min-width:140px;"></td>
+                    <td><input value="{{ r.vRemark }}" onChange="{{ r.eRemark }}" class="atE" style="min-width:140px;"></td>
+                    <td style="white-space:nowrap;"><sc-if value="{{ r.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ r.postLink }}" target="_blank" style="color:#4F46E5; font-weight:600; font-size:12px;">↗ เปิด</a></sc-if></td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.creative }}</td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.graphic }}</td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.channel }}</td>
+                    <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.kols }}</span></td>
+                    <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.docs }}</span></td>
+                    <td style="color:#94A3B8;"><span style="display:inline-block; max-width:220px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.meta }}</span></td>
                   </tr>
                 </sc-for>
               </tbody>
             </table>
           </div>
-          <div style="font-size:11.5px; color:#94A3B8;">แสดง 1 แถวต่อ 1 Platform · คอลัมน์ <span style="color:#6D28D9;">ม่วง</span> = ช่องใหม่ · <span style="color:#0E7490;">ฟ้า</span> = ข้อมูลจาก Media Plan · กดชื่องานเพื่อเปิดฟอร์มแก้ไข (แก้ค่าในฟอร์ม เดี๋ยวเฟส 3b เพิ่มแก้ในตาราง + Export)</div>
+          <div style="font-size:11.5px; color:#94A3B8;">แก้ในช่องได้เลย (บันทึกอัตโนมัติ + ซิงก์เรียลไทม์) · สลับปุ่ม <b>ยิง/ไม่ยิง</b> → เติมวันเปิดแอดอัตโนมัติ · 1 แถว/1 Platform · กดชื่องานเปิดฟอร์ม · ช่อง ดึงมา/รูป/Platform/KOL/Doctor/Price แก้ที่ฟอร์ม</div>
         </div>
       </sc-if>
       <sc-if value="{{ isFunnelres }}" hint-placeholder-val="{{ false }}">
@@ -1477,7 +1489,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24b';
+    this.APP_VERSION='2026-08-24c';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1884,6 +1896,21 @@ class Component extends DCLogic {
     const kcfg=this._extKolLS(); if(kcfg.token && kcfg.baseId && kcfg.table && (kcfg.auto!==false)){ let last=''; try{ last=localStorage.getItem('mp.ext.day.kol')||''; }catch(e){} if(last!==today){ this.setState({ extKolCfg:kcfg }, ()=>this.syncKol()); } }
   }catch(e){} }
   setAdsMode(mode){ this.setFnRange(mode); }
+  _adsSet(id, scope, field, raw){
+    const S=this.state;
+    const tasks=(S.tasks||[]).map(t=>{ if(t.id!==id) return t;
+      if(scope==='brief'){ const br=Object.assign({}, this.normalizeBrief(t.brief)); br[field]=raw; return Object.assign({}, t, { brief:br }); }
+      return Object.assign({}, t, { [field]:raw }); });
+    this.setState({ tasks }); clearTimeout(this._atT); this._atT=setTimeout(()=>this.persist(), 700);
+  }
+  _adsToggleOn(id){
+    const S=this.state; const noAds=(S.adStatuses||[]).find(s=>this.isNoAds(s)); const yes=(S.adStatuses||[]).find(s=>!this.isNoAds(s));
+    const tasks=(S.tasks||[]).map(t=>{ if(t.id!==id) return t; const br=Object.assign({}, this.normalizeBrief(t.brief));
+      const cur=(S.adStatuses||[]).find(s=>s.id===br.adStatus)||{}; const isOn=!!br.adStatus && !this.isNoAds(cur);
+      if(isOn){ br.adStatus=noAds?noAds.id:''; } else { br.adStatus=yes?yes.id:''; if(!br.adStart) br.adStart=S.today||this.iso(new Date()); }
+      return Object.assign({}, t, { brief:br }); });
+    this.setState({ tasks }); clearTimeout(this._atT); this._atT=setTimeout(()=>this.persist(), 700);
+  }
   _adsTable(){
     const S=this.state; if(S.view!=='adstable') return { isAdsTable:false };
     const out={ isAdsTable:true };
@@ -1934,9 +1961,15 @@ class Component extends DCLogic {
         channel:((chMap[t.ch]||{}).name)||(t.ch==='other'?'อื่นๆ':(t.ch||'—')),
         kols:nmM(S.kols,b.kols)||'—', docs:nmM(S.doctors,b.doctors)||'—',
         meta:this.buildAdName(t),
+        isOn:done, onClass:(done?'on':''),
+        vAdName:(b.adName||''), vAge:(b.age||''), vGreeting:(b.greeting||''), vQuestion:(b.question||''), vFollowup:(b.followup||''), vHeadline:(b.headline||''), vCommentAds:(b.commentAds||''), vNote:(b.note||''), vRemark:(b.remark||''), vAudienceDetail:(b.audienceDetail||''), vAdStart:(b.adStart||''), vAdEnd:(b.adEnd||''), vFormat:(t.format||''), vPostType:(b.postType||''), vFunnel:(b.funnel||''), vCampaign:(b.campaign||''), vAudience:(b.audience||''), vObjective:(b.objective||''),
+        onToggleOn:()=>this._adsToggleOn(t.id),
+        eAdName:e=>this._adsSet(t.id,'brief','adName',e.target.value), eAge:e=>this._adsSet(t.id,'brief','age',e.target.value), eGreeting:e=>this._adsSet(t.id,'brief','greeting',e.target.value), eQuestion:e=>this._adsSet(t.id,'brief','question',e.target.value), eFollowup:e=>this._adsSet(t.id,'brief','followup',e.target.value), eHeadline:e=>this._adsSet(t.id,'brief','headline',e.target.value), eCommentAds:e=>this._adsSet(t.id,'brief','commentAds',e.target.value), eNote:e=>this._adsSet(t.id,'brief','note',e.target.value), eRemark:e=>this._adsSet(t.id,'brief','remark',e.target.value), eAudienceDetail:e=>this._adsSet(t.id,'brief','audienceDetail',e.target.value), eAdStart:e=>this._adsSet(t.id,'brief','adStart',e.target.value), eAdEnd:e=>this._adsSet(t.id,'brief','adEnd',e.target.value), eFormat:e=>this._adsSet(t.id,'task','format',e.target.value), ePostType:e=>this._adsSet(t.id,'brief','postType',e.target.value), eFunnel:e=>this._adsSet(t.id,'brief','funnel',e.target.value), eCampaign:e=>this._adsSet(t.id,'brief','campaign',e.target.value), eAudience:e=>this._adsSet(t.id,'brief','audience',e.target.value), eObjective:e=>this._adsSet(t.id,'brief','objective',e.target.value),
         onOpen:()=>this.openEditTaskBrief(t)
       };
     });
+    const optOf=(list)=>[{ value:'', label:'—' }].concat((list||[]).map(x=>({ value:x.id, label:x.name })));
+    out.atAdTypeOpts=optOf(S.formats); out.atPostTypeOpts=optOf(S.adPostTypes); out.atFunnelOpts=optOf(S.adFunnels); out.atCampaignOpts=optOf(S.adCampaigns); out.atAudienceOpts=optOf(S.adAudiences); out.atObjectiveOpts=optOf(S.adObjectives);
     out.atRowsEmpty=out.atRows.length===0;
     out.atCount=rows.length+' แถว';
     out.atPlatOpts=[{ value:'all', label:'ทุก Platform' }].concat((S.channels||[]).filter(c=>c.platformAd).map(c=>({ value:c.id, label:c.name })));
