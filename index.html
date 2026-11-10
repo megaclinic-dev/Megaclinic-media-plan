@@ -893,23 +893,39 @@
 
       <sc-if value="{{ isAdsTable }}" hint-placeholder-val="{{ false }}">
         <style>
-          .atWrap table td{ padding:3px 5px !important; border-bottom:1px solid #F1F5F9; }
-          .atE{ width:100%; min-width:72px; border:1px solid transparent; background:transparent; font-size:12px; padding:5px 6px; border-radius:6px; font-family:inherit; color:#0F172A; }
-          .atE:hover{ border-color:#E2E8F0; background:#fff; }
-          .atE:focus{ border-color:#4F46E5; background:#fff; outline:none; }
-          .atSw{ display:inline-block; width:38px; height:21px; border-radius:99px; background:#CBD5E1; position:relative; cursor:pointer; vertical-align:middle; }
+          #atTbl th, #atTbl td{ border-right:1px solid #EEF2F6; border-bottom:1px solid #EEF2F6; }
+          #atTbl tbody td{ padding:2px 4px !important; }
+          #atTbl tbody tr:nth-child(even) td{ background:#FBFCFE; }
+          #atTbl tbody tr:hover td{ background:#F1F5FF; }
+          .atE{ width:100%; min-width:72px; border:1px solid transparent; background:transparent; font-size:12px; padding:5px 7px; border-radius:0; font-family:inherit; color:#0F172A; }
+          .atE:hover{ background:#fff; box-shadow:inset 0 0 0 1px #E2E8F0; }
+          .atE:focus{ background:#fff; box-shadow:inset 0 0 0 2px #4F46E5; outline:none; }
+          select.atE{ appearance:none; cursor:pointer; background-image:url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path d='M1 2l3 3 3-3' stroke='%2394A3B8' fill='none' stroke-width='1.3'/></svg>\"); background-repeat:no-repeat; background-position:right 6px center; padding-right:18px; }
+          .atSw{ display:inline-block; width:36px; height:20px; border-radius:99px; background:#CBD5E1; position:relative; cursor:pointer; vertical-align:middle; margin:5px 0 0; }
           .atSw.on{ background:#059669; }
-          .atSw::after{ content:''; position:absolute; top:2px; left:2px; width:17px; height:17px; border-radius:50%; background:#fff; transition:.15s; }
-          .atSw.on::after{ left:19px; }
-          .atPin{ position:sticky; left:0; z-index:2; background:#fff; box-shadow:1px 0 0 #E2E8F0; }
-          thead .atPin{ z-index:4; background:#EAEEF4; }
+          .atSw::after{ content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:.15s; }
+          .atSw.on::after{ left:18px; }
+          .atPin{ position:sticky; left:0; z-index:2; background:#fff; box-shadow:1px 0 0 #D8DEE9; }
+          #atTbl tbody tr:nth-child(even) td.atPin{ background:#F7F9FC; }
+          #atTbl tbody tr:hover td.atPin{ background:#F1F5FF; }
+          thead .atPin{ z-index:5; background:#EAEEF4; }
         </style>
+        <style id="atColHide"></style>
         <div class="atWrap" style="display:flex; flex-direction:column; gap:14px;">
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;">
             <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;"><sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for></div>
             <sc-if value="{{ showNav }}" hint-placeholder-val="{{ true }}"><div style="display:flex; align-items:center; gap:8px;"><button onClick="{{ prevPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; color:#475569;">‹</button><div style="font-size:13px; font-weight:600; min-width:150px; text-align:center;">{{ periodLabel }}</div><button onClick="{{ nextPeriod }}" style="width:32px; height:32px; border:1px solid #E2E8F0; background:#fff; border-radius:9px; cursor:pointer; color:#475569;">›</button></div></sc-if>
             <sc-if value="{{ showRange }}" hint-placeholder-val="{{ false }}"><div style="display:flex; align-items:center; gap:8px;"><input type="date" value="{{ rangeStart }}" onChange="{{ onRangeStart }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"><span style="color:#94A3B8;">–</span><input type="date" value="{{ rangeEnd }}" onChange="{{ onRangeEnd }}" style="font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px;"></div></sc-if>
-            <span style="margin-left:auto; font-size:12px; color:#94A3B8;">{{ atCount }}</span>
+            <div style="margin-left:auto; display:flex; align-items:center; gap:10px; position:relative;">
+              <span style="font-size:12px; color:#94A3B8;">{{ atCount }}</span>
+              <button onClick="{{ onAtColMenu }}" style="font-size:12px; font-weight:700; border:1px solid #E2E8F0; background:#fff; color:#64748B; padding:7px 11px; border-radius:8px; cursor:pointer;">⚙ คอลัมน์ ▾</button>
+              <sc-if value="{{ atColMenuOpen }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute; top:40px; right:0; z-index:30; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 14px 34px rgba(15,23,42,.2); padding:7px; width:220px; max-height:320px; overflow:auto;">
+                  <div style="font-size:10px; font-weight:800; color:#94A3B8; text-transform:uppercase; letter-spacing:.05em; padding:5px 8px;">ซ่อน/แสดงคอลัมน์</div>
+                  <sc-for list="{{ atColChecks }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onToggle }}" style="display:flex; align-items:center; gap:8px; width:100%; border:none; background:transparent; font-family:inherit; font-size:12.5px; color:#0F172A; padding:6px 8px; border-radius:7px; cursor:pointer; text-align:left;">{{ c.mark }} {{ c.label }}</button></sc-for>
+                </div>
+              </sc-if>
+            </div>
           </div>
           <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
             <select value="{{ atPlatVal }}" onChange="{{ onAtPlat }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:200px;"><sc-for list="{{ atPlatOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select>
@@ -920,7 +936,7 @@
             <button onClick="{{ onAtToggleNoAds }}" style="{{ atNoAdsStyle }}">รวม "ไม่ยิงแอด"</button>
           </div>
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; overflow:auto; max-height:70vh;">
-            <table style="border-collapse:separate; border-spacing:0; font-size:12px; white-space:nowrap;">
+            <table id="atTbl" style="border-collapse:separate; border-spacing:0; font-size:12px; white-space:nowrap;">
               <thead><tr>
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Month</th>
                 <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Team</th>
@@ -1489,7 +1505,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24c';
+    this.APP_VERSION='2026-08-24d';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1708,10 +1724,11 @@ class Component extends DCLogic {
     window.addEventListener('drop', this._onDrop);
     this._onCbDown=(e)=>{ if(this.state.cbOpen && e.target && !(e.target.closest && e.target.closest('.mp-cb'))) this.setState({ cbOpen:null, cbq:'' }); };
     window.addEventListener('pointerdown', this._onCbDown, true);
+    try{ this._atHide=JSON.parse(localStorage.getItem('mp.atHide')||'{}')||{}; }catch(e){ this._atHide={}; } setTimeout(()=>this._applyAdsCols(),0);
     this._onBeforeUnload=(e)=>{ if((this._pend||0)>0 || this.state.syncStatus==='saving' || this.state.syncStatus==='error'){ e.preventDefault(); e.returnValue='ยังบันทึกไม่เสร็จ ถ้าปิดตอนนี้งานล่าสุดอาจหาย'; return e.returnValue; } };
     window.addEventListener('beforeunload', this._onBeforeUnload);
     this._loadAll().then(()=>this._initSync()).catch(err=>{ console.error('[load]',err&&err.message); this.setState({ loading:false, loadErr:true }); this._retryLoad(); }); }
-  componentDidUpdate(){ if(this._reloadWhenIdle && !this.state.modal && (this._pend||0)===0){ this._reloadWhenIdle=false; setTimeout(()=>location.reload(), 300); } } // deferred update fires once the user closes the form and saves finish
+  componentDidUpdate(){ if(this._reloadWhenIdle && !this.state.modal && (this._pend||0)===0){ this._reloadWhenIdle=false; setTimeout(()=>location.reload(), 300); } if(this.state.view==='adstable') this._applyAdsCols(); } // deferred update fires once the user closes the form and saves finish
   componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); if(this._onPaste) window.removeEventListener('paste',this._onPaste); if(this._onDragOver) window.removeEventListener('dragover',this._onDragOver); if(this._onDrop) window.removeEventListener('drop',this._onDrop); if(this._onCbDown) window.removeEventListener('pointerdown',this._onCbDown,true); if(this._onBeforeUnload) window.removeEventListener('beforeunload',this._onBeforeUnload); }
 
   commit(patch, action, detail, changes, meta){
@@ -1911,6 +1928,8 @@ class Component extends DCLogic {
       return Object.assign({}, t, { brief:br }); });
     this.setState({ tasks }); clearTimeout(this._atT); this._atT=setTimeout(()=>this.persist(), 700);
   }
+  toggleAdsCol(idx){ this._atHide=this._atHide||{}; this._atHide[idx]=!this._atHide[idx]; try{ localStorage.setItem('mp.atHide', JSON.stringify(this._atHide)); }catch(e){} this._applyAdsCols(); this.setState({ _atTick:(this.state._atTick||0)+1 }); }
+  _applyAdsCols(){ try{ const el=document.getElementById('atColHide'); if(!el) return; const hid=this._atHide||{}; el.textContent=Object.keys(hid).filter(k=>hid[k]).map(k=>'#atTbl tr>:nth-child('+k+'){display:none}').join(''); }catch(e){} }
   _adsTable(){
     const S=this.state; if(S.view!=='adstable') return { isAdsTable:false };
     const out={ isAdsTable:true };
@@ -1980,6 +1999,10 @@ class Component extends DCLogic {
     out.onAtPlat=e=>this.setState({ atPlat:e.target.value }); out.onAtTeam=e=>this.setState({ atTeam:e.target.value }); out.onAtType=e=>this.setState({ atType:e.target.value }); out.onAtProc=e=>this.setState({ atProc:e.target.value }); out.onAtQ=e=>this.setState({ atQ:e.target.value });
     out.atNoAdsStyle='font-size:12px;font-weight:700;padding:7px 12px;border-radius:9px;cursor:pointer;border:1px solid '+(showNoAds?'#4F46E5;background:#4F46E51A;color:#4F46E5;':'#E2E8F0;background:#fff;color:#64748B;');
     out.onAtToggleNoAds=()=>this.setState(s=>({ atShowNoAds:!s.atShowNoAds }));
+    const COLS=[[1,'Month'],[2,'Team'],[3,'Platform'],[4,'ยิง Ads'],[5,'วันลงงาน'],[6,'วันเปิดแอด'],[7,'วันปิดแอด'],[8,'Post Type'],[9,'Ad Type'],[10,'Ad Name'],[11,'ชื่องาน'],[12,'หัตถการ'],[13,'Price'],[14,'Objective'],[15,'Funnel'],[16,'Campaign'],[17,'Type of Audience'],[18,'Audience'],[19,'Age'],[20,'Greeting'],[21,'Question'],[22,'Follow-up'],[23,'Headline'],[24,'Comment ADS'],[25,'Note'],[26,'Remark'],[27,'Link ลงงาน'],[28,'Creative'],[29,'Graphic'],[30,'ช่องทาง'],[31,'KOL/KOC'],[32,'Doctor'],[33,'Meta Ad Name']];
+    const hid=this._atHide||{};
+    out.atColChecks=COLS.map(c=>({ idx:c[0], label:c[1], mark:(hid[c[0]]?'☐':'☑'), onToggle:()=>this.toggleAdsCol(c[0]) }));
+    out.atColMenuOpen=!!S.atColMenu; out.onAtColMenu=()=>this.setState(s=>({ atColMenu:!s.atColMenu }));
     return out;
   }
   _csView(){
