@@ -1505,7 +1505,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24d';
+    this.APP_VERSION='2026-08-24e';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1655,7 +1655,7 @@ class Component extends DCLogic {
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return false; return p[area].view!==false; }
   navArea(v){ return v; }
   navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', csview:'🎧 CS View', taskdate:'🕒 แก้วัน/เวลาลงงาน (ใช้ช่อง "แก้")', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
-  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','adsplan','table','report','funnelres','csview','adstable']],['สิทธิ์พิเศษในฟอร์มงาน',['taskdate']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
+  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','table','report','funnelres','csview','adstable']],['สิทธิ์พิเศษในฟอร์มงาน',['taskdate']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
   togglePermGroup(pos, keys){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; const allOn=keys.every(k=>{ const pk=perms[pos][k]; return pk?pk.view!==false:true; }); const nv=!allOn; keys.forEach(k=>{ perms[pos][k]={ view:nv, edit:nv, del:nv }; }); return { perms }; }, ()=>this.persist()); }
   firstPermittedView(pos,perms){ if(pos==='CS' && this.permView(pos,'csview',perms)) return 'csview'; const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
@@ -2635,7 +2635,7 @@ class Component extends DCLogic {
       onClick:()=>this.setView(k) });
     const navOpen=S.navOpen||{};
     const navSections=[
-      { title:null, keys:['plan','adsplan','table','report','funnelres','csview','adstable'] },
+      { title:null, keys:['plan','table','report','funnelres','csview','adstable'] },
       { title:'DATA', keys:['channels','content','procedure','format','size','branch','status','kol','doctor','price'] },
       { title:'ADS', keys:['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective'] },
       { title:'SETTING', keys:['team','perms','history'] }
