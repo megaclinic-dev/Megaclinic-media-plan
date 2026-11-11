@@ -1507,7 +1507,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24h';
+    this.APP_VERSION='2026-08-24i';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1939,6 +1939,18 @@ class Component extends DCLogic {
     const pMap={}; (S.people||[]).forEach(p=>{ pMap[p.id]=p; });
     const nm=(list,id)=>{ const x=(list||[]).find(o=>o&&o.id===id); return x?x.name:''; };
     const nmM=(list,ids)=>(Array.isArray(ids)?ids:[]).map(id=>nm(list,id)).filter(Boolean).join(', ');
+    const platBrand=(name)=>{ const s=(name||''); const n=s.toLowerCase();
+      if(n.indexOf('tiktok')>=0||n.indexOf('tik tok')>=0) return 'TikTok';
+      if(n.indexOf('facebook')>=0||n.indexOf('fb')>=0) return 'Facebook';
+      if(n.indexOf('instagram')>=0||n.indexOf('ig')>=0) return 'IG';
+      if(n.indexOf('line')>=0) return 'LINE';
+      if(n.indexOf('shopee')>=0) return 'Shopee';
+      if(n.indexOf('lazada')>=0) return 'Lazada';
+      if(n.indexOf('google')>=0) return 'Google';
+      if(n.indexOf('youtube')>=0) return 'YouTube';
+      if(n.indexOf('lemon8')>=0) return 'Lemon8';
+      if(n.indexOf('twitter')>=0) return 'X';
+      return s.split(/[\s(]+/)[0]||s||'—'; };
     const isNo=id=>{ const s=(S.adStatuses||[]).find(x=>x&&x.id===id); return s?this.isNoAds(s):false; };
     const stName=id=>{ const s=(S.adStatuses||[]).find(x=>x&&x.id===id); return s?s.name:''; };
     let from,to;
@@ -1966,7 +1978,7 @@ class Component extends DCLogic {
       return {
         month:(_thM[(+((t.date||'').split('-')[1]))-1]||''),
         team:cre.name||'—',
-        plat:(r.pid==='__none__'?'—':(c.name||r.pid)), platColor:c.color||'#94A3B8', page:(c.page||'—'),
+        plat:(r.pid==='__none__'?'—':platBrand(c.name||r.pid)), platColor:c.color||'#94A3B8', page:(c.page||'—'),
         status:stName(b.adStatus)||'—', stColor:done?'#059669':'#94A3B8', stBg:done?'#ECFDF5':'#F1F5F9',
         date:(fmtTH(t.date)||'—')+((t.time)?(' · '+String(t.time).replace(':','.')):''),
         adStart:fmtTH(b.adStart)||'—', adEnd:fmtTH(b.adEnd)||'—',
