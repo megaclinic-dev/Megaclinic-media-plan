@@ -924,12 +924,26 @@
           .atSw::after{ content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:.15s; }
           .atSw.on::after{ left:18px; }
           .f1,.f2,.f3,.f4,.f5{ position:sticky; z-index:2; background:#fff; }
-          .f1{ left:0; min-width:150px; max-width:150px; } .f2{ left:150px; min-width:70px; max-width:70px; } .f3{ left:220px; min-width:46px; max-width:46px; } .f4{ left:266px; min-width:190px; max-width:190px; } .f5{ left:456px; min-width:170px; max-width:170px; box-shadow:1px 0 0 #D8DEE9; }
+          .f1{ left:0; min-width:150px; max-width:150px; } .f2{ left:150px; min-width:70px; max-width:70px; } .f3{ left:220px; min-width:66px; max-width:66px; } .f4{ left:286px; min-width:190px; max-width:190px; } .f5{ left:476px; min-width:170px; max-width:170px; box-shadow:1px 0 0 #D8DEE9; }
           #atTbl tbody tr:nth-child(even) td.f1,#atTbl tbody tr:nth-child(even) td.f2,#atTbl tbody tr:nth-child(even) td.f3,#atTbl tbody tr:nth-child(even) td.f4,#atTbl tbody tr:nth-child(even) td.f5{ background:#F7F9FC; }
           #atTbl tbody tr:hover td.f1,#atTbl tbody tr:hover td.f2,#atTbl tbody tr:hover td.f3,#atTbl tbody tr:hover td.f4,#atTbl tbody tr:hover td.f5{ background:#F1F5FF; }
           thead th.f1,thead th.f2,thead th.f3,thead th.f4,thead th.f5{ z-index:6; background:#EAEEF4; }
+          /* wrap long content (show all, break lines) */
+          #atTbl tbody td{ white-space:normal !important; word-break:break-word; vertical-align:top; }
+          #atTbl tbody td > span{ max-width:none !important; overflow:visible !important; text-overflow:clip !important; }
+          /* copy cell */
+          .atcopy{ display:flex; align-items:flex-start; gap:4px; padding:4px 5px; }
+          .atv{ flex:1; min-width:0; white-space:normal; word-break:break-word; line-height:1.35; }
+          .atcb{ flex-shrink:0; border:1px solid #E2E8F0; background:#fff; color:#64748B; font-size:11px; line-height:1; border-radius:6px; padding:3px 5px; cursor:pointer; }
+          .atcb:hover{ background:#EEF2FF; color:#4F46E5; border-color:#C7D2FE; }
+          /* column resize handle */
+          #atTbl thead th{ position:sticky; }
+          .atrs{ position:absolute; top:0; right:-3px; width:7px; height:100%; cursor:col-resize; z-index:8; user-select:none; }
+          .atrs:hover{ background:rgba(79,70,229,.35); }
         </style>
         <style id="atColHide"></style>
+        <style id="atColW"></style>
+        <style id="atColFreeze"></style>
         <div class="atWrap" style="display:flex; flex-direction:column; gap:14px;">
           <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px;">
             <div style="display:inline-flex; background:#E9EDF3; border-radius:10px; padding:3px;"><sc-for list="{{ modeTabs }}" as="m" hint-placeholder-count="3"><button onClick="{{ m.onClick }}" style="{{ m.style }}">{{ m.label }}</button></sc-for></div>
@@ -960,7 +974,7 @@
                 <th class="f1" style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#64748B; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Note</th>
                 <th class="f2" style="padding:8px 9px; text-align:center; font-size:10.5px; font-weight:800; color:#64748B; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ads Status</th>
                 <th class="f3" style="padding:8px 9px; text-align:center; font-size:10.5px; font-weight:800; color:#64748B; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">รูป</th>
-                <th class="f4" style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#0E7490; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Meta Ad Name</th>
+                <th class="f4" style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#0E7490; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ad Name (Auto)</th>
                 <th class="f5" style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#6D28D9; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Audience (Auto)</th>
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">CreativeName</th>
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Platform</th>
@@ -973,7 +987,7 @@
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">End Date</th>
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">KOL/KOC Name</th>
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Doctor</th>
-                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#4F46E5; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">AW Name</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ad Name</th>
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">link/CodeInflu</th>
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Product (หัตถการ)</th>
                 <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Price</th>
@@ -997,9 +1011,9 @@
                   <tr>
                     <td class="f1"><input value="{{ r.vNote }}" onChange="{{ r.eNote }}" class="atE" style="min-width:140px;" placeholder="Note"></td>
                     <td class="f2" style="text-align:center;"><button onClick="{{ r.onToggleOn }}" class="atSw {{ r.onClass }}" title="สลับ ยิง/ไม่ยิง"></button></td>
-                    <td class="f3" style="text-align:center;"><sc-if value="{{ r.imgPic }}" hint-placeholder-val="{{ false }}"><img src="{{ r.img }}" onClick="{{ r.onOpen }}" style="width:30px; height:30px; object-fit:cover; border-radius:5px; border:1px solid #E2E8F0; cursor:pointer; vertical-align:middle;"></sc-if><sc-if value="{{ r.imgVid2 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ r.onOpen }}" style="display:inline-block; width:30px; height:30px; border-radius:5px; background:#0F172A; color:#fff; text-align:center; line-height:30px; font-size:14px; cursor:pointer;">🎬</span></sc-if></td>
-                    <td class="f4" style="color:#64748B;"><span style="display:inline-block; max-width:178px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom; padding:0 4px;">{{ r.meta }}</span></td>
-                    <td class="f5" style="color:#475569;"><span style="display:inline-block; max-width:160px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom; padding:0 4px;">{{ r.audCombo }}</span></td>
+                    <td class="f3" style="text-align:center;"><sc-if value="{{ r.imgPic }}" hint-placeholder-val="{{ false }}"><img src="{{ r.img }}" onClick="{{ r.onOpen }}" style="width:54px; height:54px; object-fit:cover; border-radius:7px; border:1px solid #E2E8F0; cursor:pointer; vertical-align:middle;"></sc-if><sc-if value="{{ r.imgVid2 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ r.onOpen }}" style="display:inline-block; width:54px; height:54px; border-radius:7px; background:#0F172A; color:#fff; text-align:center; line-height:54px; font-size:22px; cursor:pointer;">🎬</span></sc-if><sc-if value="{{ r.noImg }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onOpen }}" style="border:1px dashed #CBD5E1; background:#fff; color:#94A3B8; font-size:10px; border-radius:7px; width:54px; height:54px; cursor:pointer;">เปิด</button></sc-if></td>
+                    <td class="f4" style="color:#334155; vertical-align:top;"><div class="atcopy"><span class="atv">{{ r.meta }}</span><button class="atcb" onClick="{{ r.copyMeta }}" title="คัดลอก">⧉</button></div></td>
+                    <td class="f5" style="color:#475569; vertical-align:top;"><div class="atcopy"><span class="atv">{{ r.audCombo }}</span><button class="atcb" onClick="{{ r.copyAud }}" title="คัดลอก">⧉</button></div></td>
                     <td style="color:#0F172A; white-space:nowrap;">{{ r.creative }}</td>
                     <td style="color:#0F172A; font-weight:600; white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:{{ r.platColor }}; margin-right:6px;"></span>{{ r.plat }}</td>
                     <td style="color:#0F172A; white-space:nowrap;">{{ r.page }}</td>
@@ -1011,7 +1025,7 @@
                     <td><input type="date" value="{{ r.vAdEnd }}" onChange="{{ r.eAdEnd }}" class="atE" style="min-width:130px;"></td>
                     <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.kols }}</span></td>
                     <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.docs }}</span></td>
-                    <td><button onClick="{{ r.onOpen }}" style="border:none; background:transparent; color:#4F46E5; font-weight:700; font-size:12px; cursor:pointer; text-align:left; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;">{{ r.title }}</button></td>
+                    <td><input value="{{ r.vAdName }}" onChange="{{ r.eAdName }}" class="atE" style="min-width:130px;" placeholder="ตั้งชื่อ Ad"></td>
                     <td><input value="{{ r.vCodeInflu }}" onChange="{{ r.eCodeInflu }}" class="atE" style="min-width:120px;" placeholder="โค้ด/ลิงก์"></td>
                     <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.procs }}</span></td>
                     <td style="color:#0F172A; white-space:nowrap;">{{ r.price }}</td>
@@ -1033,7 +1047,7 @@
               </tbody>
             </table>
           </div>
-          <div style="font-size:11.5px; color:#94A3B8;">แก้ในช่องได้เลย (บันทึกอัตโนมัติ + ซิงก์เรียลไทม์) · ❄️ Freeze 5 คอลัมน์แรก · สลับปุ่ม <b>Ads Status</b> → เติมวันเปิดแอดอัตโนมัติ · 1 แถว/1 Platform · Audience(Auto)=Audience Name+Type+Funnel · กด AW Name เปิดฟอร์ม · ช่อง รูป/Platform/Page/KOL/Doctor/Product/Price แก้ที่ฟอร์ม/DATA</div>
+          <div style="font-size:11.5px; color:#94A3B8;">แก้ในช่องได้เลย (บันทึกอัตโนมัติ + ซิงก์เรียลไทม์) · ❄️ Freeze 5 คอลัมน์แรก · <b>ลากขอบหัวคอลัมน์เพื่อปรับความกว้าง</b> · สลับปุ่ม <b>Ads Status</b> → เติมวันเปิดแอดอัตโนมัติ · ปุ่ม ⧉ คัดลอก Ad Name(Auto)/Audience(Auto) · Audience(Auto)=Audience Name_Type_Funnel · คลิกรูป/ปุ่ม "เปิด" เพื่อเปิดฟอร์ม · ช่อง รูป/Platform/Page/KOL/Doctor/Product/Price แก้ที่ฟอร์ม/DATA</div>
         </div>
       </sc-if>
       <sc-if value="{{ isFunnelres }}" hint-placeholder-val="{{ false }}">
@@ -1525,7 +1539,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24j';
+    this.APP_VERSION='2026-08-24k';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1745,11 +1759,13 @@ class Component extends DCLogic {
     window.addEventListener('drop', this._onDrop);
     this._onCbDown=(e)=>{ if(this.state.cbOpen && e.target && !(e.target.closest && e.target.closest('.mp-cb'))) this.setState({ cbOpen:null, cbq:'' }); };
     window.addEventListener('pointerdown', this._onCbDown, true);
-    try{ this._atHide=JSON.parse(localStorage.getItem('mp.atHide')||'{}')||{}; }catch(e){ this._atHide={}; } setTimeout(()=>this._applyAdsCols(),0);
+    try{ this._atHide=JSON.parse(localStorage.getItem('mp.atHide')||'{}')||{}; }catch(e){ this._atHide={}; }
+    try{ this._atW=JSON.parse(localStorage.getItem('mp.atW')||'{}')||{}; }catch(e){ this._atW={}; }
+    setTimeout(()=>{ this._applyAdsCols(); this._applyAtW(); this._initAtResize(); this._syncAtFreeze(); },0);
     this._onBeforeUnload=(e)=>{ if((this._pend||0)>0 || this.state.syncStatus==='saving' || this.state.syncStatus==='error'){ e.preventDefault(); e.returnValue='ยังบันทึกไม่เสร็จ ถ้าปิดตอนนี้งานล่าสุดอาจหาย'; return e.returnValue; } };
     window.addEventListener('beforeunload', this._onBeforeUnload);
     this._loadAll().then(()=>this._initSync()).catch(err=>{ console.error('[load]',err&&err.message); this.setState({ loading:false, loadErr:true }); this._retryLoad(); }); }
-  componentDidUpdate(){ if(this._reloadWhenIdle && !this.state.modal && (this._pend||0)===0){ this._reloadWhenIdle=false; setTimeout(()=>location.reload(), 300); } if(this.state.view==='adstable') this._applyAdsCols(); } // deferred update fires once the user closes the form and saves finish
+  componentDidUpdate(){ if(this._reloadWhenIdle && !this.state.modal && (this._pend||0)===0){ this._reloadWhenIdle=false; setTimeout(()=>location.reload(), 300); } if(this.state.view==='adstable'){ this._applyAdsCols(); this._applyAtW(); this._initAtResize(); this._syncAtFreeze(); } } // deferred update fires once the user closes the form and saves finish
   componentWillUnmount(){ if(this._onR) window.removeEventListener('resize',this._onR); if(this._onPaste) window.removeEventListener('paste',this._onPaste); if(this._onDragOver) window.removeEventListener('dragover',this._onDragOver); if(this._onDrop) window.removeEventListener('drop',this._onDrop); if(this._onCbDown) window.removeEventListener('pointerdown',this._onCbDown,true); if(this._onBeforeUnload) window.removeEventListener('beforeunload',this._onBeforeUnload); }
 
   commit(patch, action, detail, changes, meta){
@@ -1952,6 +1968,21 @@ class Component extends DCLogic {
   }
   toggleAdsCol(idx){ this._atHide=this._atHide||{}; this._atHide[idx]=!this._atHide[idx]; try{ localStorage.setItem('mp.atHide', JSON.stringify(this._atHide)); }catch(e){} this._applyAdsCols(); this.setState({ _atTick:(this.state._atTick||0)+1 }); }
   _applyAdsCols(){ try{ const el=document.getElementById('atColHide'); if(!el) return; const hid=this._atHide||{}; el.textContent=Object.keys(hid).filter(k=>hid[k]).map(k=>'#atTbl tr>:nth-child('+k+'){display:none}').join(''); }catch(e){} }
+  _copyBtn(e,text){ try{ const s=String(text==null?'':text);
+    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(s).catch(()=>this._copyFallback(s)); } else { this._copyFallback(s); }
+    const b=e&&e.currentTarget; if(b){ const o=b.textContent; b.textContent='✓'; b.style.color='#059669'; setTimeout(()=>{ try{ b.textContent=o; b.style.color=''; }catch(_){} },900); }
+  }catch(err){} }
+  _copyFallback(s){ try{ const ta=document.createElement('textarea'); ta.value=s; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); }catch(e){} }
+  _applyAtW(){ try{ const el=document.getElementById('atColW'); if(!el) return; const w=this._atW||{}; el.textContent=Object.keys(w).map(k=>'#atTbl tr>:nth-child('+k+'){width:'+w[k]+'px;min-width:'+w[k]+'px;max-width:'+w[k]+'px}').join(''); }catch(e){} }
+  _syncAtFreeze(){ try{ const tbl=document.getElementById('atTbl'), el=document.getElementById('atColFreeze'); if(!tbl||!el) return; const ths=tbl.querySelectorAll('thead th'); let left=0, css=''; for(let i=0;i<5&&i<ths.length;i++){ css+='#atTbl tr>:nth-child('+(i+1)+'){left:'+left+'px}'; left+=ths[i].getBoundingClientRect().width; } el.textContent=css; }catch(e){} }
+  _setAtColW(n,w){ this._atW=this._atW||{}; this._atW[n]=Math.round(w); this._applyAtW(); }
+  _saveAtW(){ try{ localStorage.setItem('mp.atW', JSON.stringify(this._atW||{})); }catch(e){} }
+  _initAtResize(){ try{ const tbl=document.getElementById('atTbl'); if(!tbl) return; const ths=tbl.querySelectorAll('thead th'); const self=this;
+    ths.forEach((th,idx)=>{ if(th.querySelector('.atrs')) return; const h=document.createElement('div'); h.className='atrs'; th.appendChild(h); let sx=0, sw=0;
+      const mv=(e)=>{ self._setAtColW(idx+1, Math.max(40, sw+(e.clientX-sx))); self._syncAtFreeze(); };
+      const up=()=>{ document.removeEventListener('mousemove',mv); document.removeEventListener('mouseup',up); document.body.style.userSelect=''; self._saveAtW(); self._syncAtFreeze(); };
+      h.addEventListener('mousedown',(e)=>{ e.preventDefault(); e.stopPropagation(); sx=e.clientX; sw=th.getBoundingClientRect().width; document.body.style.userSelect='none'; document.addEventListener('mousemove',mv); document.addEventListener('mouseup',up); });
+    }); }catch(e){} }
   _adsTable(){
     const S=this.state; if(S.view!=='adstable') return { isAdsTable:false };
     const out={ isAdsTable:true };
@@ -2014,13 +2045,15 @@ class Component extends DCLogic {
         channel:((chMap[t.ch]||{}).name)||(t.ch==='other'?'อื่นๆ':(t.ch||'—')),
         kols:nmM(S.kols,b.kols)||'—', docs:nmM(S.doctors,b.doctors)||'—',
         meta:this.buildAdName(t),
-        img:fin.url, hasImg:!!fin.url, imgPic:(!!fin.url&&!fin.vid), imgVid2:(!!fin.url&&!!fin.vid),
-        audCombo:[b.audienceName, nm(S.adAudiences,b.audience), nm(S.adFunnels,b.funnel)].filter(Boolean).join(' ')||'—',
+        img:fin.url, hasImg:!!fin.url, noImg:!fin.url, imgPic:(!!fin.url&&!fin.vid), imgVid2:(!!fin.url&&!!fin.vid),
+        audCombo:[b.audienceName, nm(S.adAudiences,b.audience), nm(S.adFunnels,b.funnel)].filter(Boolean).join('_')||'—',
         isOn:done, onClass:(done?'on':''),
         vAdName:(b.adName||''), vAge:(b.age||''), vGender:(b.gender||''), vCodeInflu:(b.codeInflu||''), vCaption:(t.caption||''), vGreeting:(b.greeting||''), vQuestion:(b.question||''), vFollowup:(b.followup||''), vHeadline:(b.headline||''), vCommentAds:(b.commentAds||''), vNote:(b.note||''), vRemark:(b.remark||''), vAudienceDetail:(b.audienceDetail||''), vAdStart:(b.adStart||''), vAdEnd:(b.adEnd||''), vFormat:(t.format||''), vPostType:(b.postType||''), vFunnel:(b.funnel||''), vCampaign:(b.campaign||''), vAudience:(b.audience||''), vObjective:(b.objective||''),
         onToggleOn:()=>this._adsToggleOn(t.id),
         eAdName:e=>this._adsSet(t.id,'brief','adName',e.target.value), eAge:e=>this._adsSet(t.id,'brief','age',e.target.value), eGender:e=>this._adsSet(t.id,'brief','gender',e.target.value), eCodeInflu:e=>this._adsSet(t.id,'brief','codeInflu',e.target.value), eCaption:e=>this._adsSet(t.id,'task','caption',e.target.value), eGreeting:e=>this._adsSet(t.id,'brief','greeting',e.target.value), eQuestion:e=>this._adsSet(t.id,'brief','question',e.target.value), eFollowup:e=>this._adsSet(t.id,'brief','followup',e.target.value), eHeadline:e=>this._adsSet(t.id,'brief','headline',e.target.value), eCommentAds:e=>this._adsSet(t.id,'brief','commentAds',e.target.value), eNote:e=>this._adsSet(t.id,'brief','note',e.target.value), eRemark:e=>this._adsSet(t.id,'brief','remark',e.target.value), eAudienceDetail:e=>this._adsSet(t.id,'brief','audienceDetail',e.target.value), vAudienceName:(b.audienceName||''), eAudienceName:e=>this._adsSet(t.id,'brief','audienceName',e.target.value), eAdStart:e=>this._adsSet(t.id,'brief','adStart',e.target.value), eAdEnd:e=>this._adsSet(t.id,'brief','adEnd',e.target.value), eFormat:e=>this._adsSet(t.id,'task','format',e.target.value), ePostType:e=>this._adsSet(t.id,'brief','postType',e.target.value), eFunnel:e=>this._adsSet(t.id,'brief','funnel',e.target.value), eCampaign:e=>this._adsSet(t.id,'brief','campaign',e.target.value), eAudience:e=>this._adsSet(t.id,'brief','audience',e.target.value), eObjective:e=>this._adsSet(t.id,'brief','objective',e.target.value),
-        onOpen:()=>this.openEditTaskBrief(t)
+        onOpen:()=>this.openEditTaskBrief(t),
+        copyMeta:(e)=>this._copyBtn(e,this.buildAdName(t)),
+        copyAud:(e)=>this._copyBtn(e,[b.audienceName, nm(S.adAudiences,b.audience), nm(S.adFunnels,b.funnel)].filter(Boolean).join('_')||'')
       };
     });
     const optOf=(list)=>[{ value:'', label:'—' }].concat((list||[]).map(x=>({ value:x.id, label:x.name })));
@@ -2035,7 +2068,7 @@ class Component extends DCLogic {
     out.onAtPlat=e=>this.setState({ atPlat:e.target.value }); out.onAtTeam=e=>this.setState({ atTeam:e.target.value }); out.onAtType=e=>this.setState({ atType:e.target.value }); out.onAtProc=e=>this.setState({ atProc:e.target.value }); out.onAtQ=e=>this.setState({ atQ:e.target.value });
     out.atNoAdsStyle='font-size:12px;font-weight:700;padding:7px 12px;border-radius:9px;cursor:pointer;border:1px solid '+(showNoAds?'#4F46E5;background:#4F46E51A;color:#4F46E5;':'#E2E8F0;background:#fff;color:#64748B;');
     out.onAtToggleNoAds=()=>this.setState(s=>({ atShowNoAds:!s.atShowNoAds }));
-    const COLS=[[1,'Note'],[2,'Ads Status'],[3,'รูป'],[4,'Meta Ad Name'],[5,'Audience (Auto)'],[6,'CreativeName'],[7,'Platform'],[8,'Page'],[9,'Post Type'],[10,'Ad Type'],[11,'Campaign'],[12,'Brief Date'],[13,'Start Date'],[14,'End Date'],[15,'KOL/KOC Name'],[16,'Doctor'],[17,'AW Name'],[18,'link/CodeInflu'],[19,'Product'],[20,'Price'],[21,'Age'],[22,'Gender'],[23,'Funnel'],[24,'Greeting'],[25,'Question'],[26,'Follow-up'],[27,'Caption'],[28,'Headline'],[29,'Type of Audience'],[30,'Objective'],[31,'Audience Name'],[32,'Audience Note'],[33,'Remark']];
+    const COLS=[[1,'Note'],[2,'Ads Status'],[3,'รูป'],[4,'Ad Name (Auto)'],[5,'Audience (Auto)'],[6,'CreativeName'],[7,'Platform'],[8,'Page'],[9,'Post Type'],[10,'Ad Type'],[11,'Campaign'],[12,'Brief Date'],[13,'Start Date'],[14,'End Date'],[15,'KOL/KOC Name'],[16,'Doctor'],[17,'Ad Name'],[18,'link/CodeInflu'],[19,'Product'],[20,'Price'],[21,'Age'],[22,'Gender'],[23,'Funnel'],[24,'Greeting'],[25,'Question'],[26,'Follow-up'],[27,'Caption'],[28,'Headline'],[29,'Type of Audience'],[30,'Objective'],[31,'Audience Name'],[32,'Audience Note'],[33,'Remark']];
     const hid=this._atHide||{};
     out.atColChecks=COLS.map(c=>({ idx:c[0], label:c[1], mark:(hid[c[0]]?'☐':'☑'), onToggle:()=>this.toggleAdsCol(c[0]) }));
     out.atColMenuOpen=!!S.atColMenu; out.onAtColMenu=()=>this.setState(s=>({ atColMenu:!s.atColMenu }));
