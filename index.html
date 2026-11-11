@@ -905,10 +905,11 @@
           .atSw.on{ background:#059669; }
           .atSw::after{ content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; transition:.15s; }
           .atSw.on::after{ left:18px; }
-          .atPin{ position:sticky; left:0; z-index:2; background:#fff; box-shadow:1px 0 0 #D8DEE9; }
-          #atTbl tbody tr:nth-child(even) td.atPin{ background:#F7F9FC; }
-          #atTbl tbody tr:hover td.atPin{ background:#F1F5FF; }
-          thead .atPin{ z-index:5; background:#EAEEF4; }
+          .f1,.f2,.f3,.f4,.f5{ position:sticky; z-index:2; background:#fff; }
+          .f1{ left:0; min-width:150px; max-width:150px; } .f2{ left:150px; min-width:70px; max-width:70px; } .f3{ left:220px; min-width:46px; max-width:46px; } .f4{ left:266px; min-width:190px; max-width:190px; } .f5{ left:456px; min-width:170px; max-width:170px; box-shadow:1px 0 0 #D8DEE9; }
+          #atTbl tbody tr:nth-child(even) td.f1,#atTbl tbody tr:nth-child(even) td.f2,#atTbl tbody tr:nth-child(even) td.f3,#atTbl tbody tr:nth-child(even) td.f4,#atTbl tbody tr:nth-child(even) td.f5{ background:#F7F9FC; }
+          #atTbl tbody tr:hover td.f1,#atTbl tbody tr:hover td.f2,#atTbl tbody tr:hover td.f3,#atTbl tbody tr:hover td.f4,#atTbl tbody tr:hover td.f5{ background:#F1F5FF; }
+          thead th.f1,thead th.f2,thead th.f3,thead th.f4,thead th.f5{ z-index:6; background:#EAEEF4; }
         </style>
         <style id="atColHide"></style>
         <div class="atWrap" style="display:flex; flex-direction:column; gap:14px;">
@@ -938,87 +939,83 @@
           <div style="background:#fff; border:1px solid #E2E8F0; border-radius:14px; overflow:auto; max-height:70vh;">
             <table id="atTbl" style="border-collapse:separate; border-spacing:0; font-size:12px; white-space:nowrap;">
               <thead><tr>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Month</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Team</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Platform</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">สถานะ</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">วันลงงาน</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">วันเปิดแอด</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">วันปิดแอด</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Post Type</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ad Type</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ad Name</th>
-                <th class="atPin" style="padding:8px 10px; text-align:left; font-size:11px; font-weight:800; color:#4F46E5; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">ชื่องาน</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">รูป</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Product (หัตถการ)</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Price</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Objective</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Funnel</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Campaign</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Type of Audience</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Audience</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Audience Name</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Age</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Greeting</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Question</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Follow-up</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Headline</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Comment ADS</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Note</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Remark</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Link ลงงาน</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Creative</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Graphic</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">ช่องทาง</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">KOL/KOC</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Doctor</th>
-                <th style="padding:8px 10px; text-align:left; font-size:11px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Meta Ad Name</th>
+                <th class="f1" style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#64748B; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Note</th>
+                <th class="f2" style="padding:8px 9px; text-align:center; font-size:10.5px; font-weight:800; color:#64748B; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ads Status</th>
+                <th class="f3" style="padding:8px 9px; text-align:center; font-size:10.5px; font-weight:800; color:#64748B; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">รูป</th>
+                <th class="f4" style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#0E7490; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Meta Ad Name</th>
+                <th class="f5" style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#6D28D9; background:#EAEEF4; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Audience (Auto)</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">CreativeName</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Platform</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Page</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Post Type</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Ad Type</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Campaign</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Brief Date</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Start Date</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">End Date</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">KOL/KOC Name</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#0E7490; background:#ECFEFF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Doctor</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:800; color:#4F46E5; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">AW Name</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">link/CodeInflu</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Product (หัตถการ)</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Price</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Age</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Gender</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Funnel</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Greeting</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Question</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Follow-up</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Caption</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Headline</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Type of Audience</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Objective</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Audience Name</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#6D28D9; background:#F3E8FF; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Audience Note</th>
+                <th style="padding:8px 9px; text-align:left; font-size:10.5px; font-weight:700; color:#64748B; background:#F1F5F9; position:sticky; top:0; border-bottom:1px solid #E2E8F0;">Remark</th>
               </tr></thead>
               <tbody>
-                <sc-if value="{{ atRowsEmpty }}" hint-placeholder-val="{{ false }}"><tr><td colspan="35" style="padding:28px; text-align:center; color:#94A3B8; font-size:13px;">ไม่มีงานยิงแอดในช่วงนี้ · กด "รวมไม่ยิงแอด" เพื่อดูทั้งหมด</td></tr></sc-if>
+                <sc-if value="{{ atRowsEmpty }}" hint-placeholder-val="{{ false }}"><tr><td colspan="33" style="padding:28px; text-align:center; color:#94A3B8; font-size:13px;">ไม่มีงานยิงแอดในช่วงนี้ · กด "รวมไม่ยิงแอด" เพื่อดูทั้งหมด</td></tr></sc-if>
                 <sc-for list="{{ atRows }}" as="r" hint-placeholder-count="6">
                   <tr>
-                    <td style="color:#64748B; white-space:nowrap;">{{ r.month }}</td>
-                    <td style="color:#0F172A; white-space:nowrap;">{{ r.team }}</td>
+                    <td class="f1"><input value="{{ r.vNote }}" onChange="{{ r.eNote }}" class="atE" style="min-width:140px;" placeholder="Note"></td>
+                    <td class="f2" style="text-align:center;"><button onClick="{{ r.onToggleOn }}" class="atSw {{ r.onClass }}" title="สลับ ยิง/ไม่ยิง"></button></td>
+                    <td class="f3" style="text-align:center;"><sc-if value="{{ r.imgPic }}" hint-placeholder-val="{{ false }}"><img src="{{ r.img }}" onClick="{{ r.onOpen }}" style="width:30px; height:30px; object-fit:cover; border-radius:5px; border:1px solid #E2E8F0; cursor:pointer; vertical-align:middle;"></sc-if><sc-if value="{{ r.imgVid2 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ r.onOpen }}" style="display:inline-block; width:30px; height:30px; border-radius:5px; background:#0F172A; color:#fff; text-align:center; line-height:30px; font-size:14px; cursor:pointer;">🎬</span></sc-if></td>
+                    <td class="f4" style="color:#64748B;"><span style="display:inline-block; max-width:178px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom; padding:0 4px;">{{ r.meta }}</span></td>
+                    <td class="f5" style="color:#475569;"><span style="display:inline-block; max-width:160px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom; padding:0 4px;">{{ r.audCombo }}</span></td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.creative }}</td>
                     <td style="color:#0F172A; font-weight:600; white-space:nowrap;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:{{ r.platColor }}; margin-right:6px;"></span>{{ r.plat }}</td>
-                    <td style="white-space:nowrap; text-align:center;"><button onClick="{{ r.onToggleOn }}" class="atSw {{ r.onClass }}" title="สลับ ยิง/ไม่ยิง"></button></td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.page }}</td>
+                    <td><select value="{{ r.vPostType }}" onChange="{{ r.ePostType }}" class="atE" style="min-width:100px;"><sc-for list="{{ atPostTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><select value="{{ r.vFormat }}" onChange="{{ r.eFormat }}" class="atE" style="min-width:110px;"><sc-for list="{{ atAdTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><select value="{{ r.vCampaign }}" onChange="{{ r.eCampaign }}" class="atE" style="min-width:110px;"><sc-for list="{{ atCampaignOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
                     <td style="color:#0F172A; white-space:nowrap;">{{ r.date }}</td>
                     <td><input type="date" value="{{ r.vAdStart }}" onChange="{{ r.eAdStart }}" class="atE" style="min-width:130px;"></td>
                     <td><input type="date" value="{{ r.vAdEnd }}" onChange="{{ r.eAdEnd }}" class="atE" style="min-width:130px;"></td>
-                    <td><select value="{{ r.vPostType }}" onChange="{{ r.ePostType }}" class="atE" style="min-width:100px;"><sc-for list="{{ atPostTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
-                    <td><select value="{{ r.vFormat }}" onChange="{{ r.eFormat }}" class="atE" style="min-width:110px;"><sc-for list="{{ atAdTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
-                    <td><input value="{{ r.vAdName }}" onChange="{{ r.eAdName }}" class="atE" style="min-width:120px;" placeholder="ตั้งชื่อ Ad"></td>
-                    <td class="atPin" style="background:#FAFBFF;"><button onClick="{{ r.onOpen }}" style="border:none; background:transparent; color:#4F46E5; font-weight:700; font-size:12px; cursor:pointer; text-align:left; max-width:190px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;">{{ r.title }}</button></td>
-                    <td style="text-align:center;"><sc-if value="{{ r.imgPic }}" hint-placeholder-val="{{ false }}"><img src="{{ r.img }}" onClick="{{ r.onOpen }}" style="width:30px; height:30px; object-fit:cover; border-radius:5px; border:1px solid #E2E8F0; cursor:pointer; vertical-align:middle;"></sc-if><sc-if value="{{ r.imgVid2 }}" hint-placeholder-val="{{ false }}"><span onClick="{{ r.onOpen }}" style="display:inline-block; width:30px; height:30px; border-radius:5px; background:#0F172A; color:#fff; text-align:center; line-height:30px; font-size:14px; cursor:pointer;">🎬</span></sc-if></td>
+                    <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.kols }}</span></td>
+                    <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.docs }}</span></td>
+                    <td><button onClick="{{ r.onOpen }}" style="border:none; background:transparent; color:#4F46E5; font-weight:700; font-size:12px; cursor:pointer; text-align:left; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:block;">{{ r.title }}</button></td>
+                    <td><input value="{{ r.vCodeInflu }}" onChange="{{ r.eCodeInflu }}" class="atE" style="min-width:120px;" placeholder="โค้ด/ลิงก์"></td>
                     <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.procs }}</span></td>
                     <td style="color:#0F172A; white-space:nowrap;">{{ r.price }}</td>
-                    <td><select value="{{ r.vObjective }}" onChange="{{ r.eObjective }}" class="atE" style="min-width:100px;"><sc-for list="{{ atObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
-                    <td><select value="{{ r.vFunnel }}" onChange="{{ r.eFunnel }}" class="atE" style="min-width:90px;"><sc-for list="{{ atFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
-                    <td><select value="{{ r.vCampaign }}" onChange="{{ r.eCampaign }}" class="atE" style="min-width:110px;"><sc-for list="{{ atCampaignOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
-                    <td><select value="{{ r.vAudience }}" onChange="{{ r.eAudience }}" class="atE" style="min-width:120px;"><sc-for list="{{ atAudienceOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
-                    <td><input value="{{ r.vAudienceDetail }}" onChange="{{ r.eAudienceDetail }}" class="atE" style="min-width:150px;" placeholder="รายละเอียด"></td>
-                    <td><input value="{{ r.vAudienceName }}" onChange="{{ r.eAudienceName }}" class="atE" style="min-width:130px;" placeholder="พิมพ์ชื่อ Audience"><div style="font-size:9.5px; color:#94A3B8; padding:0 7px 2px; max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">= {{ r.audCombo }}</div></td>
                     <td><input value="{{ r.vAge }}" onChange="{{ r.eAge }}" class="atE" style="min-width:80px;" placeholder="เช่น 20-25"></td>
+                    <td><input value="{{ r.vGender }}" onChange="{{ r.eGender }}" class="atE" style="min-width:80px;" placeholder="เพศ"></td>
+                    <td><select value="{{ r.vFunnel }}" onChange="{{ r.eFunnel }}" class="atE" style="min-width:90px;"><sc-for list="{{ atFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
                     <td><input value="{{ r.vGreeting }}" onChange="{{ r.eGreeting }}" class="atE" style="min-width:160px;"></td>
                     <td><input value="{{ r.vQuestion }}" onChange="{{ r.eQuestion }}" class="atE" style="min-width:160px;"></td>
                     <td><input value="{{ r.vFollowup }}" onChange="{{ r.eFollowup }}" class="atE" style="min-width:160px;"></td>
+                    <td><input value="{{ r.vCaption }}" onChange="{{ r.eCaption }}" class="atE" style="min-width:160px;" placeholder="Caption"></td>
                     <td><input value="{{ r.vHeadline }}" onChange="{{ r.eHeadline }}" class="atE" style="min-width:150px;"></td>
-                    <td><input value="{{ r.vCommentAds }}" onChange="{{ r.eCommentAds }}" class="atE" style="min-width:160px;"></td>
-                    <td><input value="{{ r.vNote }}" onChange="{{ r.eNote }}" class="atE" style="min-width:140px;"></td>
+                    <td><select value="{{ r.vAudience }}" onChange="{{ r.eAudience }}" class="atE" style="min-width:120px;"><sc-for list="{{ atAudienceOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><select value="{{ r.vObjective }}" onChange="{{ r.eObjective }}" class="atE" style="min-width:100px;"><sc-for list="{{ atObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
+                    <td><input value="{{ r.vAudienceName }}" onChange="{{ r.eAudienceName }}" class="atE" style="min-width:130px;" placeholder="พิมพ์ชื่อ Audience"></td>
+                    <td><input value="{{ r.vAudienceDetail }}" onChange="{{ r.eAudienceDetail }}" class="atE" style="min-width:150px;" placeholder="รายละเอียด"></td>
                     <td><input value="{{ r.vRemark }}" onChange="{{ r.eRemark }}" class="atE" style="min-width:140px;"></td>
-                    <td style="white-space:nowrap;"><sc-if value="{{ r.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ r.postLink }}" target="_blank" style="color:#4F46E5; font-weight:600; font-size:12px;">↗ เปิด</a></sc-if></td>
-                    <td style="color:#0F172A; white-space:nowrap;">{{ r.creative }}</td>
-                    <td style="color:#0F172A; white-space:nowrap;">{{ r.graphic }}</td>
-                    <td style="color:#0F172A; white-space:nowrap;">{{ r.channel }}</td>
-                    <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.kols }}</span></td>
-                    <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.docs }}</span></td>
-                    <td style="color:#94A3B8;"><span style="display:inline-block; max-width:220px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.meta }}</span></td>
                   </tr>
                 </sc-for>
               </tbody>
             </table>
           </div>
-          <div style="font-size:11.5px; color:#94A3B8;">แก้ในช่องได้เลย (บันทึกอัตโนมัติ + ซิงก์เรียลไทม์) · สลับปุ่ม <b>ยิง/ไม่ยิง</b> → เติมวันเปิดแอดอัตโนมัติ · 1 แถว/1 Platform · กดชื่องานเปิดฟอร์ม · ช่อง ดึงมา/รูป/Platform/KOL/Doctor/Price แก้ที่ฟอร์ม</div>
+          <div style="font-size:11.5px; color:#94A3B8;">แก้ในช่องได้เลย (บันทึกอัตโนมัติ + ซิงก์เรียลไทม์) · ❄️ Freeze 5 คอลัมน์แรก · สลับปุ่ม <b>Ads Status</b> → เติมวันเปิดแอดอัตโนมัติ · 1 แถว/1 Platform · Audience(Auto)=Audience Name+Type+Funnel · กด AW Name เปิดฟอร์ม · ช่อง รูป/Platform/Page/KOL/Doctor/Product/Price แก้ที่ฟอร์ม/DATA</div>
         </div>
       </sc-if>
       <sc-if value="{{ isFunnelres }}" hint-placeholder-val="{{ false }}">
@@ -1472,6 +1469,7 @@
               <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภท</span><select value="{{ form.kind }}" onChange="{{ onFKind }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="online">Online</option><option value="offline">Offline</option></select></label>
               <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทงาน</span><select value="{{ form.jobcat }}" onChange="{{ onFJobcat }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><sc-for list="{{ chanJobcatOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
             </div>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เพจ (สำหรับ Platform Ads) <span style="font-weight:400; color:#94A3B8;">เช่น หลัก / รอง / inter</span></span><input value="{{ form.page }}" onChange="{{ onFPage }}" placeholder="เว้นว่างได้" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
               <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
                 <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
@@ -1509,7 +1507,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24f';
+    this.APP_VERSION='2026-08-24g';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1805,7 +1803,7 @@ class Component extends DCLogic {
     const nmM=(list,ids)=>(ids||[]).map(id=>nm(list,id)).filter(Boolean).join(',');
     const pairs=[[nm(S.formats,t.format),'Post Format'],[nm(S.adCampaigns,b.campaign),'Campaign'],[(t.title||'').trim(),'ชื่องาน'],[nmM(S.procedures,this.procIds(t)),'Product'],[nmM(S.prices,b.prices),'Price'],[nmM(S.channels,b.platforms),'Platform Ads'],[nm(S.adPostTypes,b.postType),'Post Type'],[((S.people.find(p=>p.id===t.creative)||{}).name||''),'Creative'],[nm(S.adObjectives,b.objective),'Objective'],[nmM(S.kols,b.kols),'KOL/KOC'],[nm(S.adFunnels,b.funnel),'Funnel'],[nmM(S.doctors,b.doctors),'Doctor Name']];
     return pairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_'); }
-  blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'', adName:'', age:'', greeting:'', question:'', followup:'', headline:'', commentAds:'', audienceDetail:'', audienceName:'' }; }
+  blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'', adName:'', age:'', gender:'', codeInflu:'', greeting:'', question:'', followup:'', headline:'', commentAds:'', audienceDetail:'', audienceName:'' }; }
   _adPlatKind(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'line'; if(/facebook|fb|instagram|tiktok|tik tok/.test(name)||/\big\b/.test(name)) return 'chat'; return 'other'; }
   _briefPlatFlags(brf){ const S=this.state; const ids=(brf&&brf.platforms)||[]; let hasChat=false,hasLine=false; (S.channels||[]).forEach(c=>{ if(ids.indexOf(c.id)<0) return; const k=this._adPlatKind(c.name); if(k==='chat') hasChat=true; else if(k==='line') hasLine=true; }); return { hasChat, hasLine }; }
   blankFunnel(){ return { aw:'', in:'', co:'', cf:'', at:'' }; }
@@ -1836,7 +1834,7 @@ class Component extends DCLogic {
   toggleBrief(field,id){ this.setState(s=>{ const b=Object.assign({}, s.form.brief); const arr=Array.isArray(b[field])?b[field].slice():[]; const i=arr.indexOf(id); if(i>=0) arr.splice(i,1); else arr.push(id); b[field]=arr; return { form:{ ...s.form, brief:b } }; }); }
   openAddPerson(){ this.openModal('person','add',{ name:'', position:'Creative', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], pass:'1234' }); }
   openEditPerson(p){ this.openModal('person','edit',{ id:p.id, name:p.name, position:p.position, color:p.color, pass:p.pass||'1234' }); }
-  openAddChannel(){ this.openModal('channel','add',{ name:'', group:'อื่นๆ', kind:'online', jobcat:'online', color:this.PAL[Math.floor(Math.random()*this.PAL.length)] }); }
+  openAddChannel(){ this.openModal('channel','add',{ name:'', group:'อื่นๆ', kind:'online', jobcat:'online', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], page:'', platformAd:false }); }
   dropMedia(field, targetIdx){ const d=this._dragMedia; this._dragMedia=null; if(!d||d.field!==field||d.i===targetIdx) return; this.setState(s=>{ const f=s.form||{}; const arr=(f[field]||[]).slice(); if(d.i<0||d.i>=arr.length||targetIdx<0||targetIdx>=arr.length) return {}; const m=arr.splice(d.i,1)[0]; arr.splice(targetIdx,0,m); const nf={...f}; nf[field]=arr; return { form:nf }; }); }
   // ===== CS View (read-only viewer) =====
   _csFinImg(t){ const pick=a=>{ const arr=Array.isArray(a)?a:[]; for(let i=0;i<arr.length;i++){ const im=arr[i]; if(im&&im.data) return { url:im.data, vid: !!im.vid || /\.(mp4|mov|webm|m4v)(\?|$)/i.test(im.data) }; } return null; }; return pick(t&&t.aw) || pick(t&&t.images) || { url:'', vid:false }; }
@@ -1968,7 +1966,7 @@ class Component extends DCLogic {
       return {
         month:(_thM[(+((t.date||'').split('-')[1]))-1]||''),
         team:cre.name||'—',
-        plat:(r.pid==='__none__'?'—':(c.name||r.pid)), platColor:c.color||'#94A3B8',
+        plat:(r.pid==='__none__'?'—':(c.name||r.pid)), platColor:c.color||'#94A3B8', page:(c.page||'—'),
         status:stName(b.adStatus)||'—', stColor:done?'#059669':'#94A3B8', stBg:done?'#ECFDF5':'#F1F5F9',
         date:(fmtTH(t.date)||'—')+((t.time)?(' · '+String(t.time).replace(':','.')):''),
         adStart:fmtTH(b.adStart)||'—', adEnd:fmtTH(b.adEnd)||'—',
@@ -1977,7 +1975,7 @@ class Component extends DCLogic {
         procs:nmM(S.procedures,this.procIds(t))||'—', price:nmM(S.prices,b.prices)||'—',
         objective:nm(S.adObjectives,b.objective)||'—', funnel:nm(S.adFunnels,b.funnel)||'—',
         campaign:nm(S.adCampaigns,b.campaign)||'—', audience:nm(S.adAudiences,b.audience)||'—',
-        audienceDetail:b.audienceDetail||'', age:b.age||'—',
+        audienceDetail:b.audienceDetail||'', age:b.age||'—', gender:b.gender||'', codeInflu:b.codeInflu||'', caption:t.caption||'',
         greeting:b.greeting||'', question:b.question||'', followup:b.followup||'', headline:b.headline||'', commentAds:b.commentAds||'', note:b.note||'', remark:b.remark||'',
         postLink:t.postLink||'', hasLink:!!(t.postLink&&String(t.postLink).trim()),
         creative:cre.name||'—', graphic:gra.name||'—',
@@ -1987,9 +1985,9 @@ class Component extends DCLogic {
         img:fin.url, hasImg:!!fin.url, imgPic:(!!fin.url&&!fin.vid), imgVid2:(!!fin.url&&!!fin.vid),
         audCombo:[b.audienceName, nm(S.adAudiences,b.audience), nm(S.adFunnels,b.funnel)].filter(Boolean).join(' ')||'—',
         isOn:done, onClass:(done?'on':''),
-        vAdName:(b.adName||''), vAge:(b.age||''), vGreeting:(b.greeting||''), vQuestion:(b.question||''), vFollowup:(b.followup||''), vHeadline:(b.headline||''), vCommentAds:(b.commentAds||''), vNote:(b.note||''), vRemark:(b.remark||''), vAudienceDetail:(b.audienceDetail||''), vAdStart:(b.adStart||''), vAdEnd:(b.adEnd||''), vFormat:(t.format||''), vPostType:(b.postType||''), vFunnel:(b.funnel||''), vCampaign:(b.campaign||''), vAudience:(b.audience||''), vObjective:(b.objective||''),
+        vAdName:(b.adName||''), vAge:(b.age||''), vGender:(b.gender||''), vCodeInflu:(b.codeInflu||''), vCaption:(t.caption||''), vGreeting:(b.greeting||''), vQuestion:(b.question||''), vFollowup:(b.followup||''), vHeadline:(b.headline||''), vCommentAds:(b.commentAds||''), vNote:(b.note||''), vRemark:(b.remark||''), vAudienceDetail:(b.audienceDetail||''), vAdStart:(b.adStart||''), vAdEnd:(b.adEnd||''), vFormat:(t.format||''), vPostType:(b.postType||''), vFunnel:(b.funnel||''), vCampaign:(b.campaign||''), vAudience:(b.audience||''), vObjective:(b.objective||''),
         onToggleOn:()=>this._adsToggleOn(t.id),
-        eAdName:e=>this._adsSet(t.id,'brief','adName',e.target.value), eAge:e=>this._adsSet(t.id,'brief','age',e.target.value), eGreeting:e=>this._adsSet(t.id,'brief','greeting',e.target.value), eQuestion:e=>this._adsSet(t.id,'brief','question',e.target.value), eFollowup:e=>this._adsSet(t.id,'brief','followup',e.target.value), eHeadline:e=>this._adsSet(t.id,'brief','headline',e.target.value), eCommentAds:e=>this._adsSet(t.id,'brief','commentAds',e.target.value), eNote:e=>this._adsSet(t.id,'brief','note',e.target.value), eRemark:e=>this._adsSet(t.id,'brief','remark',e.target.value), eAudienceDetail:e=>this._adsSet(t.id,'brief','audienceDetail',e.target.value), vAudienceName:(b.audienceName||''), eAudienceName:e=>this._adsSet(t.id,'brief','audienceName',e.target.value), eAdStart:e=>this._adsSet(t.id,'brief','adStart',e.target.value), eAdEnd:e=>this._adsSet(t.id,'brief','adEnd',e.target.value), eFormat:e=>this._adsSet(t.id,'task','format',e.target.value), ePostType:e=>this._adsSet(t.id,'brief','postType',e.target.value), eFunnel:e=>this._adsSet(t.id,'brief','funnel',e.target.value), eCampaign:e=>this._adsSet(t.id,'brief','campaign',e.target.value), eAudience:e=>this._adsSet(t.id,'brief','audience',e.target.value), eObjective:e=>this._adsSet(t.id,'brief','objective',e.target.value),
+        eAdName:e=>this._adsSet(t.id,'brief','adName',e.target.value), eAge:e=>this._adsSet(t.id,'brief','age',e.target.value), eGender:e=>this._adsSet(t.id,'brief','gender',e.target.value), eCodeInflu:e=>this._adsSet(t.id,'brief','codeInflu',e.target.value), eCaption:e=>this._adsSet(t.id,'task','caption',e.target.value), eGreeting:e=>this._adsSet(t.id,'brief','greeting',e.target.value), eQuestion:e=>this._adsSet(t.id,'brief','question',e.target.value), eFollowup:e=>this._adsSet(t.id,'brief','followup',e.target.value), eHeadline:e=>this._adsSet(t.id,'brief','headline',e.target.value), eCommentAds:e=>this._adsSet(t.id,'brief','commentAds',e.target.value), eNote:e=>this._adsSet(t.id,'brief','note',e.target.value), eRemark:e=>this._adsSet(t.id,'brief','remark',e.target.value), eAudienceDetail:e=>this._adsSet(t.id,'brief','audienceDetail',e.target.value), vAudienceName:(b.audienceName||''), eAudienceName:e=>this._adsSet(t.id,'brief','audienceName',e.target.value), eAdStart:e=>this._adsSet(t.id,'brief','adStart',e.target.value), eAdEnd:e=>this._adsSet(t.id,'brief','adEnd',e.target.value), eFormat:e=>this._adsSet(t.id,'task','format',e.target.value), ePostType:e=>this._adsSet(t.id,'brief','postType',e.target.value), eFunnel:e=>this._adsSet(t.id,'brief','funnel',e.target.value), eCampaign:e=>this._adsSet(t.id,'brief','campaign',e.target.value), eAudience:e=>this._adsSet(t.id,'brief','audience',e.target.value), eObjective:e=>this._adsSet(t.id,'brief','objective',e.target.value),
         onOpen:()=>this.openEditTaskBrief(t)
       };
     });
@@ -2005,7 +2003,7 @@ class Component extends DCLogic {
     out.onAtPlat=e=>this.setState({ atPlat:e.target.value }); out.onAtTeam=e=>this.setState({ atTeam:e.target.value }); out.onAtType=e=>this.setState({ atType:e.target.value }); out.onAtProc=e=>this.setState({ atProc:e.target.value }); out.onAtQ=e=>this.setState({ atQ:e.target.value });
     out.atNoAdsStyle='font-size:12px;font-weight:700;padding:7px 12px;border-radius:9px;cursor:pointer;border:1px solid '+(showNoAds?'#4F46E5;background:#4F46E51A;color:#4F46E5;':'#E2E8F0;background:#fff;color:#64748B;');
     out.onAtToggleNoAds=()=>this.setState(s=>({ atShowNoAds:!s.atShowNoAds }));
-    const COLS=[[1,'Month'],[2,'Team'],[3,'Platform'],[4,'ยิง Ads'],[5,'วันลงงาน'],[6,'วันเปิดแอด'],[7,'วันปิดแอด'],[8,'Post Type'],[9,'Ad Type'],[10,'Ad Name'],[11,'ชื่องาน'],[12,'รูป'],[13,'Product'],[14,'Price'],[15,'Objective'],[16,'Funnel'],[17,'Campaign'],[18,'Type of Audience'],[19,'Audience'],[20,'Audience Name'],[21,'Age'],[22,'Greeting'],[23,'Question'],[24,'Follow-up'],[25,'Headline'],[26,'Comment ADS'],[27,'Note'],[28,'Remark'],[29,'Link ลงงาน'],[30,'Creative'],[31,'Graphic'],[32,'ช่องทาง'],[33,'KOL/KOC'],[34,'Doctor'],[35,'Meta Ad Name']];
+    const COLS=[[1,'Note'],[2,'Ads Status'],[3,'รูป'],[4,'Meta Ad Name'],[5,'Audience (Auto)'],[6,'CreativeName'],[7,'Platform'],[8,'Page'],[9,'Post Type'],[10,'Ad Type'],[11,'Campaign'],[12,'Brief Date'],[13,'Start Date'],[14,'End Date'],[15,'KOL/KOC Name'],[16,'Doctor'],[17,'AW Name'],[18,'link/CodeInflu'],[19,'Product'],[20,'Price'],[21,'Age'],[22,'Gender'],[23,'Funnel'],[24,'Greeting'],[25,'Question'],[26,'Follow-up'],[27,'Caption'],[28,'Headline'],[29,'Type of Audience'],[30,'Objective'],[31,'Audience Name'],[32,'Audience Note'],[33,'Remark']];
     const hid=this._atHide||{};
     out.atColChecks=COLS.map(c=>({ idx:c[0], label:c[1], mark:(hid[c[0]]?'☐':'☑'), onToggle:()=>this.toggleAdsCol(c[0]) }));
     out.atColMenuOpen=!!S.atColMenu; out.onAtColMenu=()=>this.setState(s=>({ atColMenu:!s.atColMenu }));
@@ -2081,7 +2079,7 @@ class Component extends DCLogic {
     } else { out.csDetailOpen=false; out.csDetail=null; }
     return out;
   }
-  openEditChannel(c){ this.openModal('channel','edit',{ id:c.id, name:c.name, group:c.group, kind:c.kind||'online', jobcat:c.jobcat||'online', color:c.color }); }
+  openEditChannel(c){ this.openModal('channel','edit',{ id:c.id, name:c.name, group:c.group, kind:c.kind||'online', jobcat:c.jobcat||'online', color:c.color, page:c.page||'', platformAd:!!c.platformAd }); }
   openAddTag(entity){ this.setState({ modal:{ kind:'tag', mode:'add', entity }, form:{ name:'', color:this.PAL[Math.floor(Math.random()*this.PAL.length)], scope:'both', start:'', expiry:'' } }); }
   openEditTag(entity, it){ this.setState({ modal:{ kind:'tag', mode:'edit', entity }, form:{ id:it.id, name:it.name, color:it.color, scope:it.scope||'both', start:it.start||'', expiry:it.expiry||'' } }); }
 
@@ -2145,10 +2143,11 @@ class Component extends DCLogic {
       const kindLbl={online:'Online',offline:'Offline'};
       const jcLbl={online:'ช่องทางต่างๆ',central:'งานกลาง',kol:'KOL'};
       const nk=f.kind||'online'; const njc=(nk==='offline')?'central':(f.jobcat||'online');
-      if (m.mode==='add'){ const c={ id:'c'+Date.now(), name:f.name.trim(), group:f.group||'อื่นๆ', kind:nk, jobcat:njc, color:f.color };
-        this.commit({ channels:[...S.channels,c], modal:null, form:{} }, 'เพิ่ม', 'ช่องทาง "'+c.name+'"', [{f:'ชื่อ',from:'—',to:c.name},{f:'ประเภท',from:'—',to:kindLbl[nk]},{f:'ประเภทงาน',from:'—',to:jcLbl[njc]}]); }
-      else { const old=S.channels.find(c=>c.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.kind||'online')!==nk) d.push({ f:'ประเภท', from:kindLbl[old.kind||'online'], to:kindLbl[nk] }); if((old.jobcat||'online')!==njc) d.push({ f:'ประเภทงาน', from:jcLbl[old.jobcat||'online'], to:jcLbl[njc] }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' });
-        const channels=S.channels.map(c=>c.id===f.id?{ ...c, name:f.name.trim(), group:f.group||'อื่นๆ', kind:nk, jobcat:njc, color:f.color }:c);
+      const npage=(f.page||'').trim();
+      if (m.mode==='add'){ const c={ id:'c'+Date.now(), name:f.name.trim(), group:f.group||'อื่นๆ', kind:nk, jobcat:njc, color:f.color, page:npage };
+        this.commit({ channels:[...S.channels,c], modal:null, form:{} }, 'เพิ่ม', 'ช่องทาง "'+c.name+'"', [{f:'ชื่อ',from:'—',to:c.name},{f:'ประเภท',from:'—',to:kindLbl[nk]},{f:'ประเภทงาน',from:'—',to:jcLbl[njc]}].concat(npage?[{f:'เพจ',from:'—',to:npage}]:[])); }
+      else { const old=S.channels.find(c=>c.id===f.id)||{}; const d=[]; if((old.name||'')!==f.name.trim()) d.push({ f:'ชื่อ', from:old.name||'—', to:f.name.trim() }); if((old.kind||'online')!==nk) d.push({ f:'ประเภท', from:kindLbl[old.kind||'online'], to:kindLbl[nk] }); if((old.jobcat||'online')!==njc) d.push({ f:'ประเภทงาน', from:jcLbl[old.jobcat||'online'], to:jcLbl[njc] }); if((old.color||'')!==(f.color||'')) d.push({ f:'สี', from:old.color||'—', to:f.color||'—' }); if((old.page||'')!==npage) d.push({ f:'เพจ', from:old.page||'—', to:npage||'—' });
+        const channels=S.channels.map(c=>c.id===f.id?{ ...c, name:f.name.trim(), group:f.group||'อื่นๆ', kind:nk, jobcat:njc, color:f.color, page:npage }:c);
         this.commit({ channels, modal:null, form:{} }, 'แก้ไข', 'ช่องทาง "'+f.name.trim()+'"', d); }
     } else if (m.kind==='tag'){
       if(!f.name || !f.name.trim()) return;
@@ -2840,7 +2839,7 @@ class Component extends DCLogic {
       onFResize:()=>this.setF('resize',!f.resize), resizeBtnLabel:(f.resize?'✓ ':'')+'🟪 งาน Resize', resizeBtnStyle:'font-size:13px;font-weight:700;padding:9px 15px;border-radius:9px;cursor:pointer;'+(f.resize?'background:#7C3AED;color:#fff;border:1px solid #7C3AED;':'background:#fff;color:#7C3AED;border:1px solid #DDD6FE;'),
       onFName:e=>this.setF('name',e.target.value), onFPosition:e=>this.setF('position',e.target.value), onFGroup:e=>this.setF('group',e.target.value),
       onFKind:e=>this.setState(s=>{ const k=e.target.value; const form={ ...s.form, kind:k }; if(k==='offline') form.jobcat='central'; else if(['online','central','kol'].indexOf(form.jobcat)<0) form.jobcat='online'; return { form }; }),
-      onFJobcat:e=>this.setF('jobcat',e.target.value),
+      onFJobcat:e=>this.setF('jobcat',e.target.value), onFPage:e=>this.setF('page',e.target.value),
       chanJobcatOpts:((f.kind)==='offline')?[{value:'central',label:'งานกลาง'}]:[{value:'online',label:'ช่องทางต่างๆ'},{value:'central',label:'งานกลาง'},{value:'kol',label:'KOL'}],
     };
   }
