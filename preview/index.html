@@ -918,6 +918,7 @@
           .atE{ width:100%; min-width:72px; border:1px solid transparent; background:transparent; font-size:12px; padding:5px 7px; border-radius:0; font-family:inherit; color:#0F172A; }
           .atE:hover{ background:#fff; box-shadow:inset 0 0 0 1px #E2E8F0; }
           .atE:focus{ background:#fff; box-shadow:inset 0 0 0 2px #4F46E5; outline:none; }
+          textarea.atE{ white-space:pre-wrap; resize:vertical; line-height:1.35; min-height:32px; vertical-align:top; font-family:inherit; }
           select.atE{ appearance:none; cursor:pointer; background-image:url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><path d='M1 2l3 3 3-3' stroke='%2394A3B8' fill='none' stroke-width='1.3'/></svg>\"); background-repeat:no-repeat; background-position:right 6px center; padding-right:18px; }
           .atSw{ display:inline-block; width:36px; height:20px; border-radius:99px; background:#CBD5E1; position:relative; cursor:pointer; vertical-align:middle; margin:5px 0 0; }
           .atSw.on{ background:#059669; }
@@ -1020,7 +1021,7 @@
                     <td><select value="{{ r.vPostType }}" onChange="{{ r.ePostType }}" class="atE" style="min-width:100px;"><sc-for list="{{ atPostTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
                     <td><select value="{{ r.vFormat }}" onChange="{{ r.eFormat }}" class="atE" style="min-width:110px;"><sc-for list="{{ atAdTypeOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
                     <td><select value="{{ r.vCampaign }}" onChange="{{ r.eCampaign }}" class="atE" style="min-width:110px;"><sc-for list="{{ atCampaignOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
-                    <td style="color:#0F172A; white-space:nowrap;">{{ r.date }}</td>
+                    <td style="color:#0F172A; white-space:nowrap;">{{ r.briefDate }}</td>
                     <td><input type="date" value="{{ r.vAdStart }}" onChange="{{ r.eAdStart }}" class="atE" style="min-width:130px;"></td>
                     <td><input type="date" value="{{ r.vAdEnd }}" onChange="{{ r.eAdEnd }}" class="atE" style="min-width:130px;"></td>
                     <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.kols }}</span></td>
@@ -1030,12 +1031,12 @@
                     <td style="color:#0F172A;"><span style="display:inline-block; max-width:150px; overflow:hidden; text-overflow:ellipsis; vertical-align:bottom;">{{ r.procs }}</span></td>
                     <td style="color:#0F172A; white-space:nowrap;">{{ r.price }}</td>
                     <td><input value="{{ r.vAge }}" onChange="{{ r.eAge }}" class="atE" style="min-width:80px;" placeholder="เช่น 20-25"></td>
-                    <td><input value="{{ r.vGender }}" onChange="{{ r.eGender }}" class="atE" style="min-width:80px;" placeholder="เพศ"></td>
+                    <td><select value="{{ r.vGender }}" onChange="{{ r.eGender }}" class="atE" style="min-width:90px;"><sc-for list="{{ atGenderOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
                     <td><select value="{{ r.vFunnel }}" onChange="{{ r.eFunnel }}" class="atE" style="min-width:90px;"><sc-for list="{{ atFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
                     <td><input value="{{ r.vGreeting }}" onChange="{{ r.eGreeting }}" class="atE" style="min-width:160px;"></td>
-                    <td><input value="{{ r.vQuestion }}" onChange="{{ r.eQuestion }}" class="atE" style="min-width:160px;"></td>
+                    <td style="color:#0F172A;"><div style="white-space:pre-wrap; word-break:break-word; line-height:1.4; padding:5px 7px; min-width:160px;">{{ r.questionCombo }}</div></td>
                     <td><input value="{{ r.vFollowup }}" onChange="{{ r.eFollowup }}" class="atE" style="min-width:160px;"></td>
-                    <td><input value="{{ r.vCaption }}" onChange="{{ r.eCaption }}" class="atE" style="min-width:160px;" placeholder="Caption"></td>
+                    <td><textarea value="{{ r.vCaption }}" onChange="{{ r.eCaption }}" class="atE atEta" style="min-width:160px;" placeholder="Caption" rows="2"></textarea></td>
                     <td><input value="{{ r.vHeadline }}" onChange="{{ r.eHeadline }}" class="atE" style="min-width:150px;"></td>
                     <td><select value="{{ r.vAudience }}" onChange="{{ r.eAudience }}" class="atE" style="min-width:120px;"><sc-for list="{{ atAudienceOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
                     <td><select value="{{ r.vObjective }}" onChange="{{ r.eObjective }}" class="atE" style="min-width:100px;"><sc-for list="{{ atObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></td>
@@ -1452,13 +1453,21 @@
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Funnel<span style="color:#EF4444; font-weight:700;"> *</span></span><select value="{{ briefFunnel }}" onChange="{{ onBriefFunnel }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefFunnelOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
               </div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Age <span style="color:#94A3B8; font-weight:500;">· พิมพ์เองได้ · ไม่บังคับ</span></span><input value="{{ briefAge }}" onChange="{{ onBriefAge }}" placeholder="เช่น 20-25 หรือ วัยทำงาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></div>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Age <span style="color:#94A3B8; font-weight:500;">· พิมพ์เองได้ · ไม่บังคับ</span></span><input value="{{ briefAge }}" onChange="{{ onBriefAge }}" placeholder="เช่น 20-25 หรือ วัยทำงาน" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+                <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Gender <span style="color:#94A3B8; font-weight:500;">· เลือกได้ · ไม่บังคับ · ตั้งค่าที่ ADS › Gender</span></span><select value="{{ briefGender }}" onChange="{{ onBriefGender }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><sc-for list="{{ briefGenderOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+              </div>
               <div style="display:flex; gap:12px; flex-wrap:wrap;">
                 <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">วันปิดแอด</span><input type="date" value="{{ briefAdEnd }}" onChange="{{ onBriefAdEnd }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
               </div>
               <sc-if value="{{ briefHasChat }}" hint-placeholder-val="{{ false }}">
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Greeting Message<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· FB/IG/TikTok</span></span><textarea value="{{ briefGreeting }}" onChange="{{ onBriefGreeting }}" rows="2" placeholder="ข้อความทักทายในแชตแอด..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
-              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Question<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· FB/IG/TikTok · 1 บรรทัด=1 คำถาม</span></span><textarea value="{{ briefQuestion }}" onChange="{{ onBriefQuestion }}" rows="3" placeholder="คำถามสำเร็จรูป..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
+              <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Question<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· FB/IG/TikTok · Question 1 บังคับ · ข้อ 2-5 ไม่บังคับ</span></span>
+                <input value="{{ briefQuestion }}" onChange="{{ onBriefQuestion }}" placeholder="Question 1" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; margin-bottom:7px;">
+                <input value="{{ briefQuestion2 }}" onChange="{{ onBriefQuestion2 }}" placeholder="Question 2" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; margin-bottom:7px;">
+                <input value="{{ briefQuestion3 }}" onChange="{{ onBriefQuestion3 }}" placeholder="Question 3" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; margin-bottom:7px;">
+                <input value="{{ briefQuestion4 }}" onChange="{{ onBriefQuestion4 }}" placeholder="Question 4" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; margin-bottom:7px;">
+                <input value="{{ briefQuestion5 }}" onChange="{{ onBriefQuestion5 }}" placeholder="Question 5" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></div>
               <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Follow-up message<span style="color:#EF4444; font-weight:700;"> *</span> <span style="color:#94A3B8; font-weight:500;">· FB/IG/TikTok</span></span><textarea value="{{ briefFollowup }}" onChange="{{ onBriefFollowup }}" rows="2" placeholder="ข้อความติดตามลูกค้า..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></div>
               </sc-if>
               <sc-if value="{{ briefHasLine }}" hint-placeholder-val="{{ false }}">
@@ -1501,7 +1510,7 @@
               <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภท</span><select value="{{ form.kind }}" onChange="{{ onFKind }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="online">Online</option><option value="offline">Offline</option></select></label>
               <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทงาน</span><select value="{{ form.jobcat }}" onChange="{{ onFJobcat }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><sc-for list="{{ chanJobcatOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
             </div>
-            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เพจ (สำหรับ Platform Ads)</span><select value="{{ form.page }}" onChange="{{ onFPage }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="">— เว้นว่าง —</option><option value="หลัก">หลัก</option><option value="รอง">รอง</option></select></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เพจ (สำหรับ Platform Ads)</span><select value="{{ form.page }}" onChange="{{ onFPage }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="">— เว้นว่าง —</option><option value="หลัก">หลัก</option><option value="รอง">รอง</option><option value="Influ">Influ</option></select></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
               <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
                 <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
@@ -1539,7 +1548,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24m';
+    this.APP_VERSION='2026-08-24n';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1569,6 +1578,7 @@ class Component extends DCLogic {
       adCampaigns: seed.adCampaigns || this.defaultAdList(['AO','Event'],'acm'),
       adAudiences: seed.adAudiences || this.defaultAdList(['Interest','Lookalike','CustomList','ThruplaysData','Location'],'aud'),
       adObjectives: seed.adObjectives || this.defaultAdList(['Eng','Reach','Msg','View','PageLike','Visit','Purchase','Recall','Lead','Click','AddF'],'obj'),
+      adGenders: seed.adGenders || this.defaultAdList(['ชาย','หญิง','ทุกเพศ'],'gnd'),
       adStatuses: this.ensureAdStatuses(seed.adStatuses || this.defaultAdList(['ไม่ยิงแอด','ยิงแอด'],'ast')),
       kols: seed.kols || [], doctors: seed.doctors || [], prices: seed.prices || [],
       fMedium:'all',
@@ -1607,6 +1617,7 @@ class Component extends DCLogic {
     adCampaign:{ key:'adCampaigns', label:'Campaign', pfx:'acm', dated:false },
     adAudience:{ key:'adAudiences', label:'Type of Audience', pfx:'aud', dated:false },
     adObjective:{ key:'adObjectives', label:'Objective', pfx:'obj', dated:false },
+    adGender:{ key:'adGenders', label:'Gender', pfx:'gnd', dated:false },
     adStatus:{ key:'adStatuses', label:'สถานะ ADS', pfx:'ast', dated:false }
   }; }
   procIds(t){ return Array.isArray(t&&t.procs)?t.procs:((t&&t.proc)?[t.proc]:[]); }
@@ -1626,7 +1637,7 @@ class Component extends DCLogic {
     s.perms=this.ensureTeamAccess(s.perms, s.positions, s.people);
     this.migrateFormats(s);
     return s; } catch(e){ return null; } }
-  _dataBlob(){ const S=this.state; return { channels:S.channels, people:S.people, tasks:S.tasks, log:S.log, contentTypes:S.contentTypes, procedures:S.procedures, statuses:S.statuses, perms:S.perms, positions:S.positions, formats:S.formats, sizes:S.sizes, branches:S.branches, adPostTypes:S.adPostTypes, adFunnels:S.adFunnels, adCampaigns:S.adCampaigns, adAudiences:S.adAudiences, adObjectives:S.adObjectives, adStatuses:S.adStatuses, kols:S.kols, doctors:S.doctors, prices:S.prices, delTasks:S.delTasks||{} }; }
+  _dataBlob(){ const S=this.state; return { channels:S.channels, people:S.people, tasks:S.tasks, log:S.log, contentTypes:S.contentTypes, procedures:S.procedures, statuses:S.statuses, perms:S.perms, positions:S.positions, formats:S.formats, sizes:S.sizes, branches:S.branches, adPostTypes:S.adPostTypes, adFunnels:S.adFunnels, adCampaigns:S.adCampaigns, adAudiences:S.adAudiences, adObjectives:S.adObjectives, adGenders:S.adGenders, adStatuses:S.adStatuses, kols:S.kols, doctors:S.doctors, prices:S.prices, delTasks:S.delTasks||{} }; }
   persist(){ if(!window.sb) return; if(!this._loadComplete){ console.warn('[persist] blocked: load not complete'); this._syncSet('error'); return; } const S=this.state;
     // TASKS: upsert changed/new via field-level merge RPC (คนละช่อง=เก็บครบ), delete ONLY rows explicitly removed by user (S.delTasks). Never delete from a sync/state diff — that caused "เซฟแล้วหาย".
     const cur=S.tasks||[]; const curIds={}; const srv=this._srvTasks||(this._srvTasks={});
@@ -1647,7 +1658,7 @@ class Component extends DCLogic {
   _cleanupMedia(tid){ if(!window.sb||!tid) return; const id=String(tid); if(!id.trim()) return; try{ window.sb.storage.from('media').list(id).then(({data})=>{ const files=(data||[]).filter(f=>f&&f.name&&f.id!=null); if(files.length){ window.sb.storage.from('media').remove(files.map(f=>id+'/'+f.name)); } }).catch(()=>{}); }catch(e){} }
   _saveState(kind, val){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_state').upsert({ id:kind, data:val, updated_at:new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save state]',kind,error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }).catch(e=>{ console.error('[save state]',kind,e); this._syncSet('error'); setTimeout(go,4000); }); go(); }
   _saveLog(entry){ if(!window.sb) return; this._pStart(); const go=()=>window.sb.from('mp_log').upsert({ id:entry.id, data:entry, created_at:entry.iso||new Date().toISOString() }).then(({error})=>{ if(error){ console.error('[save log]',error.message); this._syncSet('error'); setTimeout(go,4000); } else this._pEnd(); }).catch(e=>{ console.error('[save log]',e); this._syncSet('error'); setTimeout(go,4000); }); go(); }
-  _KINDS(){ return ['channels','people','contentTypes','procedures','statuses','perms','positions','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adStatuses','kols','doctors','prices','delTasks','extSync']; }
+  _KINDS(){ return ['channels','people','contentTypes','procedures','statuses','perms','positions','formats','sizes','branches','adPostTypes','adFunnels','adCampaigns','adAudiences','adObjectives','adGenders','adStatuses','kols','doctors','prices','delTasks','extSync']; }
   _pubUrl(path){ return 'https://ldokxrqxaunwfdcccvcg.supabase.co/storage/v1/object/public/media/'+path; }
   _ensureFormId(){ let id=this.state.form&&this.state.form.id; if(!id){ id='t'+Date.now(); this.setState(s=>({ form:{ ...s.form, id:id } })); } return id; }
   _uploadMedia(tid, field, idx, dataUrl, file){ const m=/^data:([^;]+);base64,/.exec(dataUrl||''); const mime=m?m[1]:'application/octet-stream'; const ext=(mime.split('/')[1]||'bin').split('+')[0]; const isImg=mime.indexOf('image')===0; const nm=(file&&file.name)?(isImg?file.name.replace(/\.(png|webp|bmp|gif)$/i,'.jpg'):file.name):(field+'.'+ext); const path=tid+'/'+field+'_'+Date.now()+'_'+idx+'.'+ext; return fetch(dataUrl).then(r=>r.blob()).then(blob=>window.sb.storage.from('media').upload(path, blob, { contentType:mime, upsert:true }).then(({error})=>{ if(error){ console.error('[upload]',error.message); return { name:nm, data:dataUrl, vid:mime.indexOf('video')===0 }; } return { name:nm, data:this._pubUrl(path), vid:mime.indexOf('video')===0 }; })); }
@@ -1688,8 +1699,8 @@ class Component extends DCLogic {
     return P; }
   permView(pos,area,perms){ const P=perms||this.state.perms||{}; const p=P[pos]; if(!p||!p[area]) return false; return p[area].view!==false; }
   navArea(v){ return v; }
-  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', csview:'🎧 CS View', taskdate:'🕒 แก้วัน/เวลาลงงาน (ใช้ช่อง "แก้")', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
-  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','table','report','funnelres','csview','adstable']],['สิทธิ์พิเศษในฟอร์มงาน',['taskdate']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective']],['ตั้งค่า',['team','perms','history']]]; }
+  navPermLabel(k){ return { plan:'📋 แผนงาน', adsplan:'📣 แผนงาน ADS', table:'🗓 ปฏิทิน', report:'📊 สรุป', funnelres:'📈 ผล Funnel', csview:'🎧 CS View', taskdate:'🕒 แก้วัน/เวลาลงงาน (ใช้ช่อง "แก้")', channels:'📡 ช่องทาง', content:'🏷 ประเภทคอนเทนต์', procedure:'💉 หัตถการ', format:'🎬 รูปแบบงาน', size:'📐 Size งาน', branch:'🏢 สาขา', status:'⚑ สถานะ', kol:'🤝 KOL / KOC', doctor:'🩺 Doctor Name', price:'💰 Price', adStatus:'🚦 สถานะ ADS', adPostType:'📌 Post Type', adFunnel:'🔻 Funnel', adCampaign:'📣 Campaign', adAudience:'🎯 Type of Audience', adObjective:'🏁 Objective', adGender:'⚧ Gender', team:'👥 ทีมงาน', perms:'🔑 สิทธิ์ตามตำแหน่ง', history:'🕘 ประวัติ' }[k]||k; }
+  navGroups(){ return [['แผนงาน / คอนเทนต์',['plan','table','report','funnelres','csview','adstable']],['สิทธิ์พิเศษในฟอร์มงาน',['taskdate']],['Data',['channels','content','procedure','format','size','branch','status','kol','doctor','price']],['ADS',['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective','adGender']],['ตั้งค่า',['team','perms','history']]]; }
   togglePermGroup(pos, keys){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; const allOn=keys.every(k=>{ const pk=perms[pos][k]; return pk?pk.view!==false:true; }); const nv=!allOn; keys.forEach(k=>{ perms[pos][k]={ view:nv, edit:nv, del:nv }; }); return { perms }; }, ()=>this.persist()); }
   firstPermittedView(pos,perms){ if(pos==='CS' && this.permView(pos,'csview',perms)) return 'csview'; const order=['plan','table','report','team','channels','content','procedure','status','format','size','branch','history']; for(const v of order){ const a=this.navArea(v); if(a==null||this.permView(pos,a,perms)) return v; } return 'history'; }
 
@@ -1839,7 +1850,7 @@ class Component extends DCLogic {
     const nmM=(list,ids)=>(ids||[]).map(id=>nm(list,id)).filter(Boolean).join(',');
     const pairs=[[nm(S.formats,t.format),'Post Format'],[nm(S.adCampaigns,b.campaign),'Campaign'],[(b.adName||'').trim(),'Ad Name'],[nmM(S.procedures,this.procIds(t)),'Product'],[nmM(S.prices,b.prices),'Price'],[nmM(S.channels,b.platforms),'Platform Ads'],[nm(S.adPostTypes,b.postType),'Post Type'],[((S.people.find(p=>p.id===t.creative)||{}).name||''),'Creative'],[nm(S.adObjectives,b.objective),'Objective'],[nmM(S.kols,b.kols),'KOL/KOC'],[nm(S.adFunnels,b.funnel),'Funnel'],[nmM(S.doctors,b.doctors),'Doctor Name']];
     return pairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_'); }
-  blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'', adName:'', age:'', gender:'', codeInflu:'', greeting:'', question:'', followup:'', headline:'', commentAds:'', audienceDetail:'', audienceName:'' }; }
+  blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'', adName:'', age:'', gender:'', codeInflu:'', greeting:'', question:'', question2:'', question3:'', question4:'', question5:'', followup:'', headline:'', commentAds:'', audienceDetail:'', audienceName:'' }; }
   _adPlatKind(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'line'; if(/facebook|fb|instagram|tiktok|tik tok/.test(name)||/\big\b/.test(name)) return 'chat'; return 'other'; }
   _briefPlatFlags(brf){ const S=this.state; const ids=(brf&&brf.platforms)||[]; let hasChat=false,hasLine=false; (S.channels||[]).forEach(c=>{ if(ids.indexOf(c.id)<0) return; const k=this._adPlatKind(c.name); if(k==='chat') hasChat=true; else if(k==='line') hasLine=true; }); return { hasChat, hasLine }; }
   blankFunnel(){ return { aw:'', in:'', co:'', cf:'', at:'' }; }
@@ -2010,6 +2021,7 @@ class Component extends DCLogic {
     else { from=S.weekStart||this.iso(new Date()); to=this.addDays(from,6); }
     const _thM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
     const fmtTH=iso=>{ if(!iso||String(iso).indexOf('-')<0) return ''; const p=String(iso).split('-'); return (+p[2])+' '+(_thM[(+p[1])-1]||''); };
+    const fmtDMY=iso=>{ if(!iso||String(iso).indexOf('-')<0) return ''; const p=String(iso).split('-'); return p[2]+'/'+p[1]+'/'+p[0]; };
     const showNoAds=!!S.atShowNoAds;
     const fPlat=S.atPlat||'all', fTeam=S.atTeam||'all', fType=S.atType||'all', fProc=S.atProc||'all', q=(S.atQ||'').toLowerCase().trim();
     let base=(S.tasks||[]).filter(t=>t&&t.date&&t.date>=from&&t.date<=to);
@@ -2031,14 +2043,16 @@ class Component extends DCLogic {
         team:cre.name||'—',
         plat:(r.pid==='__none__'?'—':platBrand(c.name||r.pid)), platColor:c.color||'#94A3B8', page:(c.page||'—'),
         status:stName(b.adStatus)||'—', stColor:done?'#059669':'#94A3B8', stBg:done?'#ECFDF5':'#F1F5F9',
-        date:(fmtTH(t.date)||'—')+((t.time)?(' · '+String(t.time).replace(':','.')):''),
+        date:(fmtTH(t.date)||'—')+((t.time)?(' · '+String(t.time).replace(':','.')):''), briefDate:fmtDMY(t.date)||'—',
+        questionCombo:[['Question1',b.question],['Question2',b.question2],['Question3',b.question3],['Question4',b.question4],['Question5',b.question5]].filter(x=>x[1]&&String(x[1]).trim()).map(x=>x[0]+'\n'+String(x[1]).trim()).join('\n\n'),
+        gender:nm(S.adGenders,b.gender)||'',
         adStart:fmtTH(b.adStart)||'—', adEnd:fmtTH(b.adEnd)||'—',
         postType:nm(S.adPostTypes,b.postType)||'—', adType:nm(S.formats,t.format)||'—',
         adName:b.adName||'—', title:t.title||'(ไม่มีชื่อ)',
         procs:nmM(S.procedures,this.procIds(t))||'—', price:nmM(S.prices,b.prices)||'—',
         objective:nm(S.adObjectives,b.objective)||'—', funnel:nm(S.adFunnels,b.funnel)||'—',
         campaign:nm(S.adCampaigns,b.campaign)||'—', audience:nm(S.adAudiences,b.audience)||'—',
-        audienceDetail:b.audienceDetail||'', age:b.age||'—', gender:b.gender||'', codeInflu:b.codeInflu||'', caption:t.caption||'',
+        audienceDetail:b.audienceDetail||'', age:b.age||'—', codeInflu:b.codeInflu||'', caption:t.caption||'',
         greeting:b.greeting||'', question:b.question||'', followup:b.followup||'', headline:b.headline||'', commentAds:b.commentAds||'', note:b.note||'', remark:b.remark||'',
         postLink:t.postLink||'', hasLink:!!(t.postLink&&String(t.postLink).trim()),
         creative:cre.name||'—', graphic:gra.name||'—',
@@ -2057,7 +2071,7 @@ class Component extends DCLogic {
       };
     });
     const optOf=(list)=>[{ value:'', label:'—' }].concat((list||[]).map(x=>({ value:x.id, label:x.name })));
-    out.atAdTypeOpts=optOf(S.formats); out.atPostTypeOpts=optOf(S.adPostTypes); out.atFunnelOpts=optOf(S.adFunnels); out.atCampaignOpts=optOf(S.adCampaigns); out.atAudienceOpts=optOf(S.adAudiences); out.atObjectiveOpts=optOf(S.adObjectives);
+    out.atAdTypeOpts=optOf(S.formats); out.atPostTypeOpts=optOf(S.adPostTypes); out.atFunnelOpts=optOf(S.adFunnels); out.atCampaignOpts=optOf(S.adCampaigns); out.atAudienceOpts=optOf(S.adAudiences); out.atObjectiveOpts=optOf(S.adObjectives); out.atGenderOpts=optOf(S.adGenders);
     out.atRowsEmpty=out.atRows.length===0;
     out.atCount=rows.length+' แถว';
     out.atPlatOpts=[{ value:'all', label:'ทุก Platform' }].concat((S.channels||[]).filter(c=>c.platformAd).map(c=>({ value:c.id, label:c.name })));
@@ -2162,7 +2176,7 @@ class Component extends DCLogic {
     const psn=v=>((v||'notset')==='done')?'ตั้ง/ลงแล้ว':'ยังไม่ได้ตั้ง/ลง'; cmp('สถานะการลงโพส',psn(o.postStatus),psn(n.postStatus));
     const txt=(label,a,b)=>{ if((a||'')!==(b||'')) out.push({ f:label, from:(a||'—'), to:(b||'—'), long:true }); };
     txt('ชื่อ Link Draft',o.imgDesc,n.imgDesc); txt('คอมเมนต์',o.imgComment,n.imgComment); txt('แคปชั่น',o.caption,n.caption); txt('รายละเอียดอื่นๆ',o.details,n.details); txt('Link ที่เก็บงาน',o.link,n.link); txt('Link ลงงาน',o.postLink,n.postLink); txt('ก้อนเด้ง',o.lineBounce,n.lineBounce);
-    const ob=o.brief||{}, nb=n.brief||{}; txt('Ad Name',ob.adName,nb.adName); txt('Age',ob.age,nb.age); txt('Greeting Message',ob.greeting,nb.greeting); txt('Question',ob.question,nb.question); txt('Follow-up message',ob.followup,nb.followup); txt('Headline',ob.headline,nb.headline); txt('Comment ADS',ob.commentAds,nb.commentAds);
+    const ob=o.brief||{}, nb=n.brief||{}; const gnn=id=>id?((S.adGenders||[]).find(x=>x.id===id)||{}).name||id:'—'; txt('Ad Name',ob.adName,nb.adName); txt('Age',ob.age,nb.age); cmp('Gender',gnn(ob.gender),gnn(nb.gender)); txt('Greeting Message',ob.greeting,nb.greeting); txt('Question',ob.question,nb.question); txt('Question 2',ob.question2,nb.question2); txt('Question 3',ob.question3,nb.question3); txt('Question 4',ob.question4,nb.question4); txt('Question 5',ob.question5,nb.question5); txt('Follow-up message',ob.followup,nb.followup); txt('Headline',ob.headline,nb.headline); txt('Comment ADS',ob.commentAds,nb.commentAds);
     if((o.images||[]).length!==(n.images||[]).length) out.push({ f:'รูปภาพ', from:(o.images||[]).length+' ไฟล์', to:(n.images||[]).length+' ไฟล์' });
     if((o.aw||[]).length!==(n.aw||[]).length) out.push({ f:'ไฟล์ AW/VDO', from:(o.aw||[]).length+' ไฟล์', to:(n.aw||[]).length+' ไฟล์' });
     return out;
@@ -2698,8 +2712,8 @@ class Component extends DCLogic {
         changes:ch, noChanges:ch.length===0,
         actionStyle:'font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;white-space:nowrap;color:'+(actClr[l.action]||'#64748B')+';background:'+(actClr[l.action]||'#64748B')+'18;' }; });
 
-    const navMeta={ plan:['📋','แผนงาน'], adsplan:['📣','แผนงาน ADS'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], funnelres:['📈','ผล Funnel'], csview:['🎧','CS View'], adstable:['🧾','แผนงาน Ads'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], perms:['🔑','สิทธิ์ตามตำแหน่ง'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adStatus:['🚦','สถานะ ADS'] };
-    const navBadge={ plan:S.tasks.length, table:null, report:null, csview:null, adstable:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length, kol:S.kols.length, doctor:S.doctors.length, price:S.prices.length, adPostType:S.adPostTypes.length, adFunnel:S.adFunnels.length, adCampaign:S.adCampaigns.length, adAudience:S.adAudiences.length, adObjective:S.adObjectives.length, adStatus:S.adStatuses.length };
+    const navMeta={ plan:['📋','แผนงาน'], adsplan:['📣','แผนงาน ADS'], table:['🗓','ปฏิทิน'], report:['📊','สรุป'], funnelres:['📈','ผล Funnel'], csview:['🎧','CS View'], adstable:['🧾','แผนงาน Ads'], channels:['📡','ช่องทาง'], content:['🏷','ประเภทคอนเทนต์'], procedure:['💉','หัตถการ'], format:['🎬','รูปแบบงาน'], size:['📐','Size งาน'], branch:['🏢','สาขา'], status:['⚑','สถานะ'], team:['👥','ทีมงาน'], perms:['🔑','สิทธิ์ตามตำแหน่ง'], history:['🕘','ประวัติ'], kol:['🤝','KOL / KOC'], doctor:['🩺','Doctor Name'], price:['💰','Price'], adPostType:['📌','Post Type'], adFunnel:['🔻','Funnel'], adCampaign:['📣','Campaign'], adAudience:['🎯','Type of Audience'], adObjective:['🏁','Objective'], adGender:['⚧','Gender'], adStatus:['🚦','สถานะ ADS'] };
+    const navBadge={ plan:S.tasks.length, table:null, report:null, csview:null, adstable:null, team:S.people.length, channels:S.channels.length, content:S.contentTypes.length, procedure:S.procedures.length, format:S.formats.length, size:S.sizes.length, branch:S.branches.length, status:S.statuses.length, history:S.log.length, kol:S.kols.length, doctor:S.doctors.length, price:S.prices.length, adPostType:S.adPostTypes.length, adFunnel:S.adFunnels.length, adCampaign:S.adCampaigns.length, adAudience:S.adAudiences.length, adObjective:S.adObjectives.length, adGender:S.adGenders.length, adStatus:S.adStatuses.length };
     const mkNav=k=>({ label:navMeta[k][1], icon:navMeta[k][0], badge:navBadge[k]||null,
       style:'display:flex;align-items:center;gap:11px;width:100%;font-size:13px;font-weight:600;padding:10px 12px;border-radius:10px;border:none;cursor:pointer;'+(S.view===k?'background:#4F46E5;color:#fff;':'background:transparent;color:#94A3B8;'),
       onClick:()=>this.setView(k) });
@@ -2707,7 +2721,7 @@ class Component extends DCLogic {
     const navSections=[
       { title:null, keys:['plan','table','report','funnelres','csview','adstable'] },
       { title:'DATA', keys:['channels','content','procedure','format','size','branch','status','kol','doctor','price'] },
-      { title:'ADS', keys:['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective'] },
+      { title:'ADS', keys:['adStatus','adPostType','adFunnel','adCampaign','adAudience','adObjective','adGender'] },
       { title:'SETTING', keys:['team','perms','history'] }
     ].map(sec=>{
       const items=sec.keys.filter(k=>{ const a=this.navArea(k); return a==null||can(a,'view'); }).map(mkNav);
@@ -2719,7 +2733,7 @@ class Component extends DCLogic {
         headStyle:'display:flex;align-items:center;width:100%;font-size:10px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:.08em;padding:14px 12px 5px;background:transparent;border:none;cursor:pointer;'+(hasCurrent&&!open?'color:#818CF8;':'') };
     }).filter(sec=>sec.items.length);
     const curArea=this.navArea(S.view); const viewAllowed=curArea==null||can(curArea,'view');
-    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], funnelres:['ผลโพสต์ตาม Funnel','กรอกผลแต่ละขั้น Awareness → Interest → Consideration → Confirmation'], csview:['CS View','ดูงานทั้งหมดแบบอ่านอย่างเดียว · เลือกช่วงเวลา/มุมมอง · คลิกงานเพื่อดูรายละเอียด'], adstable:['แผนงาน Ads','ตารางบรีฟแอด · 1 แถว/1 Platform · กรอง/ค้นหา · คลิกชื่องานเพื่อเปิดฟอร์ม'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'] };
+    const titles={ plan:['แผนงาน Media Plan','ตารางลงงานแต่ละช่องทาง'], adsplan:['แผนงาน ADS','เฉพาะงานที่มี Platform Ads · วางตามวันเปิด/ปิดแอด · คลิกงานเพื่อดู Brief Ads'], table:['ปฏิทินคอนเทนต์','ปฏิทินคอนเทนต์ · แยกสีตามช่องทาง · คลิกวันเพื่อเพิ่มงาน'], report:['สรุปภาพรวม','สรุปตามช่วงเวลาและผู้รับผิดชอบที่เลือก'], funnelres:['ผลโพสต์ตาม Funnel','กรอกผลแต่ละขั้น Awareness → Interest → Consideration → Confirmation'], csview:['CS View','ดูงานทั้งหมดแบบอ่านอย่างเดียว · เลือกช่วงเวลา/มุมมอง · คลิกงานเพื่อดูรายละเอียด'], adstable:['แผนงาน Ads','ตารางบรีฟแอด · 1 แถว/1 Platform · กรอง/ค้นหา · คลิกชื่องานเพื่อเปิดฟอร์ม'], team:['ทีมงาน','จัดการพนักงาน'], perms:['สิทธิ์ตามตำแหน่ง','กำหนดสิทธิ์เข้าถึง/แก้ไข/ลบ แต่ละหน้าตามตำแหน่ง'], channels:['ช่องทาง','จัดการช่องทางที่ลงงาน'], content:['ประเภทคอนเทนต์','เพิ่ม/ลด ประเภทคอนเทนต์ได้เอง · แยก Online/Offline'], procedure:['หัตถการ','เพิ่ม/ลด รายการหัตถการได้เอง · แยก Online/Offline'], format:['รูปแบบงาน','เพิ่ม/ลด รูปแบบงานได้เอง · แยก Online/Offline'], size:['Size งาน','เพิ่ม/ลด ขนาดงานได้เอง · แยก Online/Offline'], branch:['สาขา','สาขาที่ส่งมอบงาน Offline'], status:['สถานะงาน','ตั้งสี/ชื่อสถานะได้อิสระ'], history:['ประวัติการแก้ไข','ใครเพิ่ม/แก้ไข/ลบ อะไร (แก้จาก...เป็น...)'], kol:['KOL / KOC','รายชื่อ KOL/KOC · ตั้งวันเริ่มใช้–วันหมดอายุได้'], doctor:['Doctor Name','รายชื่อแพทย์ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], price:['Price','รายการราคา/แพ็กเกจ · ตั้งวันเริ่มใช้–วันหมดอายุได้'], adPostType:['Post Type','ประเภทโพสต์โฆษณา (เช่น ExT, Dark)'], adFunnel:['Funnel','ระดับ Funnel (เช่น Cold, Warm)'], adCampaign:['Campaign','ประเภทแคมเปญ (เช่น AO, Event)'], adAudience:['Type of Audience','ประเภทกลุ่มเป้าหมายโฆษณา'], adObjective:['Objective','วัตถุประสงค์โฆษณา'], adStatus:['สถานะ ADS','สถานะการยิงโฆษณา (เช่น ยังไม่ได้ยิง / ยิง ADS แล้ว)'], adGender:['Gender','เพศของกลุ่มเป้าหมาย · เลือกในฟอร์ม Brief Ads (ไม่บังคับ)'] };
 
     const m=S.modal, f=S.form||{};
     const _tdPerm = (S.perms&&S.perms[actorPos]&&S.perms[actorPos].taskdate)||null;
@@ -2833,7 +2847,7 @@ class Component extends DCLogic {
       metaAdName, procChips, procEmpty:procChips.length===0, adsReq:adsFieldsReq, adsNoAds:!adsFieldsReq,
       briefKolEmpty:kolsAvail.length===0, briefDoctorEmpty:doctorsAvail.length===0, briefPlatformEmpty:briefPlatformChips.length===0, briefPriceEmpty:pricesAvail.length===0,
       onBriefPostType:e=>this.setBrief('postType',e.target.value), onBriefFunnel:e=>this.setBrief('funnel',e.target.value), onBriefCampaign:e=>this.setBrief('campaign',e.target.value), onBriefAudience:e=>this.setBrief('audience',e.target.value), onBriefObjective:e=>this.setBrief('objective',e.target.value), onBriefAdStatus:e=>this.setBrief('adStatus',e.target.value),
-      briefAdName:brf.adName||'', onBriefAdName:e=>this.setBrief('adName',e.target.value), briefAge:brf.age||'', onBriefAge:e=>this.setBrief('age',e.target.value), briefGreeting:brf.greeting||'', onBriefGreeting:e=>this.setBrief('greeting',e.target.value), briefQuestion:brf.question||'', onBriefQuestion:e=>this.setBrief('question',e.target.value), briefFollowup:brf.followup||'', onBriefFollowup:e=>this.setBrief('followup',e.target.value), briefHeadline:brf.headline||'', onBriefHeadline:e=>this.setBrief('headline',e.target.value), briefCommentAds:brf.commentAds||'', onBriefCommentAds:e=>this.setBrief('commentAds',e.target.value), briefHasChat:_pf.hasChat, briefHasLine:_pf.hasLine,
+      briefAdName:brf.adName||'', onBriefAdName:e=>this.setBrief('adName',e.target.value), briefAge:brf.age||'', onBriefAge:e=>this.setBrief('age',e.target.value), briefGreeting:brf.greeting||'', onBriefGreeting:e=>this.setBrief('greeting',e.target.value), briefQuestion:brf.question||'', onBriefQuestion:e=>this.setBrief('question',e.target.value), briefQuestion2:brf.question2||'', onBriefQuestion2:e=>this.setBrief('question2',e.target.value), briefQuestion3:brf.question3||'', onBriefQuestion3:e=>this.setBrief('question3',e.target.value), briefQuestion4:brf.question4||'', onBriefQuestion4:e=>this.setBrief('question4',e.target.value), briefQuestion5:brf.question5||'', onBriefQuestion5:e=>this.setBrief('question5',e.target.value), briefGender:brf.gender||'', onBriefGender:e=>this.setBrief('gender',e.target.value), briefGenderOpts:[{value:'',label:'— ไม่ระบุ —'}].concat((S.adGenders||[]).map(x=>({value:x.id,label:x.name}))), briefFollowup:brf.followup||'', onBriefFollowup:e=>this.setBrief('followup',e.target.value), briefHeadline:brf.headline||'', onBriefHeadline:e=>this.setBrief('headline',e.target.value), briefCommentAds:brf.commentAds||'', onBriefCommentAds:e=>this.setBrief('commentAds',e.target.value), briefHasChat:_pf.hasChat, briefHasLine:_pf.hasLine,
       onBriefAdStart:e=>this.setBrief('adStart',e.target.value), onBriefAdEnd:e=>this.setBrief('adEnd',e.target.value),
       taskErr:(m&&m.kind==='task')?(f._err||''):'',
       onUploadImages:e=>this.addFiles('images',e.target.files), onUploadAW:e=>this.addFiles('aw',e.target.files), imgList, awList, onFPass:e=>this.setF('pass',e.target.value),
