@@ -50,6 +50,21 @@
     .mp-workload { width: 100% !important; border-left: none !important; border-top: 1px solid #EEF2F6; }
   }
   @media (max-width: 560px) { .mp-hide-sm { display: none !important; } }
+  .mp-sidebar { transition: width .2s ease; }
+  .mp-collapse { width: 26px; height: 26px; border-radius: 8px; border: 1px solid #1E293B; background: #1E293B; color: #94A3B8; cursor: pointer; font-size: 15px; line-height: 1; display: flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+  .mp-collapse:hover { background: #334155; color: #fff; }
+  .mp-collapse::before { content: '\00AB'; }
+  body.mp-nav-mini .mp-collapse::before { content: '\00BB'; }
+  @media (max-width: 860px) { .mp-collapse { display: none !important; } }
+  @media (min-width: 861px) {
+    body.mp-nav-mini .mp-sidebar { width: 64px !important; padding-left: 8px !important; padding-right: 8px !important; }
+    body.mp-nav-mini .mp-brand { display: none !important; }
+    body.mp-nav-mini .mp-brandrow { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+    body.mp-nav-mini .mp-navitem { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; gap: 0 !important; }
+    body.mp-nav-mini .mp-navhead { justify-content: center !important; padding-left: 0 !important; padding-right: 0 !important; }
+    body.mp-nav-mini .mp-lb, body.mp-nav-mini .mp-bdg, body.mp-nav-mini .mp-headlb { display: none !important; }
+    body.mp-nav-mini .mp-navfoot { display: none !important; }
+  }
   .mp-frow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
   .mp-fbox { display: flex; flex-direction: column; gap: 6px; border: 1px solid #E2E8F0; border-radius: 12px; padding: 8px 10px; background: #FCFCFD; }
   .mp-flabel { font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .04em; }
@@ -104,27 +119,30 @@
 
   <!-- ================= SIDEBAR ================= -->
   <aside class="mp-sidebar" style="width:236px; flex-shrink:0; background:#0F172A; color:#E2E8F0; display:flex; flex-direction:column; padding:20px 14px; overflow-y:auto;">
-    <div style="padding:6px 10px 20px;">
-      <div style="font-size:16px; font-weight:700; color:#fff; letter-spacing:-.01em;">Media Plan</div>
-      <div style="font-size:11px; color:#64748B; margin-top:2px;">งานครีเอทีฟ · ตารางช่องทาง</div>
+    <div class="mp-brandrow" style="padding:6px 6px 20px; display:flex; align-items:flex-start; gap:8px;">
+      <div class="mp-brand" style="flex:1; min-width:0;">
+        <div style="font-size:16px; font-weight:700; color:#fff; letter-spacing:-.01em;">Media Plan</div>
+        <div style="font-size:11px; color:#64748B; margin-top:2px;">งานครีเอทีฟ · ตารางช่องทาง</div>
+      </div>
+      <button onClick="{{ toggleNavMini }}" class="mp-collapse" title="ย่อ/ขยายเมนู"></button>
     </div>
     <nav style="display:flex; flex-direction:column; gap:3px;">
       <sc-for list="{{ navSections }}" as="sec" hint-placeholder-count="3">
-        <sc-if value="{{ sec.title }}" hint-placeholder-val=""><button onClick="{{ sec.onToggle }}" style="{{ sec.headStyle }}"><span style="flex:1; text-align:left;">{{ sec.title }}</span><span style="font-size:9px;">{{ sec.caret }}</span></button></sc-if>
+        <sc-if value="{{ sec.title }}" hint-placeholder-val=""><button onClick="{{ sec.onToggle }}" class="mp-navhead" title="{{ sec.title }}" style="{{ sec.headStyle }}"><span class="mp-headlb" style="flex:1; text-align:left;">{{ sec.title }}</span><span style="font-size:9px;">{{ sec.caret }}</span></button></sc-if>
         <sc-if value="{{ sec.showItems }}" hint-placeholder-val="{{ true }}">
         <sc-for list="{{ sec.items }}" as="n" hint-placeholder-count="5">
-          <button onClick="{{ n.onClick }}" style="{{ n.style }}">
-            <span style="width:18px; text-align:center;">{{ n.icon }}</span>
-            <span style="flex:1; text-align:left;">{{ n.label }}</span>
+          <button onClick="{{ n.onClick }}" class="mp-navitem" title="{{ n.label }}" style="{{ n.style }}">
+            <span class="mp-ic" style="width:18px; text-align:center;">{{ n.icon }}</span>
+            <span class="mp-lb" style="flex:1; text-align:left;">{{ n.label }}</span>
             <sc-if value="{{ n.badge }}" hint-placeholder-val="">
-              <span style="font-size:11px; font-weight:700; background:rgba(255,255,255,.12); padding:1px 7px; border-radius:99px;">{{ n.badge }}</span>
+              <span class="mp-bdg" style="font-size:11px; font-weight:700; background:rgba(255,255,255,.12); padding:1px 7px; border-radius:99px;">{{ n.badge }}</span>
             </sc-if>
           </button>
         </sc-for>
         </sc-if>
       </sc-for>
     </nav>
-    <div style="margin-top:auto; padding:12px 10px 4px; border-top:1px solid #1E293B;">
+    <div class="mp-navfoot" style="margin-top:auto; padding:12px 10px 4px; border-top:1px solid #1E293B;">
       <div style="font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:#64748B; margin-bottom:9px;">เข้าสู่ระบบในชื่อ</div>
       <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
         <span style="width:34px; height:34px; border-radius:9px; background:{{ actorColor }}; color:#fff; font-size:12px; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0;">{{ actorInit }}</span>
@@ -1507,7 +1525,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24i';
+    this.APP_VERSION='2026-08-24j';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1714,6 +1732,7 @@ class Component extends DCLogic {
   nowStamp(){ const d=new Date(); return d.getDate()+' '+this.thMon(d.getMonth())+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
 
   componentDidMount(){ this._onR=()=>this.forceUpdate(); window.addEventListener('resize',this._onR);
+    try{ if(localStorage.getItem('mp.navMini')==='1') document.body.classList.add('mp-nav-mini'); }catch(e){}
     this._onPaste=(e)=>{ const S=this.state; if(!(S.modal&&S.modal.kind==='task'&&((S.form||{}).tab||'detail')==='images')) return;
       const items=(e.clipboardData&&e.clipboardData.items)||[]; const files=[];
       for(var i=0;i<items.length;i++){ if(items[i].type&&items[i].type.indexOf('image')===0){ var f=items[i].getAsFile(); if(f) files.push(f); } }
@@ -1748,6 +1767,7 @@ class Component extends DCLogic {
     this.setState(patch); }
   toggleNav(){ this.setState(s=>({ navOpen:!s.navOpen })); }
   closeNav(){ this.setState({ navOpen:false }); }
+  toggleNavMini(){ try{ const on=!document.body.classList.contains('mp-nav-mini'); document.body.classList.toggle('mp-nav-mini', on); localStorage.setItem('mp.navMini', on?'1':''); }catch(e){} }
   setMode(m){ this.setState({ dateMode:m }); }
   shiftPeriod(dir){
     const S=this.state;
@@ -2768,7 +2788,7 @@ class Component extends DCLogic {
       loginName:S.loginName||'', loginOpen:!!S.loginOpen, onLoginFocus:()=>this.setState({ loginOpen:true }), onLoginToggle:()=>this.setState(s=>({ loginOpen:!s.loginOpen })),
       onLoginName:e=>{ const v=e.target.value; const p=S.people.find(x=>x.name===v); this.setState({ loginName:v, loginId:p?p.id:'', loginErr:'', loginOpen:true }); },
       loginUserList:S.people.filter(p=>{ if(p.left) return false; const q=(S.loginName||'').toLowerCase(); return !q||(p.name||'').toLowerCase().indexOf(q)>=0; }).map(p=>({ name:p.name, position:p.position||'', onPick:()=>this.setState({ loginName:p.name, loginId:p.id, loginErr:'', loginOpen:false }) })),
-      navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(),
+      navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(), toggleNavMini:()=>this.toggleNavMini(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(),
       taskTabs, cmtNew:_cmtNew, tabDetail:formTab==='detail', tabImages:formTab==='images', tabStatus:formTab==='status', tabAW:formTab==='aw', tabBrief:formTab==='brief',
