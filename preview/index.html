@@ -1539,7 +1539,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24l';
+    this.APP_VERSION='2026-08-24m';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1837,7 +1837,7 @@ class Component extends DCLogic {
   buildAdName(t){ const S=this.state; const b=t.brief||{};
     const nm=(list,id)=>{ const x=(list||[]).find(o=>o.id===id); return x?x.name:''; };
     const nmM=(list,ids)=>(ids||[]).map(id=>nm(list,id)).filter(Boolean).join(',');
-    const pairs=[[nm(S.formats,t.format),'Post Format'],[nm(S.adCampaigns,b.campaign),'Campaign'],[(t.title||'').trim(),'ชื่องาน'],[nmM(S.procedures,this.procIds(t)),'Product'],[nmM(S.prices,b.prices),'Price'],[nmM(S.channels,b.platforms),'Platform Ads'],[nm(S.adPostTypes,b.postType),'Post Type'],[((S.people.find(p=>p.id===t.creative)||{}).name||''),'Creative'],[nm(S.adObjectives,b.objective),'Objective'],[nmM(S.kols,b.kols),'KOL/KOC'],[nm(S.adFunnels,b.funnel),'Funnel'],[nmM(S.doctors,b.doctors),'Doctor Name']];
+    const pairs=[[nm(S.formats,t.format),'Post Format'],[nm(S.adCampaigns,b.campaign),'Campaign'],[(b.adName||'').trim(),'Ad Name'],[nmM(S.procedures,this.procIds(t)),'Product'],[nmM(S.prices,b.prices),'Price'],[nmM(S.channels,b.platforms),'Platform Ads'],[nm(S.adPostTypes,b.postType),'Post Type'],[((S.people.find(p=>p.id===t.creative)||{}).name||''),'Creative'],[nm(S.adObjectives,b.objective),'Objective'],[nmM(S.kols,b.kols),'KOL/KOC'],[nm(S.adFunnels,b.funnel),'Funnel'],[nmM(S.doctors,b.doctors),'Doctor Name']];
     return pairs.map(p=>p[0]||('ไม่มี'+p[1])).join('_'); }
   blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'', adName:'', age:'', gender:'', codeInflu:'', greeting:'', question:'', followup:'', headline:'', commentAds:'', audienceDetail:'', audienceName:'' }; }
   _adPlatKind(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'line'; if(/facebook|fb|instagram|tiktok|tik tok/.test(name)||/\big\b/.test(name)) return 'chat'; return 'other'; }
