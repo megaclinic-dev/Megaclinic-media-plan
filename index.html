@@ -1469,7 +1469,7 @@
               <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภท</span><select value="{{ form.kind }}" onChange="{{ onFKind }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="online">Online</option><option value="offline">Offline</option></select></label>
               <label style="flex:1; min-width:140px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทงาน</span><select value="{{ form.jobcat }}" onChange="{{ onFJobcat }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><sc-for list="{{ chanJobcatOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
             </div>
-            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เพจ (สำหรับ Platform Ads) <span style="font-weight:400; color:#94A3B8;">เช่น หลัก / รอง / inter</span></span><input value="{{ form.page }}" onChange="{{ onFPage }}" placeholder="เว้นว่างได้" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">เพจ (สำหรับ Platform Ads)</span><select value="{{ form.page }}" onChange="{{ onFPage }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff; cursor:pointer;"><option value="">— เว้นว่าง —</option><option value="หลัก">หลัก</option><option value="รอง">รอง</option></select></label>
             <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">สี</span>
               <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;"><sc-for list="{{ palette }}" as="c" hint-placeholder-count="8"><button onClick="{{ c.onClick }}" style="{{ c.style }}"></button></sc-for>
                 <label style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#64748B; border:1px solid #E2E8F0; border-radius:9px; padding:4px 8px; cursor:pointer;">อื่นๆ<input type="color" value="{{ form.color }}" onChange="{{ onFColorInput }}" style="width:26px; height:26px; padding:0; border:none; background:none; cursor:pointer;"></label></div></div>
@@ -1507,7 +1507,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24g';
+    this.APP_VERSION='2026-08-24h';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
