@@ -1491,6 +1491,42 @@
               </sc-if>
             </div>
           </sc-if>
+          <sc-if value="{{ tabAds }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:20px 22px; overflow-y:auto; display:flex; flex-direction:column; gap:15px;">
+              <sc-if value="{{ canAdsEdit }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size:11px; font-weight:800; letter-spacing:.05em; color:#7C3AED; text-transform:uppercase;">สถานะ & ช่วงเวลายิงแอด</div>
+                <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Ads Status <span style="color:#94A3B8; font-weight:500;">· ค่าตั้งต้น = Off</span></span>
+                  <sc-if value="{{ briefAdsOn }}" hint-placeholder-val="{{ false }}"><button onClick="{{ onBriefAdsToggle }}" style="display:inline-flex; align-items:center; gap:10px; border:none; background:transparent; cursor:pointer; font-family:inherit; padding:0;"><span style="width:46px; height:26px; border-radius:99px; background:#16A34A; position:relative; display:inline-block;"><span style="position:absolute; top:3px; left:23px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3);"></span></span><span style="font-size:13.5px; font-weight:700; color:#16A34A;">On</span></button></sc-if>
+                  <sc-if value="{{ briefAdsOff }}" hint-placeholder-val="{{ true }}"><button onClick="{{ onBriefAdsToggle }}" style="display:inline-flex; align-items:center; gap:10px; border:none; background:transparent; cursor:pointer; font-family:inherit; padding:0;"><span style="width:46px; height:26px; border-radius:99px; background:#CBD5E1; position:relative; display:inline-block;"><span style="position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3);"></span></span><span style="font-size:13.5px; font-weight:700; color:#64748B;">Off</span></button></sc-if>
+                </div>
+                <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                  <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Start Date <span style="color:#94A3B8; font-weight:500;">· วันเปิดแอด</span></span><input type="date" value="{{ briefAdStart }}" onChange="{{ onBriefAdStart }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+                  <label style="flex:1; min-width:150px;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">End Date <span style="color:#94A3B8; font-weight:500;">· วันปิดแอด</span></span><input type="date" value="{{ briefAdEnd }}" onChange="{{ onBriefAdEnd }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+                </div>
+                <div style="font-size:11px; font-weight:800; letter-spacing:.05em; color:#7C3AED; text-transform:uppercase; margin-top:4px;">กลุ่มเป้าหมาย (Audience)</div>
+                <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Type of Audience <span style="color:#94A3B8; font-weight:500;">· เลือกจากลิสต์ตั้งค่า ADS</span></span><select value="{{ briefAudience }}" onChange="{{ onBriefAudience }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefAudienceOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Objective <span style="color:#94A3B8; font-weight:500;">· เลือกจากลิสต์ตั้งค่า ADS</span></span><select value="{{ briefObjective }}" onChange="{{ onBriefObjective }}" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><sc-for list="{{ briefObjectiveOpts }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></label>
+                <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">Audience Name</span><input value="{{ briefAudienceName }}" onChange="{{ onBriefAudienceName }}" placeholder="ชื่อกลุ่มเป้าหมาย" style="width:100%; font-size:14px; padding:10px 12px; border:1px solid #E2E8F0; border-radius:10px;"></label>
+                <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Audience Note</span><textarea value="{{ briefAudienceDetail }}" onChange="{{ onBriefAudienceDetail }}" rows="2" placeholder="โน้ตกลุ่มเป้าหมาย..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></label>
+                <div style="font-size:11px; font-weight:800; letter-spacing:.05em; color:#7C3AED; text-transform:uppercase; margin-top:4px;">อื่นๆ</div>
+                <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:6px;">Remark</span><textarea value="{{ briefRemark }}" onChange="{{ onBriefRemark }}" rows="3" placeholder="หมายเหตุฝั่ง Ads..." style="width:100%; font-size:14px; padding:12px; border:1px solid #E2E8F0; border-radius:10px; resize:vertical; line-height:1.7; color:#0F172A;"></textarea></label>
+                <div style="background:#F5F3FF; border:1px solid #DDD6FE; border-radius:10px; padding:11px 13px; font-size:12px; color:#6D28D9; line-height:1.55;">💡 บันทึกแล้วอัปเดตในตาราง <b>แผนงาน Ads</b> อัตโนมัติ (งานเดียวกัน = ค่าเดียวกัน)</div>
+              </sc-if>
+              <sc-if value="{{ adsReadonly }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FEF9C3; border:1px solid #FDE68A; border-radius:10px; padding:11px 13px; font-size:12px; color:#92400E; line-height:1.55;">🔒 แท็บนี้แก้ไขได้เฉพาะตำแหน่ง <b>ADS</b> และ <b>Strategy</b> · ตำแหน่งของคุณดูได้อย่างเดียว</div>
+                <div style="display:flex; flex-direction:column; gap:11px;">
+                  <div style="display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid #F1F5F9;"><span style="font-size:12px; font-weight:600; color:#64748B;">Ads Status</span><span style="font-size:13px; font-weight:700; color:#0F172A;">{{ briefAdsStatusText }}</span></div>
+                  <div style="display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid #F1F5F9;"><span style="font-size:12px; font-weight:600; color:#64748B;">Start Date</span><span style="font-size:13px; color:#0F172A;">{{ briefAdStartText }}</span></div>
+                  <div style="display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid #F1F5F9;"><span style="font-size:12px; font-weight:600; color:#64748B;">End Date</span><span style="font-size:13px; color:#0F172A;">{{ briefAdEndText }}</span></div>
+                  <div style="display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid #F1F5F9;"><span style="font-size:12px; font-weight:600; color:#64748B;">Type of Audience</span><span style="font-size:13px; color:#0F172A;">{{ briefAudienceLabel }}</span></div>
+                  <div style="display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid #F1F5F9;"><span style="font-size:12px; font-weight:600; color:#64748B;">Objective</span><span style="font-size:13px; color:#0F172A;">{{ briefObjectiveLabel }}</span></div>
+                  <div style="display:flex; justify-content:space-between; gap:12px; padding:9px 0; border-bottom:1px solid #F1F5F9;"><span style="font-size:12px; font-weight:600; color:#64748B;">Audience Name</span><span style="font-size:13px; color:#0F172A;">{{ briefAudienceName }}</span></div>
+                  <div style="padding:9px 0; border-bottom:1px solid #F1F5F9;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:4px;">Audience Note</span><span style="font-size:13px; color:#0F172A; white-space:pre-wrap;">{{ briefAudienceDetail }}</span></div>
+                  <div style="padding:9px 0;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:4px;">Remark</span><span style="font-size:13px; color:#0F172A; white-space:pre-wrap;">{{ briefRemark }}</span></div>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
           <sc-if value="{{ taskErr }}" hint-placeholder-val=""><div style="padding:10px 22px 0; font-size:12px; font-weight:700; color:#EF4444;">{{ taskErr }}</div></sc-if>
           <div style="padding:16px 22px; border-top:1px solid #EEF2F6; display:flex; gap:10px; justify-content:space-between; align-items:center; flex-shrink:0;">
             <sc-if value="{{ canDeleteTask }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteTaskFromForm }}" style="font-size:13px; font-weight:600; color:#EF4444; background:#fff; border:1px solid #FECACA; padding:9px 14px; border-radius:9px; cursor:pointer;">ลบงานนี้</button></sc-if>
@@ -1558,14 +1594,14 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24u';
+    this.APP_VERSION='2026-08-24v';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
     this.mediums = [ {id:'online',label:'Online'}, {id:'offline',label:'Offline'} ];
     this.SIZES = ['1:1 (1080×1080)','4:5 (1080×1350)','9:16 (1080×1920)','16:9 (1920×1080)','Cover / Banner','อื่นๆ'];
     this.jobTypes = [ {id:'online',label:'ช่องทางต่างๆ'}, {id:'central',label:'งานกลาง'}, {id:'kol',label:'KOL'} ];
-    this.positions = ['Creative','Graphic','Planner','Strategy'];
+    this.positions = ['Creative','Graphic','Planner','Strategy','ADS'];
     this.CTYPES = ['โปรโมชั่น','ให้ความรู้','รีวิว/รีวิวจริง','Before/After','โปรไฟล์แพทย์','Testimonial','โปรโมทหัตถการ'];
     this.PROCS = ['โบท็อกซ์','ฟิลเลอร์','เลเซอร์','ร้อยไหม','ดูดไขมัน','ทรีตเมนต์ผิว','ปรับรูปหน้า'];
     const saved = this.load();
@@ -1695,8 +1731,8 @@ class Component extends DCLogic {
     this.setState({ modal:{ kind:'confirm', msg:'ลบตำแหน่ง "'+pos+'"?'+(cnt?' มีพนักงาน '+cnt+' คนใช้ตำแหน่งนี้อยู่ (ชื่อตำแหน่งของเขาจะยังคงอยู่ แต่จะไม่มีสิทธิ์กำหนดไว้)':''),
       onYes:()=>{ let perms=JSON.parse(JSON.stringify(S.perms||{})); delete perms[pos]; const positions=S.positions.filter(p=>p!==pos); perms=this.ensureTeamAccess(perms, positions, S.people); this.commit({ positions, perms, modal:null }, 'ลบ', 'ตำแหน่ง "'+pos+'"'); } } }); }
 
-  areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา'],['ads','ADS'],['csview','CS View'],['adstable','แผนงาน Ads'],['history','ประวัติ']]; }
-  defaultPerms(){ const p={}; this.positions.forEach(pos=>{ const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:true, del: a==='tasks' }; }); p[pos]=o; }); return p; }
+  areas(){ return [['tasks','งาน'],['team','ทีมงาน'],['channels','ช่องทาง'],['content','ประเภท'],['procedure','หัตถการ'],['status','สถานะ'],['format','รูปแบบ'],['size','Size'],['branch','สาขา'],['ads','ADS'],['csview','CS View'],['adstable','แผนงาน Ads'],['adstab','แท็บ Ads (ในฟอร์ม)'],['history','ประวัติ']]; }
+  defaultPerms(){ const p={}; this.positions.forEach(pos=>{ const o={}; this.areas().forEach(([a])=>{ o[a]={ view:true, edit:(a==='adstab'?(pos==='ADS'||pos==='Strategy'):true), del: a==='tasks' }; }); p[pos]=o; }); return p; }
   togglePermPos(pos){ this.setState(s=>{ const o=Object.assign({}, s.permOpen||{}); o[pos]=!o[pos]; return { permOpen:o }; }); }
   togglePerm(pos,area,act){ this.setState(s=>{ const perms=JSON.parse(JSON.stringify(s.perms||{})); if(!perms[pos]) perms[pos]={}; if(!perms[pos][area]) perms[pos][area]={view:true,edit:true,del:true}; const cur=perms[pos][area][act]!==false; perms[pos][area][act]=!cur;
     if(area==='team'&&act==='view'&&cur){ const held=[...new Set(s.people.map(p=>p.position).filter(Boolean))]; const posList=held.length?held:[...new Set(s.positions||[])]; const anyLeft=posList.some(p=>{ const o=perms[p]; return !o||!o.team||o.team.view!==false; }); if(!anyLeft){ return {}; } }
@@ -1854,12 +1890,14 @@ class Component extends DCLogic {
     const list=matched.slice(0,60).map(o=>({ label:o.label, onPick:()=>{ add(o.value); this.setState({ cbq:'' }); } }));
     return { value:q, open, list, empty:list.length===0, moreCount:(matched.length>60?(matched.length-60):0), hasMore:matched.length>60, onFocus:()=>this.setState({ cbOpen:key, cbq:'' }), onToggle:()=>this.setState(s=>({ cbOpen:(s.cbOpen===key?null:key), cbq:'' })), onInput:e=>this.setState({ cbOpen:key, cbq:e.target.value }) }; }
   openAddTask(){ this.openModal('task','add',this.blankTask()); }
-  openAddAdsTask(){ const S=this.state; const yes=(S.adStatuses||[]).find(s=>!this.isNoAds(s)); const br=this.blankBrief(); if(yes) br.adStatus=yes.id; const td=S.today||this.iso(new Date()); this.openModal('task','add', this.blankTask({ brief:br, tab:'brief', date:td, start:td })); }
+  openAddAdsTask(){ const S=this.state; const noAds=(S.adStatuses||[]).find(s=>this.isNoAds(s)); const br=this.blankBrief(); if(noAds) br.adStatus=noAds.id; const td=S.today||this.iso(new Date()); this.openModal('task','add', this.blankTask({ brief:br, tab:'adstab', date:td, start:td })); }
   copyAdsTask(t){ const S=this.state; const todo=((S.statuses.find(s=>s.label==='ยังไม่เริ่ม')||S.statuses[0]||{}).id)||'todo'; const brf=this.normalizeBrief(t.brief);
     this.openModal('task','add', this.blankTask({ title:t.title, ch:t.ch, date:t.date, time:t.time||'', creative:t.creative||'', graphic:t.graphic||'', jobType:t.jobType||'online', status:todo, medium:t.medium||'online', delivery:t.delivery||'', branchQty:Object.assign({}, t.branchQty||{}), format:t.format||'', size:t.size||'', ctype:t.ctype||'', proc:t.proc||'', procs:this.procIds(t), resize:!!t.resize, imgDesc:t.imgDesc||'', imgComment:t.imgComment||'', caption:t.caption||'', details:t.details||'', link:t.link||'', postLink:t.postLink||'', lineBounce:t.lineBounce||'', images:(t.images||[]).slice(), aw:(t.aw||[]).slice(), start:t.start||t.date, brief:brf, tab:'brief' })); }
   _parseDMY(s){ s=(s||'').trim(); if(!s) return ''; let m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})$/); if(m) return m[3]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2); m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/); if(m) return m[1]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[3]).slice(-2); return null; }
   _adsSetDMY(id,field,raw){ raw=(raw||'').trim(); if(raw===''){ this._adsSet(id,'brief',field,''); return; } const iso=this._parseDMY(raw); if(iso){ this._adsSet(id,'brief',field,iso); } else { this.setState({ _atTick:(this.state._atTick||0)+1 }); } }
   openEditTaskBrief(t){ this.openEditTask(t); this.setState(s=>({ form:{ ...s.form, tab:'brief' } })); }
+  openEditTaskAds(t){ this.openEditTask(t); this.setState(s=>({ form:{ ...s.form, tab:'adstab' } })); }
+  toggleBriefAds(){ const S=this.state; const f=S.form||{}; const br=Object.assign({}, f.brief||{}); const noAds=(S.adStatuses||[]).find(s=>this.isNoAds(s)); const yes=(S.adStatuses||[]).find(s=>!this.isNoAds(s)); const cur=(S.adStatuses||[]).find(s=>s.id===br.adStatus)||{}; const isOn=!!br.adStatus && !this.isNoAds(cur); if(isOn){ this.setBrief('adStatus', noAds?noAds.id:''); } else { this.setBrief('adStatus', yes?yes.id:''); if(!br.adStart){ this.setBrief('adStart', S.today||this.iso(new Date())); } } }
   buildAdName(t){ const S=this.state; const b=t.brief||{};
     const nm=(list,id)=>{ const x=(list||[]).find(o=>o.id===id); return x?x.name:''; };
     const nmM=(list,ids)=>(ids||[]).map(id=>nm(list,id)).filter(Boolean).join(',');
@@ -2080,7 +2118,7 @@ class Component extends DCLogic {
         vAdName:(b.adName||''), vAge:(b.age||''), vGender:(b.gender||''), vCodeInflu:(b.codeInflu||''), vCaption:(t.caption||''), vGreeting:(b.greeting||''), vQuestion:(b.question||''), vFollowup:(b.followup||''), vHeadline:(b.headline||''), vCommentAds:(b.commentAds||''), vNote:(b.note||''), vRemark:(b.remark||''), vAudienceDetail:(b.audienceDetail||''), vAdStart:(b.adStart||''), vAdEnd:(b.adEnd||''), vFormat:(t.format||''), vPostType:(b.postType||''), vFunnel:(b.funnel||''), vCampaign:(b.campaign||''), vAudience:(b.audience||''), vObjective:(b.objective||''),
         onToggleOn:()=>this._adsToggleOn(t.id),
         eAdName:e=>this._adsSet(t.id,'brief','adName',e.target.value), eAge:e=>this._adsSet(t.id,'brief','age',e.target.value), eGender:e=>this._adsSet(t.id,'brief','gender',e.target.value), eCodeInflu:e=>this._adsSet(t.id,'brief','codeInflu',e.target.value), eCaption:e=>this._adsSet(t.id,'task','caption',e.target.value), eGreeting:e=>this._adsSet(t.id,'brief','greeting',e.target.value), eQuestion:e=>this._adsSet(t.id,'brief','question',e.target.value), eFollowup:e=>this._adsSet(t.id,'brief','followup',e.target.value), eHeadline:e=>this._adsSet(t.id,'brief','headline',e.target.value), eCommentAds:e=>this._adsSet(t.id,'brief','commentAds',e.target.value), eNote:e=>this._adsSet(t.id,'brief','note',e.target.value), eRemark:e=>this._adsSet(t.id,'brief','remark',e.target.value), eAudienceDetail:e=>this._adsSet(t.id,'brief','audienceDetail',e.target.value), vAudienceName:(b.audienceName||''), eAudienceName:e=>this._adsSet(t.id,'brief','audienceName',e.target.value), eAdStart:e=>this._adsSet(t.id,'brief','adStart',e.target.value), eAdEnd:e=>this._adsSet(t.id,'brief','adEnd',e.target.value), eFormat:e=>this._adsSet(t.id,'task','format',e.target.value), ePostType:e=>this._adsSet(t.id,'brief','postType',e.target.value), eFunnel:e=>this._adsSet(t.id,'brief','funnel',e.target.value), eCampaign:e=>this._adsSet(t.id,'brief','campaign',e.target.value), eAudience:e=>this._adsSet(t.id,'brief','audience',e.target.value), eObjective:e=>this._adsSet(t.id,'brief','objective',e.target.value),
-        onOpen:()=>this.openEditTaskBrief(t), copyRow:()=>this.copyAdsTask(t),
+        onOpen:()=>this.openEditTaskAds(t), copyRow:()=>this.copyAdsTask(t),
         vStartDMY:fmtDMY(b.adStart), vEndDMY:fmtDMY(b.adEnd), eStartDMY:e=>this._adsSetDMY(t.id,'adStart',e.target.value), eEndDMY:e=>this._adsSetDMY(t.id,'adEnd',e.target.value),
         copyMeta:(e)=>this._copyBtn(e,this.buildAdName(t)),
         copyAud:(e)=>this._copyBtn(e,[b.audienceName, nm(S.adAudiences,b.audience), nm(S.adFunnels,b.funnel)].filter(Boolean).join('_')||'')
@@ -2802,11 +2840,14 @@ class Component extends DCLogic {
     const showTagScope=tagScopePick.length>0;
     const showTagDates=tagIsDated;
 
-    const formTab=f.tab||'detail';
-    const ROLEC={cre:{c:'#DB2777',bg:'#FDF2F8'},gra:{c:'#2563EB',bg:'#EFF6FF'}};
+    const _adsCtx = S.view==='adstable';
+    let formTab=f.tab||'detail'; if(formTab==='adstab' && !_adsCtx) formTab='detail';
+    const ROLEC={cre:{c:'#DB2777',bg:'#FDF2F8'},gra:{c:'#2563EB',bg:'#EFF6FF'},ads:{c:'#7C3AED',bg:'#F5F3FF'}};
     const ttab=(active,role)=>{ const r=ROLEC[role]||ROLEC.cre; return 'position:relative;font-size:13px;font-weight:700;padding:9px 13px;border:none;cursor:pointer;white-space:nowrap;border-radius:10px 10px 0 0;font-family:inherit;'+(active?('background:'+r.c+';color:#fff;'):('background:'+r.bg+';color:'+r.c+';')); };
     let _cmtNew=false; try{ const _cid=f.id, _cv=(f.imgComment||'').trim(); if(_cid&&_cv) _cmtNew=(localStorage.getItem('mp.cmtseen.'+_cid)!==_cv); }catch(e){}
-    const taskTabs=[['detail','รายละเอียดงาน','cre'],['images','Draft'+((f.images||[]).length?' ('+f.images.length+')':''),'cre'],['status','สถานะงาน'+((f.aw||[]).length?' ('+f.aw.length+')':''),'gra'],['aw','ลงโพส','cre'],['brief','Brief Ads','cre']].map(([k,l,role])=>({ label:l, onClick:()=>this.setTab(k), style:ttab(formTab===k,role), hasNew:(k==='images'&&_cmtNew) }));
+    const _tabDefs=[['detail','รายละเอียดงาน','cre'],['images','Draft'+((f.images||[]).length?' ('+f.images.length+')':''),'cre'],['status','สถานะงาน'+((f.aw||[]).length?' ('+f.aw.length+')':''),'gra'],['aw','ลงโพส','cre'],['brief','Brief Ads','cre']];
+    if(_adsCtx) _tabDefs.push(['adstab','📣 Ads','ads']);
+    const taskTabs=_tabDefs.map(([k,l,role])=>({ label:l, onClick:()=>this.setTab(k), style:ttab(formTab===k,role), hasNew:(k==='images'&&_cmtNew) }));
     const brf=f.brief||this.blankBrief();
     const _pf=this._briefPlatFlags(brf);
     const briefDate=f.date||'';
@@ -2859,7 +2900,12 @@ class Component extends DCLogic {
       navOpenClass:S.navOpen?'mp-nav-open':'', toggleNav:()=>this.toggleNav(), closeNav:()=>this.closeNav(), toggleNavMini:()=>this.toggleNavMini(),
       actorName:actorP.name||'', actorPosition:actorP.position||'', actorColor:actorP.color||'#4F46E5', actorInit:init(actorP.name),
       isAdmin:can('team','edit'), forceReload:()=>this.doForceReload(),
-      taskTabs, cmtNew:_cmtNew, tabDetail:formTab==='detail', tabImages:formTab==='images', tabStatus:formTab==='status', tabAW:formTab==='aw', tabBrief:formTab==='brief',
+      taskTabs, cmtNew:_cmtNew, tabDetail:formTab==='detail', tabImages:formTab==='images', tabStatus:formTab==='status', tabAW:formTab==='aw', tabBrief:formTab==='brief', tabAds:formTab==='adstab',
+      canAdsEdit:can('adstab','edit'), adsReadonly:!can('adstab','edit'),
+      briefAdsOn:(!!brf.adStatus && !this.isNoAds((S.adStatuses||[]).find(s=>s.id===brf.adStatus)||{})), briefAdsOff:!(!!brf.adStatus && !this.isNoAds((S.adStatuses||[]).find(s=>s.id===brf.adStatus)||{})), onBriefAdsToggle:()=>this.toggleBriefAds(),
+      briefAdsStatusText:((!!brf.adStatus && !this.isNoAds((S.adStatuses||[]).find(s=>s.id===brf.adStatus)||{}))?'On':'Off'),
+      briefAudienceName:brf.audienceName||'', onBriefAudienceName:e=>this.setBrief('audienceName',e.target.value), briefAudienceDetail:brf.audienceDetail||'', onBriefAudienceDetail:e=>this.setBrief('audienceDetail',e.target.value),
+      briefAudienceLabel:(((S.adAudiences||[]).find(x=>x.id===brf.audience)||{}).name)||'—', briefObjectiveLabel:(((S.adObjectives||[]).find(x=>x.id===brf.objective)||{}).name)||'—', briefAdStartText:brf.adStart||'—', briefAdEndText:brf.adEnd||'—',
       briefPlatformChips, briefPlatformGroups, briefKolTags:kolS.tags, briefKolOpts:kolS.opts, onBriefKolAdd:kolS.onAdd, briefDoctorTags:docS.tags, briefDoctorOpts:docS.opts, onBriefDoctorAdd:docS.onAdd,
       cbKol:this._mkMultiCb('form.kol', brf.kols, kolsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('kols',id)), cbDoctor:this._mkMultiCb('form.doctor', brf.doctors, doctorsAvail.map(k=>({value:k.id,label:k.name})), id=>this.toggleBrief('doctors',id)),
       dtLocked:_dtLock, dtUnlocked:!_dtLock, dtDateLabel:_dtDateLabel, dtTimeLabel:_dtTimeLabel, briefPriceTags:priceS.tags, briefPriceOpts:priceS.opts, onBriefPriceAdd:priceS.onAdd, briefPostTypeOpts, briefFunnelOpts, briefCampaignOpts, briefAudienceOpts, briefObjectiveOpts, briefAdStatusOpts, briefAdStatusPick, briefAdStart, briefAdEnd:brf.adEnd||'',
