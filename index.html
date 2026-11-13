@@ -1594,7 +1594,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24z';
+    this.APP_VERSION='2026-08-24aa';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -2848,7 +2848,7 @@ class Component extends DCLogic {
     const _adsCtx = S.view==='adstable';
     let formTab=f.tab||'detail'; if(formTab==='adstab' && !_adsCtx) formTab='detail';
     const ROLEC={cre:{c:'#DB2777',bg:'#FDF2F8'},gra:{c:'#2563EB',bg:'#EFF6FF'},ads:{c:'#7C3AED',bg:'#F5F3FF'}};
-    const ttab=(active,role)=>{ const r=ROLEC[role]||ROLEC.cre; return 'flex:0 0 auto;position:relative;font-size:11.5px;font-weight:700;padding:7px 9px;border:none;cursor:pointer;white-space:nowrap;border-radius:9px 9px 0 0;font-family:inherit;'+(active?('background:'+r.c+';color:#fff;'):('background:'+r.bg+';color:'+r.c+';')); };
+    const ttab=(active,role)=>{ const r=ROLEC[role]||ROLEC.cre; const sz=_adsCtx?'font-size:11.5px;padding:7px 9px;border-radius:9px 9px 0 0;':'font-size:13px;padding:9px 13px;border-radius:10px 10px 0 0;'; return 'flex:0 0 auto;position:relative;font-weight:700;border:none;cursor:pointer;white-space:nowrap;font-family:inherit;'+sz+(active?('background:'+r.c+';color:#fff;'):('background:'+r.bg+';color:'+r.c+';')); };
     let _cmtNew=false; try{ const _cid=f.id, _cv=(f.imgComment||'').trim(); if(_cid&&_cv) _cmtNew=(localStorage.getItem('mp.cmtseen.'+_cid)!==_cv); }catch(e){}
     const _tabDefs=[['detail','รายละเอียดงาน','cre'],['images','Draft'+((f.images||[]).length?' ('+f.images.length+')':''),'cre'],['status','สถานะงาน'+((f.aw||[]).length?' ('+f.aw.length+')':''),'gra'],['aw','ลงโพส','cre'],['brief','Brief Ads','cre']];
     if(_adsCtx) _tabDefs.push(['adstab','📣 Ads','ads']);
