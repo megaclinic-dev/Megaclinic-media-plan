@@ -1154,7 +1154,7 @@
             <sc-if value="{{ sec.empty }}" hint-placeholder-val="{{ false }}"><div style="background:#fff; border:1px dashed #E2E8F0; border-radius:14px; padding:22px; text-align:center; color:#94A3B8; font-size:13px;">ไม่มีโพสต์ในกลุ่มนี้ในช่วงที่เลือก</div></sc-if>
           </div>
           </sc-for>
-          <div style="font-size:11px; color:#94A3B8;">แยกเป็น ADS (ยิงแอด) และ Organic (ไม่ยิงแอด) · แต่ละกลุ่มมียอด Awareness / Interest ของตัวเอง · Interest ใช้เมตริกตามช่องทาง (FB/Wechat=แชร์ · IG/TikTok/Douyin/XHS/Lemon8=เซฟ · LINE=คลิก) · รูปใช้ AW จริงถ้ามี ไม่มีใช้ดราฟ</div>
+          <div style="font-size:11px; color:#94A3B8;">ทุกโพสต์กรอกได้ทั้ง ADS และ Organic (แยกตัวเลขกัน) · เลขเดิมอยู่กลุ่ม Organic · แต่ละกลุ่มมียอด Awareness / Interest ของตัวเอง · Interest ใช้เมตริกตามช่องทาง (FB/Wechat=แชร์ · IG/TikTok/Douyin/XHS/Lemon8=เซฟ · LINE=คลิก)</div>
         </div>
       </sc-if>
 
@@ -1587,7 +1587,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24ab';
+    this.APP_VERSION='2026-08-24ac';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1903,10 +1903,10 @@ class Component extends DCLogic {
   blankBrief(){ return { platforms:[], kols:[], doctors:[], prices:[], postType:'', funnel:'', campaign:'', adStatus:'', adStart:'', adEnd:'', audience:'', objective:'', note:'', remark:'', adName:'', age:'', gender:'', codeInflu:'', greeting:'', question:'', question2:'', question3:'', question4:'', question5:'', followup:'', headline:'', commentAds:'', audienceDetail:'', audienceName:'' }; }
   _adPlatKind(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'line'; if(/facebook|fb|instagram|tiktok|tik tok/.test(name)||/\big\b/.test(name)) return 'chat'; return 'other'; }
   _briefPlatFlags(brf){ const S=this.state; const ids=(brf&&brf.platforms)||[]; let hasChat=false,hasLine=false; (S.channels||[]).forEach(c=>{ if(ids.indexOf(c.id)<0) return; const k=this._adPlatKind(c.name); if(k==='chat') hasChat=true; else if(k==='line') hasLine=true; }); return { hasChat, hasLine }; }
-  blankFunnel(){ return { aw:'', in:'', co:'', cf:'', at:'' }; }
+  blankFunnel(){ return { aw:'', in:'', co:'', cf:'', awAds:'', inAds:'', at:'' }; }
   interestMetric(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'คลิก'; if(/facebook|fb|wechat/.test(name)) return 'แชร์'; return 'เซฟ'; }
   setFunnel(id, key, raw){ const S=this.state; const v=(raw===''||raw==null)?'':(isNaN(+raw)?'':+raw);
-    const tasks=S.tasks.map(t=>{ if(t.id!==id) return t; const fn=Object.assign({}, t.funres||{}); fn[key]=v; const any=['aw','in','co','cf'].some(k=>fn[k]!==''&&fn[k]!=null); fn.at=any?(S.today||this.iso(new Date())):''; return Object.assign({}, t, { funres:fn }); });
+    const tasks=S.tasks.map(t=>{ if(t.id!==id) return t; const fn=Object.assign({}, t.funres||{}); fn[key]=v; const any=['aw','in','co','cf','awAds','inAds'].some(k=>fn[k]!==''&&fn[k]!=null); fn.at=any?(S.today||this.iso(new Date())):''; return Object.assign({}, t, { funres:fn }); });
     this.setState({ tasks }); clearTimeout(this._fnT); this._fnT=setTimeout(()=>this.persist(), 700); }
   toggleFunnelManual(id){ const S=this.state; const tasks=S.tasks.map(t=>{ if(t.id!==id) return t; const fn=Object.assign({}, t.funres||{}); fn.manual=!fn.manual; return Object.assign({}, t, { funres:fn }); }); this.setState({ tasks }); clearTimeout(this._fnT); this._fnT=setTimeout(()=>this.persist(), 700); }
   setFnRange(mode){ const S=this.state; const td=S.today||this.iso(new Date()); let from=S.fnFrom, to=S.fnTo;
@@ -2653,7 +2653,7 @@ class Component extends DCLogic {
     const fnCanEdit=can(this.navArea('funnelres'),'edit');
     const fnPct=(a,b)=>b>0?(Math.round(a/b*1000)/10+'%'):'—';
     const fnFmt=n=>Number(n).toLocaleString('en-US');
-    const _mkRow=t=>{ const c=chMap[t.ch]||{}; const p=pMap[t.creative]||{}; const md=taskMedia(t); const fr=t.funres||{}; const real=fnReal(t);
+    const _mkRow=(t,kAw,kIn)=>{ const c=chMap[t.ch]||{}; const p=pMap[t.creative]||{}; const md=taskMedia(t); const fr=t.funres||{}; const real=fnReal(t);
       const vv=k=>(fr[k]===0?0:(fr[k]||''));
       return { id:t.id, title:t.title||'(ไม่มีชื่อ)', job:jobLbl(t.jobType), chName:(c.name||(t.ch==='other'?'อื่นๆ':t.ch)), chColor:c.color||'#94A3B8',
         date:fmtTH(t.date), cre:(p.name||'—'), creInit:init(p.name||'—'), creColor:p.color||'#94A3B8',
@@ -2661,17 +2661,17 @@ class Component extends DCLogic {
         hasMedia:!!md, noMedia:!md, img:md?md.src:'', isImg:!!(md&&!md.isVid), isVid:!!(md&&md.isVid),
         imgTag:real?'รูปจริง':(md?'ดราฟ':'ยังไม่มีรูป'), imgTagColor:real?'#059669':(md?'#C2410C':'#94A3B8'),
         imetric:this.interestMetric(c.name),
-        aw:vv('aw'), in:vv('in'),
+        aw:vv(kAw), in:vv(kIn),
         enteredTH:fr.at?('🗓️ '+fmtTH(fr.at)):'—',
         manual:!!fr.manual, notManual:!fr.manual, onManual:()=>this.toggleFunnelManual(t.id),
-        onAw:e=>this.setFunnel(t.id,'aw',e.target.value), onIn:e=>this.setFunnel(t.id,'in',e.target.value) }; };
-    const _isAds=t=>this.isAdsRow(t);
-    const _adsRows=fnList.filter(_isAds).map(_mkRow);
-    const _orgRows=fnList.filter(t=>!_isAds(t)).map(_mkRow);
+        onAw:e=>this.setFunnel(t.id,kAw,e.target.value), onIn:e=>this.setFunnel(t.id,kIn,e.target.value) }; };
+    // ทุกโพสต์ขึ้นทั้ง 2 กลุ่ม · ADS ใช้ awAds/inAds · Organic ใช้ aw/in (เลขเดิม)
+    const _adsRows=fnList.map(t=>_mkRow(t,'awAds','inAds'));
+    const _orgRows=fnList.map(t=>_mkRow(t,'aw','in'));
     const _mkTiles=(rows)=>{ const A=rows.reduce((a,r)=>a+fnNum(r.aw),0), I=rows.reduce((a,r)=>a+fnNum(r.in),0); return [ { lab:'Awareness', val:fnFmt(A), rate:'ฐาน 100%' }, { lab:'Interest', val:fnFmt(I), rate:'จาก Awareness '+fnPct(I,A) } ]; };
     const fnSections=[
-      { key:'ads', label:'📣 ADS (ยิงแอด)', accent:'#7C3AED', rows:_adsRows, tiles:_mkTiles(_adsRows), count:_adsRows.length, hasRows:_adsRows.length>0, empty:_adsRows.length===0 },
-      { key:'org', label:'🌱 Organic (ไม่ยิงแอด)', accent:'#059669', rows:_orgRows, tiles:_mkTiles(_orgRows), count:_orgRows.length, hasRows:_orgRows.length>0, empty:_orgRows.length===0 }
+      { key:'ads', label:'📣 ADS', accent:'#7C3AED', rows:_adsRows, tiles:_mkTiles(_adsRows), count:_adsRows.length, hasRows:_adsRows.length>0, empty:_adsRows.length===0 },
+      { key:'org', label:'🌱 Organic', accent:'#059669', rows:_orgRows, tiles:_mkTiles(_orgRows), count:_orgRows.length, hasRows:_orgRows.length>0, empty:_orgRows.length===0 }
     ];
     const fnCount=fnList.length;
 
