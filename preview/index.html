@@ -1093,6 +1093,9 @@
             <select value="{{ fPerson }}" onChange="{{ onPerson }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:180px;">
               <sc-for list="{{ peopleOpts }}" as="op" hint-placeholder-count="4"><option value="{{ op.value }}">{{ op.label }}</option></sc-for>
             </select>
+            <select value="{{ fnCtype }}" onChange="{{ onFnCtype }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:190px;">
+              <sc-for list="{{ fnCtypeOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+            </select>
             <select value="{{ fnProc }}" onChange="{{ onFnProc }}" style="font-size:13px; padding:7px 11px; border:1px solid #E2E8F0; border-radius:9px; background:#fff; max-width:180px;">
               <sc-for list="{{ fnProcOpts }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
             </select>
@@ -1603,7 +1606,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24af';
+    this.APP_VERSION='2026-08-24ag';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1639,7 +1642,7 @@ class Component extends DCLogic {
       fMedium:'all',
       dateMode:'week', weekStart:_ws, calMonth:_today.slice(0,7), rangeStart:_ws, rangeEnd:_we, today:_today,
       fChannel:'all', fChans:[], fPerson:'all', fStatus:'all', fAdStatus:'all', fPostStatus:'all', fJob:'all', selDate:_today, adsDateMode:'post',
-      fnFrom:_ws, fnTo:_we, fnChan:'all', fnProc:'all', fnMode:'week',
+      fnFrom:_ws, fnTo:_we, fnChan:'all', fnProc:'all', fnCtype:'all', fnMode:'week',
       adfStatus:[], adfKol:[], adfDoctor:[], adfPrice:[], adfPost:[], adfFunnel:[], adfCamp:[], adfAud:[], adfObj:[], adfProc:[], adfFormat:[], adfSearch:'', adfOpen:'',
       loading:true, loadErr:false, newVer:false, chipView:'name',
       modal:null, form:{}
@@ -2666,7 +2669,10 @@ class Component extends DCLogic {
     const fnProcOpts=[{value:'all',label:'ทุกหัตถการ'}].concat(S.procedures.map(p=>({value:p.id,label:p.name})));
     const _fnProcSel=S.fnProc||'all';
     const _fnProcMatch=t=>_fnProcSel==='all'||this.procIds(t).indexOf(_fnProcSel)>=0;
-    const fnList=T.filter(t=>t.date>=fnFrom&&t.date<=fnTo&&_fnMatch(t)&&_fnPMatch(t)&&_fnProcMatch(t)).slice().sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0));
+    const fnCtypeOpts=[{value:'all',label:'ทุกประเภทคอนเทนต์'}].concat((S.contentTypes||[]).map(p=>({value:p.id,label:p.name})));
+    const _fnCtypeSel=S.fnCtype||'all';
+    const _fnCtypeMatch=t=>_fnCtypeSel==='all'||t.ctype===_fnCtypeSel;
+    const fnList=T.filter(t=>t.date>=fnFrom&&t.date<=fnTo&&_fnMatch(t)&&_fnPMatch(t)&&_fnProcMatch(t)&&_fnCtypeMatch(t)).slice().sort((a,b)=> a.date<b.date?1:(a.date>b.date?-1:0));
     const fnCanEdit=can(this.navArea('funnelres'),'edit');
     const fnPct=(a,b)=>b>0?(Math.round(a/b*1000)/10+'%'):'—';
     const fnFmt=n=>Number(n).toLocaleString('en-US');
@@ -2948,8 +2954,8 @@ class Component extends DCLogic {
       syncText:({saving:'⟳ กำลังบันทึก…',saved:'✓ บันทึกแล้ว',error:'⚠ บันทึกไม่สำเร็จ กำลังลองใหม่'}[S.syncStatus||'idle'])||'', syncShow:!!({saving:1,saved:1,error:1}[S.syncStatus]), syncColor:({saving:'#B45309',saved:'#15803D',error:'#B91C1C'}[S.syncStatus])||'#64748B', syncBg:({saving:'#FEF3C7',saved:'#F0FDF4',error:'#FEF2F2'}[S.syncStatus])||'#fff',
       noAccess:!viewAllowed,
       isPlan:viewAllowed&&S.view==='plan', isTable:viewAllowed&&S.view==='table', isReport:viewAllowed&&S.view==='report', isFunnelres:viewAllowed&&S.view==='funnelres',
-      fnTiles, fnRows, fnTotals, fnChanOpts, fnProcOpts, fnCount, fnCanEdit, fnReadonly:!fnCanEdit, fnChan:S.fnChan, fnProc:S.fnProc||'all',
-      onFnChan:e=>this.setState({fnChan:e.target.value}), onFnProc:e=>this.setState({fnProc:e.target.value}), isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
+      fnTiles, fnRows, fnTotals, fnChanOpts, fnProcOpts, fnCtypeOpts, fnCount, fnCanEdit, fnReadonly:!fnCanEdit, fnChan:S.fnChan, fnProc:S.fnProc||'all', fnCtype:S.fnCtype||'all',
+      onFnChan:e=>this.setState({fnChan:e.target.value}), onFnProc:e=>this.setState({fnProc:e.target.value}), onFnCtype:e=>this.setState({fnCtype:e.target.value}), isTeam:viewAllowed&&S.view==='team', isPerms:viewAllowed&&S.view==='perms', isChannels:viewAllowed&&S.view==='channels', isContent:viewAllowed&&S.view==='content', isProcedure:viewAllowed&&S.view==='procedure', isStatus:viewAllowed&&S.view==='status', isHistory:viewAllowed&&S.view==='history',
       isFormat:viewAllowed&&S.view==='format', isSize:viewAllowed&&S.view==='size',
       formatRows, sizeRows, sizeOpts, branchRows, isBranch:viewAllowed&&S.view==='branch', canBrEdit:can('branch','edit'), canBrDel:can('branch','del'), openAddBranch:()=>this.openAddTag('branch'),
       mediumChips, mediumPick, branchPick, branchSummary, branchTotalLabel, isOffline, deliveryHint, showBranches, tagScopePick, showTagScope,
