@@ -1112,7 +1112,7 @@
             <table style="border-collapse:collapse; width:100%; min-width:1040px;">
               <thead>
                 <tr>
-                  <th colspan="7" style="border-bottom:1px solid #EEF2F6;"></th>
+                  <th colspan="8" style="border-bottom:1px solid #EEF2F6;"></th>
                   <th colspan="2" style="padding:8px 8px 5px; text-align:center; font-size:12px; font-weight:800; color:#059669; background:#F0FDF4; border-bottom:1px solid #EEF2F6;">🌱 Organic</th>
                   <th colspan="2" style="padding:8px 8px 5px; text-align:center; font-size:12px; font-weight:800; color:#7C3AED; background:#F5F3FF; border-bottom:1px solid #EEF2F6;">📣 ADS</th>
                   <th colspan="2" style="border-bottom:1px solid #EEF2F6;"></th>
@@ -1121,6 +1121,7 @@
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">รูป</th>
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ชื่องาน</th>
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ประเภทงาน</th>
+                  <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ประเภทคอนเทนต์</th>
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">ช่องทาง</th>
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">หัตถการ</th>
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">วันที่ลงงาน</th>
@@ -1144,6 +1145,7 @@
                     </div></td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:13px; font-weight:700; min-width:160px;">{{ r.title }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155;">{{ r.job }}</td>
+                    <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155;">{{ r.ctype }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><span style="font-size:11px; font-weight:700; padding:3px 9px; border-radius:7px; white-space:nowrap; color:#fff; background:{{ r.chColor }};">{{ r.chName }}</span></td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155; min-width:120px;">{{ r.procLabel }}</td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#64748B; white-space:nowrap;">🗓️ {{ r.date }}</td>
@@ -1157,7 +1159,7 @@
                   </tr>
                 </sc-for>
                 <tr>
-                  <td colspan="7" style="padding:12px; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0; font-size:13px;">รวม ({{ fnCount }} โพสต์)</td>
+                  <td colspan="8" style="padding:12px; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0; font-size:13px;">รวม ({{ fnCount }} โพสต์)</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F0FDF4; border-top:2px solid #E2E8F0; color:#059669;">{{ fnTotals.oAw }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F0FDF4; border-top:2px solid #E2E8F0; color:#059669;">{{ fnTotals.oIn }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F5F3FF; border-top:2px solid #E2E8F0; color:#7C3AED;">{{ fnTotals.aAw }}</td>
@@ -1601,7 +1603,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24ad';
+    this.APP_VERSION='2026-08-24ae';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -2669,7 +2671,7 @@ class Component extends DCLogic {
     const fnFmt=n=>Number(n).toLocaleString('en-US');
     const fnRows=fnList.map(t=>{ const c=chMap[t.ch]||{}; const p=pMap[t.creative]||{}; const md=taskMedia(t); const fr=t.funres||{}; const real=fnReal(t);
       const vv=k=>(fr[k]===0?0:(fr[k]||''));
-      return { id:t.id, title:t.title||'(ไม่มีชื่อ)', job:jobLbl(t.jobType), chName:(c.name||(t.ch==='other'?'อื่นๆ':t.ch)), chColor:c.color||'#94A3B8',
+      return { id:t.id, title:t.title||'(ไม่มีชื่อ)', job:jobLbl(t.jobType), ctype:((S.contentTypes||[]).find(x=>x&&x.id===t.ctype)||{}).name||'—', chName:(c.name||(t.ch==='other'?'อื่นๆ':t.ch)), chColor:c.color||'#94A3B8',
         date:fmtTH(t.date), cre:(p.name||'—'), creInit:init(p.name||'—'), creColor:p.color||'#94A3B8',
         procLabel:(this.procIds(t).map(id=>(_prMap[id]||{}).name).filter(Boolean).join(', ')||'—'),
         hasMedia:!!md, noMedia:!md, img:md?md.src:'', isImg:!!(md&&!md.isVid), isVid:!!(md&&md.isVid),
