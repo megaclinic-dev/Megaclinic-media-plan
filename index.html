@@ -1357,8 +1357,8 @@
             </div>
             <div style="font-size:11px; color:#94A3B8; margin-top:-6px; line-height:1.5;">🔒 ตำแหน่ง Creative แก้วันลงงาน/เวลาของงานเดิมไม่ได้ · ถ้าต้องเปลี่ยน ใช้ปุ่ม "คัดลอกงาน" แล้วแก้ในงานใหม่</div>
             </sc-if>
-            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทคอนเทนต์</span><div class="mp-cb" style="position:relative;"><input value="{{ cbCtype.value }}" onInput="{{ cbCtype.onInput }}" onFocus="{{ cbCtype.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbCtype.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbCtype.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbCtype.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
-            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">หัตถการ <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน (ใช้เป็น Product ในชื่อ Ad)</span></span>
+            <label style="display:block;"><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:5px;">ประเภทคอนเทนต์ <span style="color:#EF4444;">*</span></span><div class="mp-cb" style="position:relative;"><input value="{{ cbCtype.value }}" onInput="{{ cbCtype.onInput }}" onFocus="{{ cbCtype.onFocus }}" placeholder="🔍 พิมพ์ค้นหา / กดเลือก" autocomplete="off" style="width:100%; font-size:14px; padding:10px 34px 10px 12px; border:1px solid #E2E8F0; border-radius:10px; background:#fff;"><button onClick="{{ cbCtype.onToggle }}" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); width:26px; height:26px; border:none; background:transparent; cursor:pointer; font-size:10px; color:#64748B;">▼</button><sc-if value="{{ cbCtype.open }}" hint-placeholder-val="{{ false }}"><div style="position:absolute; top:calc(100% + 3px); left:0; right:0; max-height:200px; overflow-y:auto; background:#fff; border:1px solid #E2E8F0; border-radius:10px; box-shadow:0 12px 32px rgba(0,0,0,.18); z-index:40;"><sc-for list="{{ cbCtype.list }}" as="o" hint-placeholder-count="4"><button onClick="{{ o.onPick }}" style="display:block; width:100%; text-align:left; padding:9px 12px; border:none; border-bottom:1px solid #F1F5F9; background:transparent; cursor:pointer; font-size:13px;">{{ o.label }}</button></sc-for></div></sc-if></div></label>
+            <div><span style="font-size:12px; font-weight:600; color:#64748B; display:block; margin-bottom:7px;">หัตถการ <span style="color:#EF4444;">*</span> <span style="color:#94A3B8; font-weight:500;">· เลือกได้หลายอัน (ใช้เป็น Product ในชื่อ Ad)</span></span>
               <sc-if value="{{ procEmpty }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px; color:#94A3B8; padding:4px 0;">ยังไม่มีหัตถการของงานประเภทนี้ · เพิ่มที่เมนู DATA › หัตถการ</div></sc-if>
               <div style="display:flex; flex-wrap:wrap; gap:8px;"><sc-for list="{{ procChips }}" as="c" hint-placeholder-count="3"><button onClick="{{ c.onClick }}" style="{{ c.style }}"><span style="width:8px; height:8px; border-radius:3px; background:{{ c.color }}; display:inline-block; flex-shrink:0;"></span>{{ c.label }}</button></sc-for></div></div>
             <div style="display:flex; gap:12px; flex-wrap:wrap;">
@@ -1603,7 +1603,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24ae';
+    this.APP_VERSION='2026-08-24af';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -2257,8 +2257,9 @@ class Component extends DCLogic {
     if(!this._loadComplete){ const w='⚠️ ข้อมูลยังโหลดไม่ครบ ระบบกำลังโหลดใหม่เพื่อกันข้อมูลหาย กรุณารอ 2–3 วินาทีแล้วกดเซฟอีกครั้ง'; if(f){ this.setState({ form:{ ...f, _err:w } }); } else { alert(w); } try{ this._retryLoad&&this._retryLoad(); }catch(e){} return; }
     const chName=id=>id==='other'?'อื่นๆ':(S.channels.find(c=>c.id===id)||{}).name;
     if (m.kind==='task'){
-      var req=[['title','ชื่องาน'],['medium','งาน Online/Offline'],['jobType','ประเภทงาน'],['ch','ช่องทาง'],['date','วันลงงาน'],['time','เวลาลงงาน'],['creative','Creative'],['graphic','Graphic'],['status','สถานะ']];
+      var req=[['title','ชื่องาน'],['medium','งาน Online/Offline'],['jobType','ประเภทงาน'],['ctype','ประเภทคอนเทนต์'],['ch','ช่องทาง'],['date','วันลงงาน'],['time','เวลาลงงาน'],['creative','Creative'],['graphic','Graphic'],['status','สถานะ']];
       var miss=req.filter(function(x){ var v=f[x[0]]; return !v || (typeof v==='string' && !v.trim()); }).map(function(x){ return x[1]; });
+      if(!this.procIds(f).length) miss.push('หัตถการ');
       if(miss.length){ this.setState({ form:{ ...f, _err:'กรุณากรอกให้ครบ: '+miss.join(', ') } }); return; }
       const timeN=this.normTime(f.time);
       if(!timeN){ this.setState({ form:{ ...f, _err:'เวลาลงงานต้องเป็นรูปแบบ 24 ชม. (00.00–23.59) เช่น 09.30' } }); return; }
