@@ -1424,6 +1424,7 @@
                       <span title="ลากเพื่อสลับลำดับ" style="color:#CBD5E1; font-size:15px; flex-shrink:0; cursor:grab;">⠿</span>
                       {{ im.awThumb }}
                       <span style="flex:1; font-size:13px; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ im.name }}</span>
+                      <sc-if value="{{ im.hasName }}" hint-placeholder-val="{{ false }}"><button onClick="{{ im.onCopyName }}" title="คัดลอกชื่อไฟล์" style="font-size:12px; font-weight:600; color:#4F46E5; background:#EEF2FF; border:1px solid #C7D2FE; padding:5px 9px; border-radius:8px; cursor:pointer; white-space:nowrap;">📋 ชื่อ</button></sc-if>
                       <button onClick="{{ im.onDownload }}" style="font-size:12px; font-weight:600; color:#4F46E5; background:#fff; border:1px solid #C7D2FE; padding:5px 10px; border-radius:8px; cursor:pointer;">ดาวน์โหลด</button>
                       <button onClick="{{ im.onRemove }}" style="width:24px; height:24px; border:1px solid #FECACA; border-radius:7px; background:#fff; color:#EF4444; font-size:12px; cursor:pointer;">✕</button>
                     </div>
@@ -1606,7 +1607,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24ag';
+    this.APP_VERSION='2026-08-24ah';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -2908,7 +2909,7 @@ class Component extends DCLogic {
       const thumb=isVid?React.createElement('video',{src:d,controls:true,preload:'metadata',playsInline:true,style:{width:'100%',maxHeight:'300px',borderRadius:'10px',background:'#000',display:'block'}}):(isImg?React.createElement('img',{src:d,style:{width:'100%',height:'auto',display:'block'}}):null);
       const media=thumb;
       const awThumb=isVid?React.createElement('span',{style:{width:'40px',height:'40px',borderRadius:'7px',background:'#0F172A',color:'#fff',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}},'🎞️'):(isImg?React.createElement('img',{src:d,style:{width:'40px',height:'40px',objectFit:'cover',borderRadius:'7px',flexShrink:0}}):React.createElement('span',{style:{width:'40px',height:'40px',borderRadius:'7px',background:'#F1F5F9',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'16px',flexShrink:0}},'📄'));
-      return { data:d, name:im.name, isImg, notImg:!isImg, isVid, media, hasMedia:!!media, thumb, awThumb, onDownload:()=>this.downloadAttach(im), onRemove:()=>this.removeAttach(field,i), onDragStart:(e)=>{ this._dragMedia={field:field,i:i}; if(e&&e.dataTransfer){ e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', field+':'+i); }catch(_){} } }, onRowDrop:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); if(e&&e.stopPropagation) e.stopPropagation(); this.dropMedia(field,i); } }; });
+      return { data:d, name:im.name, hasName:!!(im.name&&String(im.name).trim()), isImg, notImg:!isImg, isVid, media, hasMedia:!!media, thumb, awThumb, onDownload:()=>this.downloadAttach(im), onCopyName:(e)=>this._copyBtn(e, im.name||''), onRemove:()=>this.removeAttach(field,i), onDragStart:(e)=>{ this._dragMedia={field:field,i:i}; if(e&&e.dataTransfer){ e.dataTransfer.effectAllowed='move'; try{ e.dataTransfer.setData('text/plain', field+':'+i); }catch(_){} } }, onRowDrop:(e)=>{ if(e&&e.preventDefault) e.preventDefault(); if(e&&e.stopPropagation) e.stopPropagation(); this.dropMedia(field,i); } }; });
     const imgList=mkAtt('images'), awList=mkAtt('aw');
     const actorP=pMap[S.actor]||{};
 
