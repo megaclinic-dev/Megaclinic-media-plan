@@ -1123,9 +1123,9 @@
               <thead>
                 <tr>
                   <th colspan="8" style="border-bottom:1px solid #EEF2F6;"></th>
-                  <th colspan="2" style="padding:8px 8px 5px; text-align:center; font-size:12px; font-weight:800; color:#059669; background:#F0FDF4; border-bottom:1px solid #EEF2F6;">🌱 Organic</th>
+                  <th colspan="3" style="padding:8px 8px 5px; text-align:center; font-size:12px; font-weight:800; color:#059669; background:#F0FDF4; border-bottom:1px solid #EEF2F6;">🌱 Organic</th>
                   <th colspan="2" style="padding:8px 8px 5px; text-align:center; font-size:12px; font-weight:800; color:#7C3AED; background:#F5F3FF; border-bottom:1px solid #EEF2F6;">📣 ADS</th>
-                  <th colspan="2" style="border-bottom:1px solid #EEF2F6;"></th>
+                  <th colspan="1" style="border-bottom:1px solid #EEF2F6;"></th>
                 </tr>
                 <tr>
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">รูป</th>
@@ -1138,10 +1138,10 @@
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">Creative</th>
                   <th style="padding:9px 8px; text-align:center; font-size:11px; font-weight:800; color:#059669; background:#F0FDF4; border-bottom:1px solid #EEF2F6;">Awareness</th>
                   <th style="padding:9px 8px; text-align:center; font-size:11px; font-weight:800; color:#059669; background:#F0FDF4; border-bottom:1px solid #EEF2F6;">Interest</th>
+                  <th style="padding:9px 8px; text-align:center; font-size:11px; font-weight:800; color:#059669; background:#F0FDF4; border-bottom:1px solid #EEF2F6;">ทีมกรอกเอง</th>
                   <th style="padding:9px 8px; text-align:center; font-size:11px; font-weight:800; color:#7C3AED; background:#F5F3FF; border-bottom:1px solid #EEF2F6;">Awareness</th>
                   <th style="padding:9px 8px; text-align:center; font-size:11px; font-weight:800; color:#7C3AED; background:#F5F3FF; border-bottom:1px solid #EEF2F6;">Interest</th>
                   <th style="padding:9px 12px; text-align:left; font-size:11px; font-weight:800; color:#94A3B8; border-bottom:1px solid #EEF2F6;">กรอกเมื่อ</th>
-                  <th style="padding:9px 10px; text-align:center; font-size:11px; font-weight:800; color:#B45309; border-bottom:1px solid #EEF2F6;">ทีมกรอกเอง</th>
                 </tr>
               </thead>
               <tbody>
@@ -1162,19 +1162,19 @@
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9;"><span style="display:inline-flex; align-items:center; gap:6px; font-size:12px;"><span style="width:20px; height:20px; border-radius:6px; color:#fff; font-size:9px; font-weight:800; display:flex; align-items:center; justify-content:center; background:{{ r.creColor }};">{{ r.creInit }}</span>{{ r.cre }}</span></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center; background:#F7FDF9;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.oAw }}" onInput="{{ r.onOAw }}" placeholder="–" style="width:78px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #059669; border-radius:8px; background:#fff; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.oAw }}</span></sc-if></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; background:#F7FDF9;"><div style="display:flex; align-items:center; justify-content:center; gap:6px;"><span class="fnmetric" style="font-size:9px; font-weight:800; color:#059669; white-space:nowrap;">{{ r.imetric }}</span><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.oIn }}" onInput="{{ r.onOIn }}" placeholder="–" style="width:78px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #059669; border-radius:8px; background:#fff; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.oIn }}</span></sc-if></div></td>
+                    <td style="padding:6px 10px; border-bottom:1px solid #F1F5F9; text-align:center; background:#F7FDF9;"><button onClick="{{ r.onManual }}" title="ติ๊กถ้าทีมกรอกข้อมูลเอง (เฉพาะ Organic)" style="border:none; background:transparent; cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; gap:2px; line-height:1;"><sc-if value="{{ r.manual }}" hint-placeholder-val="{{ false }}"><span style="font-size:28px;">⚠️</span><span style="font-size:10px; font-weight:800; color:#B45309;">ทีมกรอกเอง</span></sc-if><sc-if value="{{ r.notManual }}" hint-placeholder-val="{{ true }}"><span style="font-size:22px; color:#CBD5E1;">☐</span><span style="font-size:10px; color:#94A3B8;">ทีมกรอกเอง</span></sc-if></button></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center; background:#FAF8FF;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.aAw }}" onInput="{{ r.onAAw }}" placeholder="–" style="width:78px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #7C3AED; border-radius:8px; background:#fff; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.aAw }}</span></sc-if></td>
                     <td style="padding:6px; border-bottom:1px solid #F1F5F9; text-align:center; background:#FAF8FF;"><sc-if value="{{ fnCanEdit }}" hint-placeholder-val="{{ true }}"><input inputmode="numeric" value="{{ r.aIn }}" onInput="{{ r.onAIn }}" placeholder="–" style="width:78px; font-size:13px; font-weight:700; text-align:center; padding:7px 6px; border:1px solid #7C3AED; border-radius:8px; background:#fff; color:#0F172A;"></sc-if><sc-if value="{{ fnReadonly }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px; font-weight:700;">{{ r.aIn }}</span></sc-if></td>
                     <td style="padding:8px 12px; border-bottom:1px solid #F1F5F9; font-size:12px; color:#334155; white-space:nowrap;">{{ r.enteredTH }}</td>
-                    <td style="padding:6px 10px; border-bottom:1px solid #F1F5F9; text-align:center;"><button onClick="{{ r.onManual }}" title="ติ๊กถ้าทีมกรอกข้อมูลเอง" style="border:none; background:transparent; cursor:pointer; display:inline-flex; flex-direction:column; align-items:center; gap:2px; line-height:1;"><sc-if value="{{ r.manual }}" hint-placeholder-val="{{ false }}"><span style="font-size:28px;">⚠️</span><span style="font-size:10px; font-weight:800; color:#B45309;">ทีมกรอกเอง</span></sc-if><sc-if value="{{ r.notManual }}" hint-placeholder-val="{{ true }}"><span style="font-size:22px; color:#CBD5E1;">☐</span><span style="font-size:10px; color:#94A3B8;">ทีมกรอกเอง</span></sc-if></button></td>
                   </tr>
                 </sc-for>
                 <tr>
                   <td colspan="8" style="padding:12px; font-weight:800; background:#F6F8FB; border-top:2px solid #E2E8F0; font-size:13px;">รวม ({{ fnCount }} โพสต์)</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F0FDF4; border-top:2px solid #E2E8F0; color:#059669;">{{ fnTotals.oAw }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F0FDF4; border-top:2px solid #E2E8F0; color:#059669;">{{ fnTotals.oIn }}</td>
+                  <td style="background:#F0FDF4; border-top:2px solid #E2E8F0;"></td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F5F3FF; border-top:2px solid #E2E8F0; color:#7C3AED;">{{ fnTotals.aAw }}</td>
                   <td style="padding:12px; text-align:center; font-weight:800; background:#F5F3FF; border-top:2px solid #E2E8F0; color:#7C3AED;">{{ fnTotals.aIn }}</td>
-                  <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
                   <td style="background:#F6F8FB; border-top:2px solid #E2E8F0;"></td>
                 </tr>
               </tbody>
@@ -1614,7 +1614,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24ak';
+    this.APP_VERSION='2026-08-24al';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1933,7 +1933,7 @@ class Component extends DCLogic {
   _adPlatKind(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'line'; if(/facebook|fb|instagram|tiktok|tik tok/.test(name)||/\big\b/.test(name)) return 'chat'; return 'other'; }
   _briefPlatFlags(brf){ const S=this.state; const ids=(brf&&brf.platforms)||[]; let hasChat=false,hasLine=false; (S.channels||[]).forEach(c=>{ if(ids.indexOf(c.id)<0) return; const k=this._adPlatKind(c.name); if(k==='chat') hasChat=true; else if(k==='line') hasLine=true; }); return { hasChat, hasLine }; }
   blankFunnel(){ return { aw:'', in:'', co:'', cf:'', awAds:'', inAds:'', at:'' }; }
-  interestMetric(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'คลิก'; if(/facebook|fb|wechat/.test(name)) return 'แชร์'; return 'เซฟ'; }
+  interestMetric(name){ name=(name||'').toLowerCase(); if(name.indexOf('line')>=0) return 'คลิก'; if(/facebook|fb|wechat/.test(name)) return 'แชร์'; if(/instagram|tiktok|tik tok/.test(name)||/\big\b/.test(name)) return 'เซฟ+แชร์'; return 'เซฟ'; }
   setFunnel(id, key, raw){ const S=this.state; const v=(raw===''||raw==null)?'':(isNaN(+raw)?'':+raw);
     const tasks=S.tasks.map(t=>{ if(t.id!==id) return t; const fn=Object.assign({}, t.funres||{}); fn[key]=v; const any=['aw','in','co','cf','awAds','inAds'].some(k=>fn[k]!==''&&fn[k]!=null); fn.at=any?(S.today||this.iso(new Date())):''; return Object.assign({}, t, { funres:fn }); });
     this.setState({ tasks }); clearTimeout(this._fnT); this._fnT=setTimeout(()=>this.persist(), 700); }
