@@ -67,6 +67,9 @@
   }
   .mp-frow { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
   .mp-fbox { display: flex; flex-direction: column; gap: 6px; border: 1px solid #E2E8F0; border-radius: 12px; padding: 8px 10px; background: #FCFCFD; }
+  body.mp-filtmin .mp-frow { display: none !important; }
+  body.mp-wlmin .mp-workload > *:not(.mp-wlhead) { display: none !important; }
+  body.mp-wlmin .mp-workload { width: auto !important; min-width: 0 !important; }
   .mp-flabel { font-size: 10px; font-weight: 700; color: #94A3B8; text-transform: uppercase; letter-spacing: .04em; }
   .mp-fchips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 </style>
@@ -230,6 +233,7 @@
             </div>
           </div>
 
+          <div style="margin-bottom:10px;"><button onClick="{{ onToggleFiltMin }}" style="font-size:12px; font-weight:700; color:#475569; background:#fff; border:1px solid #E2E8F0; border-radius:9px; padding:6px 12px; cursor:pointer;">{{ filtBtnLabel }}</button></div>
           <div class="mp-frow">
             <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox"><div class="mp-flabel">คน</div>
@@ -306,7 +310,7 @@
               </div>
             </div>
             <div class="mp-workload" style="width:264px; flex-shrink:0; border-left:1px solid #EEF2F6; padding:16px 18px; background:#FCFCFD;">
-              <div style="font-size:13px; font-weight:700; margin-bottom:8px;">Workload / คน</div>
+              <div class="mp-wlhead" style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;"><span style="font-size:13px; font-weight:700;">Workload / คน</span><button onClick="{{ onToggleWlMin }}" title="ย่อ/ขยาย Workload" style="width:26px; height:26px; border:1px solid #E2E8F0; background:#fff; border-radius:8px; cursor:pointer; color:#64748B; font-size:13px; flex-shrink:0;">{{ wlBtnCaret }}</button></div>
               <div style="display:inline-flex; background:#E9EDF3; border-radius:9px; padding:3px; margin-bottom:12px;">
                 <button onClick="{{ onWlCreative }}" style="{{ wlTabCreativeStyle }}">Creative</button>
                 <button onClick="{{ onWlGraphic }}" style="{{ wlTabGraphicStyle }}">Graphic</button><button onClick="{{ onWlOther }}" style="{{ wlTabOtherStyle }}">อื่นๆ</button>
@@ -461,6 +465,7 @@
               </div>
             </div>
           </div>
+          <div style="margin-bottom:10px;"><button onClick="{{ onToggleFiltMin }}" style="font-size:12px; font-weight:700; color:#475569; background:#fff; border:1px solid #E2E8F0; border-radius:9px; padding:6px 12px; cursor:pointer;">{{ filtBtnLabel }}</button></div>
           <div class="mp-frow">
             <div class="mp-fbox" style="width:200px;"><div class="mp-flabel">ค้นหางาน</div><input value="{{ fSearch }}" onChange="{{ onFSearch }}" placeholder="พิมพ์ชื่องาน" style="width:100%; font-size:13px; padding:7px 10px; border:1px solid #E2E8F0; border-radius:9px; background:#fff;"></div>
             <div class="mp-fbox"><div class="mp-flabel">คน</div>
@@ -521,7 +526,7 @@
             </div>
           </div>
           <div class="mp-workload" style="width:240px; flex-shrink:0; border:1px solid #EEF2F6; border-radius:16px; padding:16px 18px; background:#FCFCFD;">
-            <div style="font-size:13px; font-weight:700; margin-bottom:8px;">Workload / คน</div>
+            <div class="mp-wlhead" style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px;"><span style="font-size:13px; font-weight:700;">Workload / คน</span><button onClick="{{ onToggleWlMin }}" title="ย่อ/ขยาย Workload" style="width:26px; height:26px; border:1px solid #E2E8F0; background:#fff; border-radius:8px; cursor:pointer; color:#64748B; font-size:13px; flex-shrink:0;">{{ wlBtnCaret }}</button></div>
             <div style="display:inline-flex; background:#E9EDF3; border-radius:9px; padding:3px; margin-bottom:12px;">
               <button onClick="{{ onWlCreative }}" style="{{ wlTabCreativeStyle }}">Creative</button>
               <button onClick="{{ onWlGraphic }}" style="{{ wlTabGraphicStyle }}">Graphic</button><button onClick="{{ onWlOther }}" style="{{ wlTabOtherStyle }}">อื่นๆ</button>
@@ -1607,7 +1612,7 @@
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.APP_VERSION='2026-08-24ai';
+    this.APP_VERSION='2026-08-24aj';
     this.PAL = ['#6366F1','#EC4899','#14B8A6','#F59E0B','#3B82F6','#10B981','#8B5CF6','#EF4444','#0EA5E9','#F97316','#84CC16','#0F172A','#1877F2','#E1306C','#06C755'];
     this.FORMATS = ['รูปนิ่ง','วิดีโอ','รีล','บทความ','Story','Live'];
     this.BRANCHES = ['ลาดพร้าว 1','ลาดพร้าว 2','รัชดา','พระราม 9'];
@@ -1854,6 +1859,8 @@ class Component extends DCLogic {
   toggleNav(){ this.setState(s=>({ navOpen:!s.navOpen })); }
   closeNav(){ this.setState({ navOpen:false }); }
   toggleNavMini(){ try{ const on=!document.body.classList.contains('mp-nav-mini'); document.body.classList.toggle('mp-nav-mini', on); localStorage.setItem('mp.navMini', on?'1':''); }catch(e){} }
+  toggleFiltMin(){ const on=!this.state.filtMin; try{ document.body.classList.toggle('mp-filtmin', on); }catch(e){} this.setState({ filtMin:on }); }
+  toggleWlMin(){ const on=!this.state.wlMin; try{ document.body.classList.toggle('mp-wlmin', on); }catch(e){} this.setState({ wlMin:on }); }
   setMode(m){ this.setState({ dateMode:m }); }
   shiftPeriod(dir){
     const S=this.state;
@@ -2948,6 +2955,7 @@ class Component extends DCLogic {
       isAdsTable: viewAllowed&&S.view==='adstable',
       isCsview: viewAllowed&&S.view==='csview',
       calWeekHeads, calCells, permRows, permAreas, permTree, personPick, jobTypeOpts, jobChips, canPosEdit, canPosDel,
+      filtMin:!!S.filtMin, filtBtnLabel:(S.filtMin?'🔽 แสดงตัวกรอง':'🔼 ซ่อนตัวกรอง'), onToggleFiltMin:()=>this.toggleFiltMin(), wlMin:!!S.wlMin, wlBtnCaret:(S.wlMin?'»':'«'), onToggleWlMin:()=>this.toggleWlMin(),
       newPos:S.newPos, onNewPos:e=>this.setState({ newPos:e.target.value }), onNewPosKey:e=>{ if(e.key==='Enter') this.addPosition(); }, addPosition:()=>this.addPosition(),
       canTeamEdit:can('team','edit'), canTeamDel:can('team','del'), canChEdit:can('channels','edit'), canChDel:can('channels','del'), canCtEdit:can('content','edit'), canCtDel:can('content','del'), canPrEdit:can('procedure','edit'), canPrDel:can('procedure','del'), canStEdit:can('status','edit'), canStDel:can('status','del'), canSaveTask:can(curArea,'edit'),
       navSections, chipViewTabs, actor:S.actor, people:S.people,
